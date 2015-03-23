@@ -40,6 +40,7 @@ public:
 
 	void guidance_start()
 	{
+		//test comment
 		if (global.waypoints.count() == 0) { //there is no targets
 			target_location.latitude = 55;
 			target_location.longtitude = 9; //we default to somewhere
