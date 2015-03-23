@@ -6,6 +6,7 @@
 
 #define GPS_SAMPLE_SIZE 5 //sample size for generating an avarage of gps points
 
+// test comment
 
 //it would make more sense to have this as a functino that is called every time we have a new gps coordinate, but when i tried that, nothing worked, so i do it this way instead. 
 void gps_tracking() {
