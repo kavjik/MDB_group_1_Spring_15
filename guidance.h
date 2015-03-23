@@ -6,7 +6,7 @@
 
 enum boat_states
 {
-	close_hauled_wind_from_left,
+	close_hauled_wind_from_left, //as close to the wind as possible
 	close_hauled_wind_from_right,
 	generel_direction_left,
 	generel_direction_right,
@@ -17,9 +17,9 @@ class Navigation_guidance{ //this class contains all the previous groups work on
 private:
 	boat_states state = close_hauled_wind_from_left;
 	boat_states next_state;
-	float bearing_to_target;
-	float bearing_to_target_relative_to_wind;
-	float distance_to_target;
+	float bearing_to_target; //compass bearing to target
+	float bearing_to_target_relative_to_wind; //if 35, target is 35 degrees to the right of the wind
+	float distance_to_target; //distance in m
 	Location target_location;
 	Servo Rudder_Servo;
 public:
@@ -39,10 +39,10 @@ public:
 
 	void guidance()
 	{
-		handle_target();
-		get_target_info();
+		handle_target(); //checks if we are at the target, if we are, go to next
+		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
-		determine_path_bearing();
+		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 	}
 
 	void guidance_start()
@@ -162,6 +162,7 @@ public:
 
 	void next_state_logic(void){
 		//then next state logic
+		next_state = state; //default is staying in the current state
 		switch (state)
 		{
 		case close_hauled_wind_from_left:
