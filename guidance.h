@@ -37,6 +37,13 @@ public:
 #define rudder_servo_pin 7
 
 
+	void guidance()
+	{
+		handle_target();
+		get_target_info();
+		next_state_logic();
+		determine_path_bearing();
+	}
 
 	void guidance_start()
 	{
@@ -92,6 +99,7 @@ public:
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
+
 		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
 		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
 		if (global.debug_handler.path_finding_debug) {
@@ -210,13 +218,7 @@ public:
 	}
 
 
-	void guidance()
-	{
-		handle_target();
-		get_target_info();
-		determine_path_bearing();
-		next_state_logic();
-	}
+
 
 	void rudder_pid_controller()
 	{
