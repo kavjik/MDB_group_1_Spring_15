@@ -11,6 +11,8 @@ public:
 	bool is_valid_boat = false;
 	float bearing = 0; //optional bearing, used for tracking the other boats
 	float distance_to(Location target_location){
+		if (target_location.latitude == this->latitude && target_location.longtitude == this->longtitude) return(0);
+
 		double lat_a = this->latitude*0.0174532925199; //convert to radians
 		double lon_a = this->longtitude*0.0174532925199;
 		double lat_b = target_location.latitude*0.0174532925199;
