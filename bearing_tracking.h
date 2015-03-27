@@ -171,7 +171,7 @@ public:
 			Serial.println("");
 			Serial.println("");*/
 
-			global_wind_direction_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = global_wind_bearing;
+			//global_wind_direction_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = global_wind_bearing;
 
 
 			if (global.debug_handler.wind_direction_debug){
@@ -199,11 +199,11 @@ public:
 
 		float sin_array_sum = 0;
 		float cos_array_sum = 0;
-		global_wind_direction_sum = 0;
+		//global_wind_direction_sum = 0;
 		for (int i = 0; i < WIND_DIRECTION_SAMPLE_SIZE; i++){
 			cos_array_sum += wind_direction_cos_array[i];
 			sin_array_sum += wind_direction_sin_array[i];
-			global_wind_direction_sum += global_wind_direction_array[i];
+			//global_wind_direction_sum += global_wind_direction_array[i];
 		}
 		global.global_wind_bearing = atan2(sin_array_sum, cos_array_sum)*180/PI; //TODO CHECK IF THIS WORKS
 		//global.global_wind_bearing = (int)(global_wind_direction_sum / WIND_DIRECTION_SAMPLE_SIZE) % 360;
@@ -317,13 +317,13 @@ private:
 	float compass_x_sum = 0;
 	float pitch_sum = 0;
 	float roll_sum = 0;
-	float global_wind_direction_sum = 0;
+	//float global_wind_direction_sum = 0;
 	float compass_y_array[SAMPLE_SIZE] = { 0 }; //i dont take the avarage of the compass angle, since that may jump between 360 and 0
 	float compass_x_array[SAMPLE_SIZE] = { 0 }; //default initialized to be zero
 	float pitch_array[SAMPLE_SIZE] = { 0 };
 	float roll_array[SAMPLE_SIZE] = { 0 };
 	float wind_direction_cos_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
-	float global_wind_direction_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
+	//float global_wind_direction_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
 	float wind_direction_sin_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
 	int wind_direction_bearing_tracking_counter = 0;
 	int bearing_tracking_conuter = 0;

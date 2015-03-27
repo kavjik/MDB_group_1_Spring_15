@@ -26,6 +26,7 @@ public:
 	bool wireless_communication_debug;
 	bool main_debug;
 	bool wind_direction_debug;
+	bool show_sim_info = true;
 
 	
 

@@ -78,6 +78,9 @@
     <ClInclude Include="Visual Micro\.MDB_group_1_Spring_15.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="control_simulator.h">
+      <Filter>Header Files\threads</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adafruit_GPS.cpp">

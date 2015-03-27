@@ -1,4 +1,5 @@
 #define mySerial Serial1
+#define SIMULATOR_MODE true
 
 #include <Scheduler.h>
 #include <SPI.h>
@@ -20,22 +21,39 @@
 #include "Computer_input_handler.h"
 #include "guidance.h"
 #include "complex.h"
+#include "control_simulator.h"
 
 
 void setup() {
 
+	
 	Serial.begin(115200);
 	pinMode(53, INPUT_PULLUP);
 	pinMode(51, INPUT_PULLUP);
-	Scheduler.startLoop(Data_logging);
-	Scheduler.startLoop(Bearing_tracking);
-	Scheduler.startLoop(Location_tracking);
-	Scheduler.startLoop(wireless_cummonication);
-	Scheduler.startLoop(wireless_recieve_thread);
-	Scheduler.startLoop(path_finding);
-	Scheduler.startLoop(rudder_and_sail_control);
-	Scheduler.startLoop(gps_tracking); 
-	Scheduler.startLoop(computer_input_handler);
+	if (SIMULATOR_MODE) {
+		//Scheduler.startLoop(Data_logging);
+		//Scheduler.startLoop(Bearing_tracking);
+		//Scheduler.startLoop(Location_tracking);
+		//Scheduler.startLoop(wireless_cummonication);
+		//Scheduler.startLoop(wireless_recieve_thread);
+		Scheduler.startLoop(path_finding);
+		//Scheduler.startLoop(rudder_and_sail_control);
+		//Scheduler.startLoop(gps_tracking); 
+		Scheduler.startLoop(computer_input_handler);
+		Scheduler.startLoop(control_simulator);
+	}
+	else
+	{
+		Scheduler.startLoop(Data_logging);
+		Scheduler.startLoop(Bearing_tracking);
+		Scheduler.startLoop(Location_tracking);
+		Scheduler.startLoop(wireless_cummonication);
+		Scheduler.startLoop(wireless_recieve_thread);
+		Scheduler.startLoop(path_finding);
+		Scheduler.startLoop(rudder_and_sail_control);
+		Scheduler.startLoop(gps_tracking);
+		Scheduler.startLoop(computer_input_handler);
+	}
 	
 }
 

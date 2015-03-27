@@ -83,6 +83,7 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <bearing_tracking.h>
 #include <complex.cpp>
 #include <complex.h>
+#include <control_simulator.h>
 #include <data_logging.h>
 #include <global.h>
 #include <gps_tracking.h>
