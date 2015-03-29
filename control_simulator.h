@@ -1,9 +1,11 @@
-4void control_simulator()
+
+#ifndef control_simulator_h
+#define control_simulator_h
+
+
+void control_simulator()
 {
-	Location target;
-	target.latitude = 55;
-	target.longtitude = 9;
-	global.waypoints.enqueue(target);
+
 	while (1){
 		if (global.debug_handler.show_sim_info == true)
 		{
@@ -35,3 +37,5 @@
 		delay(100);
 	}
 }
+
+#endif

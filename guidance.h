@@ -51,9 +51,11 @@ public:
 		if (global.waypoints.count() == 0) { //there is no targets
 			target_location.latitude = 55;
 			target_location.longtitude = 9; //we default to somewhere
+			Serial.println("no waypoints avaliable, defaulted to build in guidance target");
 		}
 		else {
 			target_location = global.waypoints.dequeue();
+			Serial.println("got start target from waypoint queue");
 		}
 
 		distance_to_target = global.gps_data.location.distance_to(target_location);

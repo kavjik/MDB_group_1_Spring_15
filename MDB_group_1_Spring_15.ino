@@ -1,5 +1,5 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE true
+#define SIMULATOR_MODE false
 
 #include <Scheduler.h>
 #include <SPI.h>
@@ -30,6 +30,13 @@ void setup() {
 	Serial.begin(115200);
 	pinMode(53, INPUT_PULLUP);
 	pinMode(51, INPUT_PULLUP);
+
+	Location target;
+	target.latitude = 55;
+	target.longtitude = 9;
+	global.waypoints.enqueue(target);
+
+
 	if (SIMULATOR_MODE) {
 		//Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);

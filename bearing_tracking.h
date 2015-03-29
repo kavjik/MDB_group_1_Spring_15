@@ -1,8 +1,9 @@
 #ifndef bearing_h
 #define bearing_h
-#define SAMPLE_SIZE 20
+#define SAMPLE_SIZE 10
 #define NINE_DOF_SENSOR_POWER_PIN 52
 #define WIND_DIRECTION_SAMPLE_SIZE 10
+#define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
 
 #include "global.h"
 #include "Bearing_hardware_class.h" //TODO perhaps rename this to bearing_hardware_class
@@ -154,7 +155,7 @@ public:
 		//global.wind_bearing -= 180; //change the range from 0 to 360 to -180 to 180, since its the angle relative to north we are interested in.
 		float global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
 		//TODO implement an avaraging of this, that takes many samples to smoothe it out, the wind direction does not change that often.
-		#define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
+		
 
 
 		//TODO implement averaging here
@@ -339,7 +340,7 @@ void Bearing_tracking() {
 	Bearing_thread_class bearing_thread_object;
 	while (1) {
 		bearing_thread_object.update_data();
-		delay(3);
+		delay(10);
 	}
 }
 
