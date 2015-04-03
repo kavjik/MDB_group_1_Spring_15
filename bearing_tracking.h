@@ -137,65 +137,32 @@ public:
 
 
 	void update_wind_direction_sensor(void){
-		static bool do_wind_direction_debug = false;
-		static float global_wind_debug = 10;
-		//TODO take an avarage of the global wind bearing, and use that to calculate the local wind bearing, since we can better trust the global wind bearing
+
 		//explanation: the variable wind_bearing is the direction the wind is coming from compared to the direction of the boat, the global wind bearing is the direction compared to north. 
 
 		//first we read the wind sensor:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
-
-		/*global.wind_bearing*/ int wind_direction_relative_to_boat = ((analogRead(A4) - 37 * 1.25)*360.0f) / (645.0f*1.25); //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-		wind_direction_relative_to_boat += 14; //we offset the measurement based on measurement on the sensor //TODO moce to a calibration_values.h
+		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
+		wind_direction_relative_to_boat = ((analogRead(A4) - 37 * 1.25)*360.0f) / (645.0f*1.25); //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
+		wind_direction_relative_to_boat += 14; //we offset the measurement based on measurement on the sensor //TODO move to a calibration_values.h
 
 		wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
 		wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing
 		//TODO test that the values that comes from here are correct, since the algorith has changed somewhat. 
 
 		//global.wind_bearing -= 180; //change the range from 0 to 360 to -180 to 180, since its the angle relative to north we are interested in.
-		float global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
-		//TODO implement an avaraging of this, that takes many samples to smoothe it out, the wind direction does not change that often.
-		
+		global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
 
-
-		//TODO implement averaging here
 		if (wind_direction_bearing_tracking_counter % STEPS_BETWEEN_WIND_DIRECTION_SAMPLES == 0){
-
 		
 			wind_direction_cos_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = cos(global_wind_bearing*PI/180);
-			wind_direction_sin_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = sin(global_wind_bearing*PI / 180);
-			/*Serial.print(" sin: ");
-			Serial.print(wind_direction_sin_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES]);
-			Serial.println("");
-			Serial.print(" cos: ");
-			Serial.print(wind_direction_cos_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES]);
-			Serial.println("");
-			Serial.println("");*/
-
-			//global_wind_direction_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = global_wind_bearing;
-
+			wind_direction_sin_array[wind_direction_bearing_tracking_counter / STEPS_BETWEEN_WIND_DIRECTION_SAMPLES] = sin(global_wind_bearing*PI / 180);		
 
 			if (global.debug_handler.wind_direction_debug){
-				Serial.print(" wind_direction_relative_to_boat: ");
-				Serial.print(wind_direction_relative_to_boat);
-				Serial.println("");
-				Serial.print(" global.bearing_container.compass_bearing: ");
-				Serial.print(global.bearing_container.compass_bearing);
-				Serial.println("");
-				Serial.print(" global_wind_bearing: ");
-				Serial.print(global_wind_bearing);
-				Serial.println("");
-				Serial.print("global.global_wind_bearing: ");
-				Serial.print((global.global_wind_bearing));
-				Serial.println("");
-				Serial.print("global.wind_bearing: ");
-				Serial.print((global.wind_bearing));
-				Serial.println("");
-				Serial.println("");
-
+				this->print_wind_direction_debug();
 			}
-
 		}
+
 		wind_direction_bearing_tracking_counter = (++wind_direction_bearing_tracking_counter) % (WIND_DIRECTION_SAMPLE_SIZE*STEPS_BETWEEN_WIND_DIRECTION_SAMPLES);
 
 		float sin_array_sum = 0;
@@ -208,7 +175,7 @@ public:
 		}
 		global.global_wind_bearing = atan2(sin_array_sum, cos_array_sum)*180/PI; //TODO CHECK IF THIS WORKS
 		//global.global_wind_bearing = (int)(global_wind_direction_sum / WIND_DIRECTION_SAMPLE_SIZE) % 360;
-		//global.global_wind_bearing = global_wind_bearing; //TODO implement the above averaging in an working function
+		//global.global_wind_bearing = global_wind_bearing; //TODO implemhjvt the above averaging in an working function
 		global.wind_bearing = global.global_wind_bearing - global.bearing_container.compass_bearing;
 
 		if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
@@ -216,26 +183,27 @@ public:
 
 		if (global.wind_bearing > 180) global.wind_bearing = -360;
 		if (global.wind_bearing < -180) global.wind_bearing += 360;
-
-
-		//TODO REMOVE THIS DEBUG, replace by proper simulator
-		/*
-		if (global.debug_handler.wind_direction_debug) {
-		do_wind_direction_debug = true;
-		}
-		if (do_wind_direction_debug){
-		if (global.debug_handler.wind_direction_debug){
-
-
-		global_wind_debug += 10;
-		global_wind_debug = fmod(global_wind_debug, 360);
-		global.debug_handler.wind_direction_debug = false;
-		}
-		global.global_wind_bearing = global_wind_debug;
-		}
-		*/
-
 	}
+
+	void print_wind_direction_debug(void){
+		Serial.print(" wind_direction_relative_to_boat: ");
+		Serial.print(wind_direction_relative_to_boat);
+		Serial.println("");
+		Serial.print(" global.bearing_container.compass_bearing: ");
+		Serial.print(global.bearing_container.compass_bearing);
+		Serial.println("");
+		Serial.print(" global_wind_bearing: ");
+		Serial.print(global_wind_bearing);
+		Serial.println("");
+		Serial.print("global.global_wind_bearing: ");
+		Serial.print((global.global_wind_bearing));
+		Serial.println("");
+		Serial.print("global.wind_bearing: ");
+		Serial.print((global.wind_bearing));
+		Serial.println("");
+		Serial.println("");
+	}
+
 	void print_debug(void) {
 		Serial.print(" compass: ");
 		Serial.print(global.bearing_container.compass_bearing);
@@ -306,6 +274,8 @@ public:
 
 
 private:
+	float global_wind_bearing;
+	int wind_direction_relative_to_boat;
 	short xMax = 75;
 	short xMin = -48; //TODO move these to a seperate file called something like calibration.h
 	short yMax = -34;

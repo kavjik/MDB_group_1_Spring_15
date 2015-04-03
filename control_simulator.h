@@ -5,6 +5,9 @@
 
 void control_simulator()
 {
+	global.gps_data.location.latitude = 54.912766666667;
+	global.gps_data.location.longtitude = 9.779730555556;
+
 
 	while (1){
 		if (global.debug_handler.show_sim_info == true)

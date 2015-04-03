@@ -1,5 +1,5 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE false
+#define SIMULATOR_MODE true
 
 #include <Scheduler.h>
 #include <SPI.h>
@@ -32,8 +32,8 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-	target.latitude = 55;
-	target.longtitude = 9;
+	target.latitude = 54.911513888889;
+	target.longtitude = 9.781272222222;
 	global.waypoints.enqueue(target);
 
 

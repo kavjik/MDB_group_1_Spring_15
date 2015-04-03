@@ -64,41 +64,68 @@ void computer_input_handler()
 				Serial.println("Command recieved do wind direction debug");
 				break;
 			case 'u':
-				global.bearing_container.compass_bearing += 10;
-				if (global.bearing_container.compass_bearing > 360)
-				{
-					global.bearing_container.compass_bearing -= 360;
+				if (SIMULATOR_MODE) {
+					global.bearing_container.compass_bearing += 10;
+					if (global.bearing_container.compass_bearing > 360)
+					{
+						global.bearing_container.compass_bearing -= 360;
+					}
+
+					global.wind_bearing -= 10;
+					if (global.wind_bearing < -180)
+					{
+						global.wind_bearing += 360;
+					}
+
 				}
 				break;
 			case 'y':
-				global.bearing_container.compass_bearing -= 10;
-				if (global.bearing_container.compass_bearing < 0)
-				{
-					global.bearing_container.compass_bearing += 360;
+				if (SIMULATOR_MODE) {
+					global.bearing_container.compass_bearing -= 10;
+					if (global.bearing_container.compass_bearing < 0)
+					{
+						global.bearing_container.compass_bearing += 360;
+					}
+
+					global.wind_bearing += 10;
+					if (global.wind_bearing > 180)
+					{
+						global.wind_bearing -= 360;
+					}
 				}
 				break;
 			case 'h':
-				global.bearing_container.roll -= 5;
+				if (SIMULATOR_MODE) {
+					global.bearing_container.roll -= 5;
+				}
 				break;
 			case 'j':
-				global.bearing_container.roll += 5;
+				if (SIMULATOR_MODE) {
+					global.bearing_container.roll += 5;
+				}
 				break;
 			case 'i':
-				global.wind_bearing -= 10;
-				if (global.wind_bearing < -180)
-				{
-					global.wind_bearing += 360;
+				if (SIMULATOR_MODE) {
+					global.wind_bearing -= 10;
+					if (global.wind_bearing < -180)
+					{
+						global.wind_bearing += 360;
+					}
 				}
 				break;
 			case 'o':
-				global.wind_bearing += 10;
-				if (global.wind_bearing > 180)
-				{
-					global.wind_bearing -= 360;
+				if (SIMULATOR_MODE) {
+					global.wind_bearing += 10;
+					if (global.wind_bearing > 180)
+					{
+						global.wind_bearing -= 360;
+					}
 				}
 				break;
 			case 'n':
-				global.debug_handler.show_sim_info = !global.debug_handler.show_sim_info;
+				if (SIMULATOR_MODE) {
+					global.debug_handler.show_sim_info = !global.debug_handler.show_sim_info;
+				}
 				break;
 			default:
 				Serial.println("unrecognized command");

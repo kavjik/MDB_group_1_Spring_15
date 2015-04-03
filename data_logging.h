@@ -80,6 +80,10 @@ void Data_logging() {
 	//Then make the string containing all the data
 	dataString += String("millis()"); //timestamp in ms
 	dataString += ";";
+	dataString += String("global.GPS_module.latitude");
+	dataString += ";";
+	dataString += String("global.GPS_module.longitude");
+	dataString += ";";
 	dataString += String("global.gps_data.fix");
 	dataString += ";";
 	dataString += String("global.gps_data.gps_bearing");
@@ -153,6 +157,10 @@ void Data_logging() {
 		dataString = "";
 		//Then make the string containing all the data
 		dataString += String(millis()); //timestamp in ms
+		dataString += ";";
+		dataString += String(global.GPS_module.latitude);
+		dataString += ";";
+		dataString += String(global.GPS_module.longitude);
 		dataString += ";";
 		dataString += String(global.gps_data.fix);
 		dataString += ";";
