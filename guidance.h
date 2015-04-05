@@ -231,7 +231,7 @@ public:
 			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE)){
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE/2)){
+			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE / 2) || bearing_to_target_relative_to_wind < -5 && real_part_of_complex_from_old_code > 10){
 				next_state = close_hauled_wind_from_right;
 			}
 
@@ -244,7 +244,7 @@ public:
 			else if (bearing_to_target_relative_to_wind > TACKING_ZONE){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE / 2)){
+			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE / 2) || bearing_to_target_relative_to_wind > 5 && real_part_of_complex_from_old_code < -10){
 				next_state = close_hauled_wind_from_left;
 			}
 
