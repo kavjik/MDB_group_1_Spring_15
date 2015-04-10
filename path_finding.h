@@ -4,6 +4,7 @@
 #include "guidance.h"
 
 #define rudder_servo_pin 8
+#define sail_servo_pin 9
 
 
 void path_finding(){
@@ -15,9 +16,8 @@ void path_finding(){
 		
 	//target.longtitude = 9.79864444444445;
 	guidance_object.Rudder_Servo.attach(rudder_servo_pin);
-	Servo sail_servo;
-	sail_servo.attach(9);
-	sail_servo.write(90);
+	guidance_object.sail_servo.attach(sail_servo_pin);
+	
 	while (!global.gps_data.fix && SIMULATOR_MODE == false){ // while we dont have a GPS fix and simulator mode is false, wait.
 		delay(100);
 	}

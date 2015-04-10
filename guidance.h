@@ -30,6 +30,7 @@ private:
 	float imaginary_part_of_complex_from_old_code = 0;
 public:
 	Servo Rudder_Servo;
+	Servo sail_servo;
 
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
 #define RATEOFTURN_MAX 36 // [degrees/second]
@@ -50,6 +51,12 @@ public:
 		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
+		sail_control();
+	}
+	void sail_control(void){
+		int temp = 0 + (global.bearing_container.compass_bearing * ((global.bearing_container.compass_bearing > 0) ? 1 : -1 ) - 55)*2.25;
+		if (temp < 0) temp = 0;
+		sail_servo.write(temp);
 	}
 
 	void guidance_start()
