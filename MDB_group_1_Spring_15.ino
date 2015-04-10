@@ -48,6 +48,9 @@ void setup() {
 		//Scheduler.startLoop(gps_tracking); 
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
+		global.gps_data.fix = true;
+		global.gps_data.location.latitude = 54.901513888889;
+		global.gps_data.location.longtitude = 9.781272222222;
 	}
 	else
 	{
@@ -60,6 +63,9 @@ void setup() {
 		Scheduler.startLoop(rudder_and_sail_control);
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
+		//global.gps_data.fix = true;
+		//global.gps_data.location.latitude = 54.921513888889;
+		//global.gps_data.location.longtitude = 9.771272222222;
 	}
 	
 }

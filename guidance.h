@@ -25,14 +25,15 @@ private:
 	float bearing_to_target_relative_to_wind; //if 35, target is 35 degrees to the right of the wind
 	float distance_to_target; //distance in m
 	Location target_location;
-	Servo Rudder_Servo;
+	
 	float real_part_of_complex_from_old_code = 0;
 	float imaginary_part_of_complex_from_old_code = 0;
 public:
+	Servo Rudder_Servo;
 
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
 #define RATEOFTURN_MAX 36 // [degrees/second]
-#define GAIN_P 1 //PID Controller Setting
+#define GAIN_P -1 //PID Controller Setting
 #define GAIN_I 0 //PID Controller Setting
 #define TACKING_ZONE 55
 #define TACKING_VERTICAL_RANGE 50
@@ -40,7 +41,7 @@ public:
 
 	
 
-#define rudder_servo_pin 7
+
 
 
 	void guidance()
@@ -251,7 +252,7 @@ public:
 			break;
 
 		case generel_direction_wind_from_right:
-			if (bearing_to_target_relative_to_wind > -TACKING_ZONE && bearing_to_target_relative_to_wind < 0) {
+			if (bearing_to_target_relative_to_wind > -TACKING_ZONE) {
 				next_state = close_hauled_wind_from_right;
 			}
 			else if (bearing_to_target_relative_to_wind < -135){
@@ -260,7 +261,7 @@ public:
 			break;
 
 		case generel_direction_wind_from_left:
-			if (bearing_to_target_relative_to_wind < TACKING_ZONE && bearing_to_target_relative_to_wind > 0) {
+			if (bearing_to_target_relative_to_wind < TACKING_ZONE) {
 				next_state = close_hauled_wind_from_left;
 			}
 			else if (bearing_to_target_relative_to_wind > 135){

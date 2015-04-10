@@ -1,7 +1,7 @@
 #ifndef bearing_h
 #define bearing_h
 #define SAMPLE_SIZE 10
-#define NINE_DOF_SENSOR_POWER_PIN 52
+#define NINE_DOF_SENSOR_POWER_PIN 26
 #define WIND_DIRECTION_SAMPLE_SIZE 10
 #define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
 
@@ -144,10 +144,10 @@ public:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
 		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
 		wind_direction_relative_to_boat = ((analogRead(A4) - 37 * 1.25)*360.0f) / (645.0f*1.25); //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-		wind_direction_relative_to_boat += 14; //we offset the measurement based on measurement on the sensor //TODO move to a calibration_values.h
+		wind_direction_relative_to_boat += 20; //we offset the measurement based on measurement on the sensor //TODO move to a calibration_values.h
 
 		wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
-		wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing
+		//wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing
 		//TODO test that the values that comes from here are correct, since the algorith has changed somewhat. 
 
 		//global.wind_bearing -= 180; //change the range from 0 to 360 to -180 to 180, since its the angle relative to north we are interested in.
