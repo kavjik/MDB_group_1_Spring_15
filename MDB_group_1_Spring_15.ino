@@ -49,7 +49,7 @@ void setup() {
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		global.gps_data.location.latitude = 54.901513888889;
+		global.gps_data.location.latitude = 54.910513888889;
 		global.gps_data.location.longtitude = 9.781272222222;
 	}
 	else

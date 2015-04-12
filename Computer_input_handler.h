@@ -127,6 +127,29 @@ void computer_input_handler()
 					global.debug_handler.show_sim_info = !global.debug_handler.show_sim_info;
 				}
 				break;
+
+				//global.gps_data.location.latitude = 54.910513888889;
+				//global.gps_data.location.longtitude = 9.781272222222;
+			case '8': //north
+				if (SIMULATOR_MODE) {
+					global.gps_data.location.latitude += 0.0001;
+				}
+				break;
+			case '2': //south 
+				if (SIMULATOR_MODE) {
+					global.gps_data.location.latitude -= 0.0001;
+				}
+				break;
+			case '4': //west
+				if (SIMULATOR_MODE) {
+					global.gps_data.location.longtitude -= 0.0001;
+				}
+				break;
+			case '6': // east
+				if (SIMULATOR_MODE) {
+					global.gps_data.location.longtitude += 0.0001;
+				}
+				break;
 			default:
 				Serial.println("unrecognized command");
 				break;
