@@ -348,7 +348,7 @@ public:
 				time_stamp_for_tacking = millis();
 			}
 			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
-				next_state = close_hauled_wind_from_right;
+				next_state = close_hauled_wind_from_left;
 			}
 			break;
 
