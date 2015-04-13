@@ -108,34 +108,24 @@ void Data_logging() {
 	dataString += ";";
 
 
-	//The below part comes from navigation.h
-	dataString += String("Boat1.Data.X_b.real()");
+	//The below part comes from guidance.h
+	dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
 	dataString += ";";
-	dataString += String("Boat1.Data.X_b.imag()");
+	dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag");
 	dataString += ";";
-	dataString += String("Boat1.Data.X_T_b.real()");
+	dataString += String("global.data_from_navigation_to_log.global_Rudder_Desired_Angle");
 	dataString += ";";
-	dataString += String("Boat1.Data.X_T_b.imag()");
+	dataString += String("global.data_from_navigation_to_log.waypoints_count");
 	dataString += ";";
-	dataString += String("global.Rudder_Desired_Angle");
+	dataString += String("global.data_from_navigation_to_log.desired_heading");
 	dataString += ";";
-	dataString += String("Boat1.Data.TACKINGRANGE");
+	dataString += String("global.data_from_navigation_to_log.distance_to_target");
 	dataString += ";";
-	dataString += String("Boat1.Data.RADIUS_ACCEPTED");
+	dataString += String("global.data_from_navigation_to_log.bearing_to_target");
 	dataString += ";";
-	dataString += String("inrange");
+	dataString += String("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
 	dataString += ";";
-	dataString += String("sig1");
-	dataString += ";";
-	dataString += String("sig2");
-	dataString += ";";
-	dataString += String("sig3");
-	dataString += ";";
-	dataString += String("theta_d_b * 180 / PI");
-	dataString += ";";
-	dataString += String("theta_LOS * 180 / PI");
-	dataString += ";";
-	dataString += String("global.path_bearing * 180 / PI");
+	dataString += String("global.data_from_navigation_to_log.current_state");
 
 
 	File dataFile = SD.open(filename, FILE_WRITE);
@@ -186,34 +176,34 @@ void Data_logging() {
 		dataString += ";";
 		//dataString += global.data_from_path_to_log;
 
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_b_real);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_b_imag);
-		dataString += ";";
+		/*	double Boat1_Data_X_T_b_real;
+	double Boat1_Data_X_T_b_imag;
+	double global_Rudder_Desired_Angle;
+	int waypoints_count;
+	float desired_heading;
+	float distance_to_target;
+	float bearing_to_target;
+	float bearing_to_target_relative_to_wind;
+	int current_state;*/
+
 		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.global_Rudder_Desired_Angle);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_TACKINGRANGE);
+		dataString += String(global.data_from_navigation_to_log.waypoints_count);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_RADIUS_ACCEPTED);
+		dataString += String(global.data_from_navigation_to_log.desired_heading);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.inrange);
+		dataString += String(global.data_from_navigation_to_log.distance_to_target);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.sig1);
+		dataString += String(global.data_from_navigation_to_log.bearing_to_target);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.sig2);
+		dataString += String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind);
 		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.sig3);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_d_b);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_LOS);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.global_path_bearing);
-		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.current_state);
+
 
 
 

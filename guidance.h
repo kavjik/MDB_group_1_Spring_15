@@ -52,6 +52,40 @@ public:
 		next_state_logic();
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		sail_control();
+		send_data_to_data_logging();
+	}
+	void send_data_to_data_logging(void){
+		/*	
+	double Boat1_Data_X_T_b_real;
+	double Boat1_Data_X_T_b_imag;
+	double global_Rudder_Desired_Angle;
+	int waypoints_count;
+	float desired_heading;
+	float distance_to_target;
+	float bearing_to_target;
+	float current_state;*/
+
+		global.data_from_navigation_to_log.Boat1_Data_X_T_b_real = real_part_of_complex_from_old_code;
+		global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag = imaginary_part_of_complex_from_old_code;
+		global.data_from_navigation_to_log.global_Rudder_Desired_Angle = global.Rudder_Desired_Angle;
+		global.data_from_navigation_to_log.waypoints_count = global.waypoints.count();
+		global.data_from_navigation_to_log.desired_heading = global.desired_heading;
+		global.data_from_navigation_to_log.distance_to_target = distance_to_target;
+		global.data_from_navigation_to_log.bearing_to_target = bearing_to_target;
+		global.data_from_navigation_to_log.bearing_to_target_relative_to_wind = bearing_to_target_relative_to_wind;
+		global.data_from_navigation_to_log.current_state = state;
+
+			/*		distance_to_target = global.gps_data.location.distance_to(target_location);
+		bearing_to_target = global.gps_data.location.bearing_to(target_location);
+		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
+		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
+	
+		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
+		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
+		
+		real_part_of_complex_from_old_code = sin(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
+		imaginary_part_of_complex_from_old_code = cos(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
+*/
 	}
 	void sail_control(void){
 		int temp = 0 + (global.bearing_container.compass_bearing * ((global.bearing_container.compass_bearing > 0) ? 1 : -1 ) - 55)*2.25;
@@ -150,7 +184,7 @@ public:
 		switch (state)
 		{
 		case close_hauled_wind_from_left:
-			global.path_bearing = fmod(global.global_wind_bearing + 55, 360);
+			global.desired_heading = int(global.global_wind_bearing + 55)% 360;
 
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
@@ -158,7 +192,7 @@ public:
 			}
 			break;
 		case close_hauled_wind_from_right:
-			global.path_bearing = fmod(global.global_wind_bearing - 55, 360);
+			global.desired_heading = int(global.global_wind_bearing - 55)% 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("close_hauled_wind_from_right");
@@ -166,7 +200,7 @@ public:
 			//do stuff
 			break;
 		case generel_direction_wind_from_right:
-			global.path_bearing = bearing_to_target;
+			global.desired_heading = bearing_to_target;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("generel_direction_wind_from_right");
@@ -174,7 +208,7 @@ public:
 			//do stuff
 			break;
 		case generel_direction_wind_from_left:
-			global.path_bearing = bearing_to_target;
+			global.desired_heading = bearing_to_target;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("generel_direction_wind_from_left");
@@ -182,7 +216,7 @@ public:
 			//do stuff
 			break;
 		case down_wind_wind_from_right:
-			global.path_bearing = int(global.global_wind_bearing -135)%360;
+			global.desired_heading = int(global.global_wind_bearing - 135) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("down_wind_wind_from_right");
@@ -190,21 +224,21 @@ public:
 			break;
 
 		case down_wind_wind_from_left:
-			global.path_bearing = int(global.global_wind_bearing + 135)%360;
+			global.desired_heading = int(global.global_wind_bearing + 135) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("down_wind_wind_from_left");
 			}
 			break;
 		case jibe_going_from_wind_from_left_to_right:
-			global.path_bearing = int(global.bearing_container.compass_bearing - 20)%360;
+			global.desired_heading = int(global.bearing_container.compass_bearing - 20) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("jibe_going_from_wind_from_left_to_right");
 			}
 			break;
 		case jibe_going_from_wind_from_right_to_left:
-			global.path_bearing = int(global.bearing_container.compass_bearing + 20)%360;
+			global.desired_heading = int(global.bearing_container.compass_bearing + 20) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("jibe_going_from_wind_from_right_to_left");
@@ -214,6 +248,9 @@ public:
 			Serial.println("state logic failed, should not be here");
 			break;
 		}
+
+		if (global.desired_heading > 360) global.desired_heading -= 360;
+		if (global.desired_heading < 0) global.desired_heading += 360;
 
 	}
 
@@ -350,7 +387,7 @@ public:
 
 		float  pValue, integralValue, temp_ang;
 		int dHeading;
-		dHeading = global.path_bearing - global.bearing_container.compass_bearing; // in degrees
+		dHeading = global.desired_heading - global.bearing_container.compass_bearing; // in degrees
 		if (dHeading > 180){
 			dHeading -= 360;
 		}
@@ -398,8 +435,8 @@ public:
 			Serial.print("Rudder_Desired_Angle: ");
 			Serial.print(global.Rudder_Desired_Angle);
 			Serial.println("");
-			Serial.print("global.path_bearing: ");
-			Serial.print(global.path_bearing);
+			Serial.print("global.desired_heading: ");
+			Serial.print(global.desired_heading);
 			Serial.println("");
 			Serial.print("global.bearing_container.compass_bearing: ");
 			Serial.print(global.bearing_container.compass_bearing);
