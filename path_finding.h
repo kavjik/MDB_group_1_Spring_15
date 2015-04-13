@@ -25,7 +25,7 @@ void path_finding(){
 	
 		guidance_object.guidance();
 		guidance_object.rudder_pid_controller();
-		delay(750);
+		SIMULATOR_MODE ? delay(750) : delay(50);
 		//Serial.println(global.gps_data.location.distance_to(target));
 		//Serial.println(global.gps_data.location.bearing_to(target));
 	}

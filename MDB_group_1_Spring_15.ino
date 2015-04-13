@@ -38,7 +38,7 @@ void setup() {
 
 
 	if (SIMULATOR_MODE) {
-		//Scheduler.startLoop(Data_logging);
+		Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);
 		//Scheduler.startLoop(Location_tracking);
 		//Scheduler.startLoop(wireless_cummonication);
@@ -63,19 +63,17 @@ void setup() {
 		Scheduler.startLoop(rudder_and_sail_control);
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
-		//global.gps_data.fix = true;
-		//global.gps_data.location.latitude = 54.921513888889;
-		//global.gps_data.location.longtitude = 9.771272222222;
 	}
 	
 }
 
 
 void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		Stayin' alive.		Ah, ha, ha, ha,		Stayin' alive. 
-	analogWrite(DAC0, 170);
-	delay(1000);
-	analogWrite(DAC0, 0);
-	delay(1000);
+	digitalWrite(30,HIGH);
+	delay(500);
+	digitalWrite(30,LOW);
+	delay(500);
+
 
 
 

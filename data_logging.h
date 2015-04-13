@@ -63,16 +63,27 @@ void Data_logging() {
 
 	}
 	if(global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
-
 	char filename[] = "mmddhhmm.csv"; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour and minuttes
-	filename[0] = global.GPS_module.month / 10 + '0';
-	filename[1] = global.GPS_module.month % 10 + '0';
-	filename[2] = global.GPS_module.day / 10 + '0';
-	filename[3] = global.GPS_module.day % 10 + '0';
-	filename[4] = global.GPS_module.hour / 10 + '0';
-	filename[5] = global.GPS_module.hour % 10 + '0';
-	filename[6] = global.GPS_module.minute / 10 + '0';
-	filename[7] = global.GPS_module.minute % 10 + '0';
+	if (SIMULATOR_MODE){
+		filename[0] = 's';
+		filename[1] = 'i';
+		filename[2] = 'm';
+		filename[3] = 'u';
+		filename[4] = 'l';
+		filename[5] = 'a';
+		filename[6] = 't';
+		filename[7] = 'e';
+	}
+	else {
+		filename[0] = global.GPS_module.month / 10 + '0';
+		filename[1] = global.GPS_module.month % 10 + '0';
+		filename[2] = global.GPS_module.day / 10 + '0';
+		filename[3] = global.GPS_module.day % 10 + '0';
+		filename[4] = global.GPS_module.hour / 10 + '0';
+		filename[5] = global.GPS_module.hour % 10 + '0';
+		filename[6] = global.GPS_module.minute / 10 + '0';
+		filename[7] = global.GPS_module.minute % 10 + '0';
+	}
 
 	String dataString;
 	// make a string for assembling the data to log:
@@ -106,6 +117,13 @@ void Data_logging() {
 	dataString += ";";
 	dataString += String("global.waypoints.count()");
 	dataString += ";";
+	dataString += String("When 1 we are not controlling servos");
+	dataString += ";";
+	dataString += String("battery current");
+	dataString += ";";
+	dataString += String("battery voltage");
+	dataString += ";";
+
 
 
 	//The below part comes from guidance.h
@@ -173,6 +191,12 @@ void Data_logging() {
 		dataString += String(global.global_wind_bearing);
 		dataString += ";";
 		dataString += String(global.waypoints.count());
+		dataString += ";";
+		dataString += String(digitalRead(50));
+		dataString += ";";
+		dataString += String(analogRead(A0));
+		dataString += ";";
+		dataString += String(analogRead(A1));
 		dataString += ";";
 		//dataString += global.data_from_path_to_log;
 

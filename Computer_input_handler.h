@@ -64,6 +64,7 @@ void computer_input_handler()
 				Serial.println("Command recieved do wind direction debug");
 				break;
 			case 'u':
+			case '9':
 				if (SIMULATOR_MODE) {
 					global.bearing_container.compass_bearing += 10;
 					if (global.bearing_container.compass_bearing > 360)
@@ -80,6 +81,7 @@ void computer_input_handler()
 				}
 				break;
 			case 'y':
+			case '7': 
 				if (SIMULATOR_MODE) {
 					global.bearing_container.compass_bearing -= 10;
 					if (global.bearing_container.compass_bearing < 0)

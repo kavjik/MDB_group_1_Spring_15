@@ -227,6 +227,8 @@ public:
 	void do_compass_calibration(void)
 	{ //we want to calibrate the compass sensor, so now focus exclusivly on that.
 		//this function only returns after the compass sensor is calibrated, we can do this, since this mode is only entered, when we dont actually need the compass data
+		digitalWrite(31, HIGH);
+		
 		global.toggle_compass_calibration = false;
 		xMax = Bearing_hardware_object.compass.value.x;
 		xMin = Bearing_hardware_object.compass.value.x;
@@ -263,6 +265,7 @@ public:
 			if (global.toggle_compass_calibration) //we are done calibrating, exit.
 			{
 				global.toggle_compass_calibration = false;
+				digitalWrite(31, LOW);
 				break;
 			}
 			delay(10);

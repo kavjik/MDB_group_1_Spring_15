@@ -8,6 +8,8 @@ enum boat_states
 {
 	close_hauled_wind_from_left, //as close to the wind as possible
 	close_hauled_wind_from_right,
+	tacking_going_from_wind_from_left_to_right,
+	tacking_going_from_wind_from_right_to_left,
 	generel_direction_wind_from_right,
 	generel_direction_wind_from_left,
 	jibe_going_from_wind_from_left_to_right,
@@ -24,6 +26,9 @@ private:
 	float bearing_to_target; //compass bearing to target
 	float bearing_to_target_relative_to_wind; //if 35, target is 35 degrees to the right of the wind
 	float distance_to_target; //distance in m
+	float frozen_tacking_direction;
+	bool has_boat_been_at_tacking_target;
+	long int time_stamp_for_tacking;
 	Location target_location;
 	
 	float real_part_of_complex_from_old_code = 0;
@@ -88,7 +93,7 @@ public:
 */
 	}
 	void sail_control(void){
-		int temp = 0 + (global.bearing_container.compass_bearing * ((global.bearing_container.compass_bearing > 0) ? 1 : -1 ) - 55)*2.25;
+		int temp = 0 + 180-((sqrt(global.wind_bearing*global.wind_bearing) - 45)*2);
 		if (temp < 0) temp = 0;
 		sail_servo.write(temp);
 	}
@@ -199,6 +204,28 @@ public:
 			}
 			//do stuff
 			break;
+
+			/*	tacking_going_from_wind_from_left_to_right,
+	tacking_going_from_wind_from_right_to_left,
+	*/
+		case tacking_going_from_wind_from_left_to_right: 
+			//høns
+			global.desired_heading = frozen_tacking_direction;
+			if (global.debug_handler.path_finding_debug){
+				Serial.print("state is:");
+				Serial.println("tacking_going_from_wind_from_left_to_right");
+			}
+			//do stuff
+			break;
+		case tacking_going_from_wind_from_right_to_left:
+			//høns
+			global.desired_heading = frozen_tacking_direction;
+			if (global.debug_handler.path_finding_debug){
+				Serial.print("state is:");
+				Serial.println("tacking_going_from_wind_from_right_to_left");
+			}
+			//do stuff
+			break;
 		case generel_direction_wind_from_right:
 			global.desired_heading = bearing_to_target;
 			if (global.debug_handler.path_finding_debug){
@@ -277,7 +304,10 @@ public:
 				next_state = generel_direction_wind_from_right;
 			}
 			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE / 2) || bearing_to_target_relative_to_wind < -5 && real_part_of_complex_from_old_code > 10){
-				next_state = close_hauled_wind_from_right;
+				next_state = tacking_going_from_wind_from_left_to_right;
+				has_boat_been_at_tacking_target = false;
+				frozen_tacking_direction = global.global_wind_bearing - 55;
+				if (global.global_wind_bearing < 0) global.global_wind_bearing += 360;
 			}
 
 			break;
@@ -290,11 +320,39 @@ public:
 				next_state = generel_direction_wind_from_left;
 			}
 			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE / 2) || bearing_to_target_relative_to_wind > 5 && real_part_of_complex_from_old_code < -10){
-				next_state = close_hauled_wind_from_left;
+				next_state = tacking_going_from_wind_from_right_to_left;
+				frozen_tacking_direction = global.global_wind_bearing + 55;
+				has_boat_been_at_tacking_target = false;
+				if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
 			}
 
 			break;
 
+
+			/*	tacking_going_from_wind_from_left_to_right,
+			tacking_going_from_wind_from_right_to_left,
+			*/
+		case tacking_going_from_wind_from_left_to_right :
+			if (angle_between_two_angles(global.bearing_container.compass_bearing, frozen_tacking_direction) < 15 && has_boat_been_at_tacking_target == false) {
+				has_boat_been_at_tacking_target = true;
+				time_stamp_for_tacking = millis();
+			}
+			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
+				next_state = close_hauled_wind_from_right;
+			}
+			break;
+
+		case tacking_going_from_wind_from_right_to_left :
+			if (angle_between_two_angles(global.bearing_container.compass_bearing, frozen_tacking_direction) < 15 && has_boat_been_at_tacking_target == false) {
+				has_boat_been_at_tacking_target = true;
+				time_stamp_for_tacking = millis();
+			}
+			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
+				next_state = close_hauled_wind_from_right;
+			}
+			break;
+
+			break;
 		case generel_direction_wind_from_right:
 			if (bearing_to_target_relative_to_wind > -TACKING_ZONE) {
 				next_state = close_hauled_wind_from_right;
@@ -427,6 +485,7 @@ public:
 
 		//Rudder Calibration can be done here
 		Rudder_Servo.write(90 - global.Rudder_Desired_Angle);
+
 		if (global.debug_handler.rudder_and_sail_control_debug) {
 			Serial.println("");
 			Serial.print("d_heading on rudder: ");
