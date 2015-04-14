@@ -2,6 +2,7 @@
 #define global_global_h
 
 #define GPSSerial Serial1 //this is for the gps sensor, kept this way since the libary did it this way
+#define NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY 4
 
 
 
@@ -48,7 +49,7 @@ public:
 	Gps gps_data; //contains the filtered gps data, usefull for all the other threads
 	QueueArray <Location> waypoints; //a queue containging the waypoints we want to go to, excluding the current objective, which the path finding should maintain
 	float desired_heading = 0; //bearing we want the boat to travel, this is used by the rudder control
-	Location other_boats[4]; //a simple array containing the location of the other boats, due to lack of vectors, its kept as an array
+	Location other_boats[NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY]; //a simple array containing the location of the other boats, due to lack of vectors, its kept as an array
 	QueueArray <String> messages_to_be_logged; //special messages we want to log specifically //TODO implement.
 	Debug_handler debug_handler; //contains the boolean values for wheter we want to look at debug messages in the console.
 	Bearing_container bearing_container;

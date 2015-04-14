@@ -1,7 +1,9 @@
 #ifndef data_logging_h
 #define data_logging_h
 #include "global.h"
-
+#define DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN 50
+#define BATTERY_CURRENT_READ_PIN A0
+#define BATTERY_VOLTAGE_READ_PIN A1
 
 
 void Data_logging() {
@@ -125,7 +127,6 @@ void Data_logging() {
 	dataString += ";";
 
 
-
 	//The below part comes from guidance.h
 	dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
 	dataString += ";";
@@ -192,23 +193,12 @@ void Data_logging() {
 		dataString += ";";
 		dataString += String(global.waypoints.count());
 		dataString += ";";
-		dataString += String(digitalRead(50));
+		dataString += String(digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN));
 		dataString += ";";
-		dataString += String(analogRead(A0));
+		dataString += String(analogRead(BATTERY_CURRENT_READ_PIN));
 		dataString += ";";
-		dataString += String(analogRead(A1));
+		dataString += String(analogRead(BATTERY_VOLTAGE_READ_PIN));
 		dataString += ";";
-		//dataString += global.data_from_path_to_log;
-
-		/*	double Boat1_Data_X_T_b_real;
-	double Boat1_Data_X_T_b_imag;
-	double global_Rudder_Desired_Angle;
-	int waypoints_count;
-	float desired_heading;
-	float distance_to_target;
-	float bearing_to_target;
-	float bearing_to_target_relative_to_wind;
-	int current_state;*/
 
 		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real);
 		dataString += ";";

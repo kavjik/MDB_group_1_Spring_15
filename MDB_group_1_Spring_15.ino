@@ -1,5 +1,6 @@
 #define mySerial Serial1
 #define SIMULATOR_MODE true
+#define HEART_BEAT_LED 30
 
 #include <Scheduler.h>
 #include <SPI.h>
@@ -69,9 +70,9 @@ void setup() {
 
 
 void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		Stayin' alive.		Ah, ha, ha, ha,		Stayin' alive. 
-	digitalWrite(30,HIGH);
+	digitalWrite(HEART_BEAT_LED, HIGH);
 	delay(500);
-	digitalWrite(30,LOW);
+	digitalWrite(HEART_BEAT_LED, LOW);
 	delay(500);
 
 

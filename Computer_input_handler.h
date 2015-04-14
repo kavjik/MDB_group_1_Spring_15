@@ -63,6 +63,7 @@ void computer_input_handler()
 				global.debug_handler.wind_direction_debug = !global.debug_handler.wind_direction_debug;
 				Serial.println("Command recieved do wind direction debug");
 				break;
+				// below this point is the implementation of simulator mode
 			case 'u':
 			case '9':
 				if (SIMULATOR_MODE) {

@@ -5,6 +5,8 @@
 
 #define rudder_servo_pin 8
 #define sail_servo_pin 9
+#define PATH_FINDING_SIMULATOR_MODE_WAIT_TIME 750
+#define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
 
 
 void path_finding(){
@@ -25,7 +27,7 @@ void path_finding(){
 	
 		guidance_object.guidance();
 		guidance_object.rudder_pid_controller();
-		SIMULATOR_MODE ? delay(750) : delay(50);
+		SIMULATOR_MODE ? delay(PATH_FINDING_SIMULATOR_MODE_WAIT_TIME) : delay(PATH_FINDING_DEFAULT_MODE_WAIT_TIME);
 		//Serial.println(global.gps_data.location.distance_to(target));
 		//Serial.println(global.gps_data.location.bearing_to(target));
 	}

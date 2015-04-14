@@ -4,6 +4,12 @@
 #define NINE_DOF_SENSOR_POWER_PIN 26
 #define WIND_DIRECTION_SAMPLE_SIZE 10
 #define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
+#define COMPASS_X_MAX 75
+#define COMPASS_X_MIN -48
+#define COMPASS_Y_MAX -34
+#define COMPASS_Y_MIN -158
+#define DEBUG_LED 31
+
 
 #include "global.h"
 #include "Bearing_hardware_class.h" //TODO perhaps rename this to bearing_hardware_class
@@ -14,10 +20,10 @@ public:
 
 	Bearing_thread_class() {
 		wind_direction_bearing_tracking_counter = 0;
-		xMax = 75;
-		xMin = -48; //TODO move these to a seperate file called something like calibration.h
-		yMax = -34;
-		yMin = -158;
+		xMax = COMPASS_X_MAX;
+		xMin = -COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
+		yMax = -COMPASS_Y_MAX;
+		yMin = -COMPASS_Y_MIN;
 
 		compass_y_sum = 0;
 		compass_x_sum = 0;
@@ -227,7 +233,7 @@ public:
 	void do_compass_calibration(void)
 	{ //we want to calibrate the compass sensor, so now focus exclusivly on that.
 		//this function only returns after the compass sensor is calibrated, we can do this, since this mode is only entered, when we dont actually need the compass data
-		digitalWrite(31, HIGH);
+		digitalWrite(DEBUG_LED, HIGH);
 		
 		global.toggle_compass_calibration = false;
 		xMax = Bearing_hardware_object.compass.value.x;
@@ -265,7 +271,7 @@ public:
 			if (global.toggle_compass_calibration) //we are done calibrating, exit.
 			{
 				global.toggle_compass_calibration = false;
-				digitalWrite(31, LOW);
+				digitalWrite(DEBUG_LED, LOW);
 				break;
 			}
 			delay(10);
@@ -279,10 +285,10 @@ public:
 private:
 	float global_wind_bearing;
 	int wind_direction_relative_to_boat;
-	short xMax = 75;
-	short xMin = -48; //TODO move these to a seperate file called something like calibration.h
-	short yMax = -34;
-	short yMin = -158;
+	short xMax = COMPASS_X_MAX;
+	short xMin = -COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
+	short yMax = -COMPASS_Y_MAX;
+	short yMin = -COMPASS_Y_MIN;
 	
 	float xCali;
 	float yCali;
