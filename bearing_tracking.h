@@ -149,8 +149,8 @@ public:
 		//first we read the wind sensor:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
 		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
-		wind_direction_relative_to_boat = ((analogRead(A4) - 37 * 1.25)*360.0f) / (645.0f*1.25); //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-		wind_direction_relative_to_boat += 20; //we offset the measurement based on measurement on the sensor //TODO move to a calibration_values.h
+		wind_direction_relative_to_boat = int(0.5152 * analogRead(A4) - 12.167)%360; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
+		
 
 		wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
 		//wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing

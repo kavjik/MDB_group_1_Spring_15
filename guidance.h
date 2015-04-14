@@ -52,9 +52,9 @@ public:
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
 #define TIMEOUT_FOR_COMPLETED_TACKING 5000
 #define RUDDER_LIMIT 35 
+
+
 	
-
-
 
 
 	void guidance()
@@ -360,8 +360,8 @@ public:
 				has_boat_been_at_tacking_target = true;
 				time_stamp_for_tacking = millis();
 			}
-			if ((millis() - time_stamp_for_tacking) > TIMEOUT_FOR_COMPLETED_TACKING && has_boat_been_at_tacking_target == true) {
-				next_state = close_hauled_wind_from_left;
+			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
+				next_state = close_hauled_wind_from_right;
 			}
 			break;
 
