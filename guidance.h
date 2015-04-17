@@ -100,7 +100,7 @@ public:
 */
 	}
 	void sail_control(void){
-		int sail_control_value = 0 + 180 - ((sqrt(global.wind_bearing*global.wind_bearing) - SAIL_CONTROL_ZERO_POINT) * 2);
+		int sail_control_value = 0 + 180 - ((sqrt((global.desired_heading - global.global_wind_bearing)*(global.desired_heading - global.global_wind_bearing)) - SAIL_CONTROL_ZERO_POINT) * 2);
 		if (sail_control_value < 0) sail_control_value = 0;
 		sail_servo.write(sail_control_value);
 	}
