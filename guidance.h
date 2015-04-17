@@ -43,7 +43,7 @@ public:
 #define GAIN_I 0 //PID Controller Setting
 #define TACKING_ZONE 55
 #define SAIL_CONTROL_ZERO_POINT 45
-#define IN_RANGE_DISTANCE 10
+#define IN_RANGE_DISTANCE 5
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
 #define TACKING_ZONE_DISTANCE 20

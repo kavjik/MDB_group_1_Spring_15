@@ -1,5 +1,5 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE true
+#define SIMULATOR_MODE false
 #define HEART_BEAT_LED 30
 
 #include <Scheduler.h>
@@ -33,13 +33,19 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-	target.latitude = 54.911513888889;
-	target.longtitude = 9.781272222222;
+	target.latitude = 54.91382778; //first point in water
+	target.longtitude = 9.779919444;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91358889; //south of the first point
+	target.longtitude = 9.780316667;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91382778; //back to the first point
+	target.longtitude = 9.779919444;
 	global.waypoints.enqueue(target);
 
 
 	if (SIMULATOR_MODE) {
-		Scheduler.startLoop(Data_logging);
+		//Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);
 		//Scheduler.startLoop(Location_tracking);
 		//Scheduler.startLoop(wireless_cummonication);
@@ -78,22 +84,10 @@ void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		S
 
 
 
-	if (global.gps_data.fix && global.debug_handler.main_debug){
-		Serial.println("got a fix at:");
-		Serial.print("lattitude  ");
-		Serial.println(global.gps_data.location.latitude);
-		Serial.print("longtitude ");
-		Serial.println(global.gps_data.location.longtitude);
-		Serial.print("bearing    ");
-		Serial.println(global.gps_data.gps_bearing);
-		Serial.print("speed      ");
-		Serial.println(global.gps_data.speed);
-		
+	if (digitalRead(51) && global.debug_handler.main_debug){
+		Serial.println("WE ARE NOT IN CONTROL");
+	}
 
-	}
-	else {
-		if (global.debug_handler.main_debug) Serial.println("didnt get a fix");
-	}
 	
 
 }

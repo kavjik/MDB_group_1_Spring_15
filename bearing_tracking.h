@@ -4,10 +4,10 @@
 #define NINE_DOF_SENSOR_POWER_PIN 26
 #define WIND_DIRECTION_SAMPLE_SIZE 10
 #define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
-#define COMPASS_X_MAX 75
-#define COMPASS_X_MIN -48
-#define COMPASS_Y_MAX -34
-#define COMPASS_Y_MIN -158
+#define COMPASS_X_MAX 70
+#define COMPASS_X_MIN -75
+#define COMPASS_Y_MAX -89
+#define COMPASS_Y_MIN -208
 #define DEBUG_LED 31
 
 
@@ -149,10 +149,10 @@ public:
 		//first we read the wind sensor:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
 		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
-		wind_direction_relative_to_boat = int(0.5152 * analogRead(A4) - 12.167)%360; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-		
-
-		wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
+		wind_direction_relative_to_boat = ((int((((analogRead(A4)-46)/840.0)*360.0)+210))%360)-180; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
+		//while (wind_direction_relative_to_boat > 180) wind_direction_relative_to_boat -= 360;
+		//while (wind_direction_relative_to_boat < -180) wind_direction_relative_to_boat += 360;
+		//wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
 		//wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing
 		//TODO test that the values that comes from here are correct, since the algorith has changed somewhat. 
 
@@ -207,6 +207,8 @@ public:
 		Serial.print("global.wind_bearing: ");
 		Serial.print((global.wind_bearing));
 		Serial.println("");
+		Serial.print("from sensor: ");
+		Serial.print(analogRead(A4));
 		Serial.println("");
 	}
 

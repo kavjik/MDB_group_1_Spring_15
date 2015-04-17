@@ -153,6 +153,12 @@ void computer_input_handler()
 					global.gps_data.location.longtitude += 0.0001;
 				}
 				break;
+			case '+': // forward
+				if (SIMULATOR_MODE) {
+					global.gps_data.location.longtitude += (sin(global.bearing_container.compass_bearing*PI / 180))*0.0001;
+					global.gps_data.location.latitude += (cos(global.bearing_container.compass_bearing*PI / 180))*0.00005;
+				}
+				break;
 			default:
 				Serial.println("unrecognized command");
 				break;
