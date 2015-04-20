@@ -3,49 +3,52 @@
 #include "global.h"
 #include "XBee.h"
 class wireless_communication_class
+
+#define COORDINATOR 0x0013a200,0x40B5BBD0
+#define BOAT_1		0x0013A200,0x40B5BBF0
+#define BOAT_2		0x0013A200,0x40B5BBF5
 {
 public:
 	wireless_communication_class(){
-		Serial2.begin(9600);
-		xbee.begin(Serial2);
-		//xbee.setSerial(Serial2);
-		
-		payload[0] = 'h';
-		payload[1] = 'e';
-		payload[2] = 'y';
-		
-		//initialize
+		payload[0] = 's';
+		payload[1] = 'l';
+		payload[2] = 'a';
+		payload[3] = 'v';
+		payload[4] = 'e';
+		payload[5] = ' ';
 	}
-	void send_info(double lattitude, double longtitude, float bearing, float speed){
-		//xbee.send(zbTx);
+	void send_info(void/*double lattitude, double longtitude, float bearing, float speed*/){
+		xbee.send(zbTx);
+	}
+	void init(void){
+		Serial2.begin(9600);
+		xbee.setSerial(Serial2);
+		xbee.begin(Serial2);
 	}
 	void add_waypoint(Location target){
 		global.waypoints.enqueue(target);
 	}
 	void get_info(void){
+		
 		xbee.readPacket();
-
+		
 		if (xbee.getResponse().isAvailable()) {
 			// got something
-			//flashLed(errorLed, 10, 50);
 			if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
 				// got a zb rx packet
 
 				// now fill our zb rx class
 				xbee.getResponse().getZBRxResponse(rx);
-
 			}
 			for (int i = 0; i < rx.getDataLength(); i++) {
 				Serial.write(rx.getData(i));
+				//Serial.print(' ');
 			}
 			Serial.print('\r');
 			Serial.print('\n');
 		}
 		else if(global.debug_handler.wireless_communication_debug) Serial.println("didnt get anything");
-
-
 	}
-
 private:
 	void update_other_boats_location(int i /*change*/){
 
@@ -58,9 +61,10 @@ private:
 
 	XBee xbee = XBee();
 
-	uint8_t payload[3];// = { 'h', 'e', 'y' };
+	uint8_t payload[6] = {};// = { 'h', 'e', 'y' };
 
-	XBeeAddress64 addr64 = XBeeAddress64(0x0, 0x0);
+	XBeeAddress64 addr64 = XBeeAddress64(COORDINATOR); // address of coordinator: 0x0013a200, 0x40B5BBD0
+													// address of Boat 1: 0x0013A200, 0x40B5BBF0
 	ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 	XBeeResponse response = XBeeResponse();
 	// create reusable response objects for responses we expect to handle 
@@ -74,16 +78,16 @@ private:
 wireless_communication_class wireless_communication_object;
 
 void wireless_cummonication(){
-	
+	wireless_communication_object.init();
 	while (1){
-		wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed);
+		wireless_communication_object.send_info(/*global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed*/);
 		
 		delay(1000);
 	}
 	yield();
-
 }
 void wireless_recieve_thread(){
+	wireless_communication_object.init();
 	while (1){
 		wireless_communication_object.get_info();
 		delay(100);
