@@ -6,16 +6,16 @@
 
 enum boat_states
 {
-	close_hauled_wind_from_left, //as close to the wind as possible
-	close_hauled_wind_from_right,
-	tacking_going_from_wind_from_left_to_right,
-	tacking_going_from_wind_from_right_to_left,
-	generel_direction_wind_from_right,
-	generel_direction_wind_from_left,
-	jibe_going_from_wind_from_left_to_right,
-	jibe_going_from_wind_from_right_to_left,
-	down_wind_wind_from_right,
-	down_wind_wind_from_left,
+	close_hauled_wind_from_left, //0
+	close_hauled_wind_from_right,//1
+	tacking_going_from_wind_from_left_to_right, //2
+	tacking_going_from_wind_from_right_to_left, //3
+	generel_direction_wind_from_right, //4
+	generel_direction_wind_from_left, //5
+	jibe_going_from_wind_from_left_to_right, //6
+	jibe_going_from_wind_from_right_to_left, //7
+	down_wind_wind_from_right, // 8
+	down_wind_wind_from_left, // 9
 };
 
 

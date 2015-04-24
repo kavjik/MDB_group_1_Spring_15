@@ -27,7 +27,7 @@
 
 void setup() {
 
-	
+
 	Serial.begin(115200);
 	pinMode(53, INPUT_PULLUP);
 	pinMode(51, INPUT_PULLUP);
@@ -71,7 +71,7 @@ void setup() {
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
 	}
-	
+
 }
 
 
@@ -88,7 +88,7 @@ void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		S
 		Serial.println("WE ARE NOT IN CONTROL");
 	}
 
-	
+
 
 }
 
