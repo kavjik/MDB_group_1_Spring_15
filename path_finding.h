@@ -3,8 +3,10 @@
 
 #include "guidance.h"
 
+#define FRONT_SAIL_PIN 7
 #define rudder_servo_pin 8
 #define sail_servo_pin 9
+
 #define PATH_FINDING_SIMULATOR_MODE_WAIT_TIME 750
 #define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
 
@@ -19,6 +21,7 @@ void path_finding(){
 	//target.longtitude = 9.79864444444445;
 	guidance_object.Rudder_Servo.attach(rudder_servo_pin);
 	guidance_object.sail_servo.attach(sail_servo_pin);
+	guidance_object.front_sail_servo.attach(FRONT_SAIL_PIN);
 	
 	while (!global.gps_data.fix && SIMULATOR_MODE == false){ // while we dont have a GPS fix and simulator mode is false, wait.
 		delay(100);

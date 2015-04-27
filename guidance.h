@@ -36,6 +36,8 @@ private:
 public:
 	Servo Rudder_Servo;
 	Servo sail_servo;
+	Servo front_sail_servo;
+
 
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
 #define RATEOFTURN_MAX 36 // [degrees/second]
@@ -103,6 +105,9 @@ public:
 		int sail_control_value = 0 + 180 - ((sqrt((global.desired_heading - global.global_wind_bearing)*(global.desired_heading - global.global_wind_bearing)) - SAIL_CONTROL_ZERO_POINT) * 2);
 		if (sail_control_value < 0) sail_control_value = 0;
 		sail_servo.write(sail_control_value);
+
+		if (global.wind_bearing > 0) front_sail_servo.write(0);
+		else front_sail_servo.write(180);
 	}
 
 	void guidance_start()
