@@ -48,11 +48,11 @@ public:
 			Bearing_hardware_object.readCompass(COMPASSADDR, &Bearing_hardware_object.compass);
 			Bearing_hardware_object.readGyro(GYROADDR, &Bearing_hardware_object.gyro);
 
-			if (Bearing_hardware_object.accel.value.x>256) Bearing_hardware_object.accel.value.x = 256;
-			if (Bearing_hardware_object.accel.value.x<-256) Bearing_hardware_object.accel.value.x = -256;
+			if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
+			if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
 
-			if (Bearing_hardware_object.accel.value.x>256) Bearing_hardware_object.accel.value.x = 256;
-			if (Bearing_hardware_object.accel.value.x<-256) Bearing_hardware_object.accel.value.x = -256;
+			if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
+			if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
 
 			compass_y_array[i] = Bearing_hardware_object.compass.value.z;
 			compass_x_array[i] = Bearing_hardware_object.compass.value.x;
@@ -92,12 +92,12 @@ public:
 	}
 
 	void update_pitch_and_roll(void){
-		if (Bearing_hardware_object.accel.value.x>256) Bearing_hardware_object.accel.value.x = 256;
-		if (Bearing_hardware_object.accel.value.x<-256) Bearing_hardware_object.accel.value.x = -256;
+		if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
+		if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
 		roll_array[bearing_tracking_conuter] = asin(Bearing_hardware_object.accel.value.x / 256.0f)*57.29577f;
 
-		if (Bearing_hardware_object.accel.value.z>256) Bearing_hardware_object.accel.value.z = 256;
-		if (Bearing_hardware_object.accel.value.z<-256) Bearing_hardware_object.accel.value.z = -256;
+		if (Bearing_hardware_object.accel.value.z>255.9) Bearing_hardware_object.accel.value.z = 255.9;
+		if (Bearing_hardware_object.accel.value.z<-255.9) Bearing_hardware_object.accel.value.z = -255.9;
 		pitch_array[bearing_tracking_conuter] = asin(Bearing_hardware_object.accel.value.y / 256.0f)*57.29577f;
 
 		pitch_sum = 0;
