@@ -2,11 +2,14 @@
 #define wireless_communication_h
 #include "global.h"
 #include "XBee.h"
+#include <stdlib.h>
 class wireless_communication_class
 
 #define COORDINATOR 0x0013a200,0x40B5BBD0
 #define BOAT_1		0x0013A200,0x40B5BBF0
 #define BOAT_2		0x0013A200,0x40B5BBF5
+#define BOAT_3		0x0013A200,0x40B48973
+
 {
 public:
 	wireless_communication_class(){
@@ -15,18 +18,28 @@ public:
 		payload[2] = 'a';
 		payload[3] = 'v';
 		payload[4] = 'e';
-		payload[5] = ' ';
-	}
-	void send_info(void/*double lattitude, double longtitude, float bearing, float speed*/){
-		xbee.send(zbTx);
+		payload[5] = '1';
 	}
 	void init(void){
 		Serial2.begin(9600);
 		xbee.setSerial(Serial2);
 		xbee.begin(Serial2);
 	}
-	void add_waypoint(Location target){
-		global.waypoints.enqueue(target);
+	typedef struct{          // size of this struct should be multiples of 4
+		double lattitude;
+		double longtitude;
+		float  bearing;
+		float  speed;
+	}OUTPUT_DATA_;
+
+	void send_info(void/*double lattitude, double longtitude, float bearing, float speed*/){
+		float x = 2228.476;
+		uint8_t b[sizeof(x)];
+		memcpy(b, &x, sizeof(x));
+		addr64 = XBeeAddress64(COORDINATOR);		//		BOAT_1		COORDINATOR
+		zbTx = ZBTxRequest(addr64, b, sizeof(b));
+
+		xbee.send(zbTx);
 	}
 	void get_info(void){
 		
@@ -40,16 +53,25 @@ public:
 				// now fill our zb rx class
 				xbee.getResponse().getZBRxResponse(rx);
 			}
-			for (int i = 0; i < rx.getDataLength(); i++) {
-				Serial.write(rx.getData(i));
-				//Serial.print(' ');
-			}
+
+			float y = 1111.111;
+			uint8_t b[sizeof(y)];
+			uint8_t *bp;
+
+			memcpy(&y, rx.getData(), sizeof(y));
+			Serial.print(y);
+
 			Serial.print('\r');
 			Serial.print('\n');
 		}
 		else if(global.debug_handler.wireless_communication_debug) Serial.println("didnt get anything");
 	}
+	void add_waypoint(Location target){
+		global.waypoints.enqueue(target);
+	}
 private:
+	OUTPUT_DATA_ oData;
+
 	void update_other_boats_location(int i /*change*/){
 
 		global.other_boats[i].bearing = 1;
@@ -60,11 +82,9 @@ private:
 	}
 
 	XBee xbee = XBee();
-
-	uint8_t payload[6] = {};// = { 'h', 'e', 'y' };
-
-	XBeeAddress64 addr64 = XBeeAddress64(COORDINATOR); // address of coordinator: 0x0013a200, 0x40B5BBD0
-													// address of Boat 1: 0x0013A200, 0x40B5BBF0
+	uint8_t payload[80] = {};// = { 'h', 'e', 'y' };
+	XBeeAddress64 addr64 = XBeeAddress64(COORDINATOR);			// address of coordinator: 0x0013a200, 0x40B5BBD0 BOAT_1 COORDINATOR
+																// address of Boat 1: 0x0013A200, 0x40B5BBF0
 	ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 	XBeeResponse response = XBeeResponse();
 	// create reusable response objects for responses we expect to handle 
