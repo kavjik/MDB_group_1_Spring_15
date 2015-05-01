@@ -4,10 +4,10 @@
 #define NINE_DOF_SENSOR_POWER_PIN 26
 #define WIND_DIRECTION_SAMPLE_SIZE 10
 #define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
-#define COMPASS_X_MAX 70
-#define COMPASS_X_MIN -75
-#define COMPASS_Y_MAX -89
-#define COMPASS_Y_MIN -208
+#define COMPASS_X_MAX 42
+#define COMPASS_X_MIN -80
+#define COMPASS_Y_MAX 15
+#define COMPASS_Y_MIN -128
 #define DEBUG_LED 31
 
 
@@ -21,9 +21,9 @@ public:
 	Bearing_thread_class() {
 		wind_direction_bearing_tracking_counter = 0;
 		xMax = COMPASS_X_MAX;
-		xMin = -COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
-		yMax = -COMPASS_Y_MAX;
-		yMin = -COMPASS_Y_MIN;
+		xMin = COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
+		yMax = COMPASS_Y_MAX;
+		yMin = COMPASS_Y_MIN;
 
 		compass_y_sum = 0;
 		compass_x_sum = 0;
@@ -84,7 +84,7 @@ public:
 		Bearing_hardware_object.readCompass(COMPASSADDR, &Bearing_hardware_object.compass);
 		Bearing_hardware_object.readGyro(GYROADDR, &Bearing_hardware_object.gyro);
 
-		if ((millis() - timestamp) > 50) //something went terribly wrong, the sensor is properly disconnected or had some sort of error, lets fix that.
+		if ((millis() - timestamp) > 1500) //something went terribly wrong, the sensor is properly disconnected or had some sort of error, lets fix that.
 		{
 			Bearing_hardware_object.return_on_sensor_contact();
 			return; //there is no data, exit the function, we will try again shortly
