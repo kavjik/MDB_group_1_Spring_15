@@ -54,6 +54,8 @@ public:
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
 #define TIMEOUT_FOR_COMPLETED_TACKING 5000
 #define RUDDER_LIMIT 35 
+#define COLLISION_AVOIDANCE_INNER_LIMIT 10
+#define COLLISION_AVOIDANCE_OUTER_LIMIT 15
 
 
 	
@@ -64,9 +66,51 @@ public:
 		handle_target(); //checks if we are at the target, if we are, go to next
 		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
+		do_colission_avoidance();
+		state = next_state; //this is here to ensure that collision avoidance can "avoid" this thing. 
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		sail_control();
 		send_data_to_data_logging();
+	}
+	void do_colission_avoidance(void){
+		//first determine if we should do collision avoidance
+		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
+		bool forced = false; //this determine wheter we avoid no mater what, this is the case if we are very close to the other boat.
+
+		for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++)
+		{
+			if (global.gps_data.location.distance_to(global.other_boats[i]) < COLLISION_AVOIDANCE_INNER_LIMIT){
+				do_avoidance = i;
+				forced = true;
+			}
+			else if (global.gps_data.location.distance_to(global.other_boats[i]) < COLLISION_AVOIDANCE_OUTER_LIMIT) {
+				do_avoidance = i;
+				forced = false;
+			}
+		}
+
+		if (do_avoidance != -1 && forced == false){
+			// here we use the navigational rules to determine wheter we should avoid at all, or the other boat needs to do it, adjust do_avoidance accordingly
+			//To make this simpler, we determine which way the wind is coming from for the boat we want to avoid
+			//	global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
+			float relative_wind_direction_for_other_boat = global.global_wind_bearing - global.other_boats[do_avoidance].bearing;
+			if (relative_wind_direction_for_other_boat > 180) relative_wind_direction_for_other_boat -= 360;
+			if (relative_wind_direction_for_other_boat < -180) relative_wind_direction_for_other_boat += 360;
+
+
+			if (relative_wind_direction_for_other_boat > 0 && relative_wind_direction_for_other_boat > 0) {
+				//we have the wind from the same side, now to determine who is closest to the wind, that one moves.
+				float temp_transform_for_if_boat_is_left_or_right_from_us = global.other_boats[do_avoidance].bearing - global.bearing_container.compass_bearing;
+				if (temp_transform_for_if_boat_is_left_or_right_from_us > 180) temp_transform_for_if_boat_is_left_or_right_from_us -= 180;
+				if (temp_transform_for_if_boat_is_left_or_right_from_us < -180) temp_transform_for_if_boat_is_left_or_right_from_us += 180;
+
+				if (temp_transform_for_if_boat_is_left_or_right_from_us > 0){
+					//the boat is to the right of us, it moves
+					do_avoidance = -1;
+				}
+				else {} //we do nothing, it will continue to try and avoid it
+			}
+		}
 	}
 	void send_data_to_data_logging(void){
 		/*	
@@ -445,7 +489,7 @@ public:
 			break;
 		}
 		//if we want to do special things when changing state, it can be done here.
-		state = next_state;
+		
 
 	}
 
