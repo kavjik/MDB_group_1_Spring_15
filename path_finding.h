@@ -6,7 +6,6 @@
 #define FRONT_SAIL_PIN 7
 #define rudder_servo_pin 8
 #define sail_servo_pin 9
-
 #define PATH_FINDING_SIMULATOR_MODE_WAIT_TIME 750
 #define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
 

@@ -48,8 +48,8 @@ void setup() {
 		//Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);
 		//Scheduler.startLoop(Location_tracking);
-		//Scheduler.startLoop(wireless_cummonication);
-		//Scheduler.startLoop(wireless_recieve_thread);
+		Scheduler.startLoop(wireless_cummonication);
+		Scheduler.startLoop(wireless_recieve_thread);
 		Scheduler.startLoop(path_finding);
 		//Scheduler.startLoop(rudder_and_sail_control);
 		//Scheduler.startLoop(gps_tracking); 

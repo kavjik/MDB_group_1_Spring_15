@@ -42,7 +42,7 @@ public:
 class Global
 {
 public:
-	Global() : wind_bearing(20), desired_heading(30), toggle_compass_calibration(false){
+	Global() : wind_bearing(20), desired_heading(30), toggle_compass_calibration(false), force_load_waypoint_in_guidance(false){
 		GPS_module = Adafruit_GPS(&GPSSerial);
 	}
 	Adafruit_GPS  GPS_module = 0; //used in the gps sensor thread
@@ -57,6 +57,7 @@ public:
 	float wind_bearing = 0;
 	float global_wind_bearing;
 	float Rudder_Desired_Angle;
+	bool force_load_waypoint_in_guidance;
 
 	Data_from_navigation_to_log data_from_navigation_to_log;
 	

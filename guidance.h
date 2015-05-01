@@ -49,7 +49,7 @@ public:
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
 #define TACKING_ZONE_DISTANCE 20
-#define TACKING_ZONE_WIDE_ANGLE TACKING_ZONE / 2
+#define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
 #define TIMEOUT_FOR_COMPLETED_TACKING 5000
@@ -146,12 +146,20 @@ public:
 */
 	}
 	void sail_control(void){
-		int sail_control_value = 0 + 180 - ((sqrt((global.desired_heading - global.global_wind_bearing)*(global.desired_heading - global.global_wind_bearing)) - SAIL_CONTROL_ZERO_POINT) * 2);
-		if (sail_control_value < 0) sail_control_value = 0;
-		sail_servo.write(sail_control_value);
+		int sail_control_value = global.desired_heading - global.global_wind_bearing;// SAIL_CONTROL_ZERO_POINT;
+		if (sail_control_value < 0) sail_control_value *= -1;
+		if (sail_control_value > 180){
+			sail_control_value *= -1;
+			sail_control_value += 360;
+		}
+		
+		if (sail_control_value < 55) sail_control_value = 0;
+		else sail_control_value -= 55; 
 
-		if (global.wind_bearing > 0) front_sail_servo.write(0);
-		else front_sail_servo.write(180);
+		sail_control_value *= 2.25;
+		sail_control_value *= -1; //inverting
+		sail_control_value += 180; //inverting
+		sail_servo.write(sail_control_value);
 	}
 
 	void guidance_start()
@@ -194,9 +202,10 @@ public:
 	}
 
 	void handle_target(void){
-		if (global.gps_data.location.distance_to(target_location) < IN_RANGE_DISTANCE){ //TODO define this as a constant
+		if (global.gps_data.location.distance_to(target_location) < IN_RANGE_DISTANCE || global.force_load_waypoint_in_guidance){ 
 			if (global.waypoints.count() != 0){ //there are still waypoints to take
 				target_location = global.waypoints.dequeue();
+				global.force_load_waypoint_in_guidance = false;
 			}
 			else{
 				//TODO print message here
