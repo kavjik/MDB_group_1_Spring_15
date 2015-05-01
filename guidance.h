@@ -6,16 +6,16 @@
 
 enum boat_states
 {
-	close_hauled_wind_from_left, //as close to the wind as possible
-	close_hauled_wind_from_right,
-	tacking_going_from_wind_from_left_to_right,
-	tacking_going_from_wind_from_right_to_left,
-	generel_direction_wind_from_right,
-	generel_direction_wind_from_left,
-	jibe_going_from_wind_from_left_to_right,
-	jibe_going_from_wind_from_right_to_left,
-	down_wind_wind_from_right,
-	down_wind_wind_from_left,
+	close_hauled_wind_from_left, //0
+	close_hauled_wind_from_right,//1
+	tacking_going_from_wind_from_left_to_right, //2
+	tacking_going_from_wind_from_right_to_left, //3
+	generel_direction_wind_from_right, //4
+	generel_direction_wind_from_left, //5
+	jibe_going_from_wind_from_left_to_right, //6
+	jibe_going_from_wind_from_right_to_left, //7
+	down_wind_wind_from_right, // 8
+	down_wind_wind_from_left, // 9
 };
 
 
@@ -38,6 +38,7 @@ public:
 	Servo sail_servo;
 	Servo front_sail_servo;
 
+
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
 #define RATEOFTURN_MAX 36 // [degrees/second]
 #define GAIN_P -1 //PID Controller Setting
@@ -48,7 +49,7 @@ public:
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
 #define TACKING_ZONE_DISTANCE 20
-#define TACKING_ZONE_WIDE_ANGLE TACKING_ZONE / 2
+#define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
 #define TIMEOUT_FOR_COMPLETED_TACKING 5000
@@ -115,17 +116,6 @@ public:
 		sail_control_value *= -1; //inverting
 		sail_control_value += 180; //inverting
 		sail_servo.write(sail_control_value);
-
-		if (global.debug_handler.path_finding_debug) {
-			Serial.println("");
-			Serial.println("sail_control_value: ");
-			Serial.println(sail_control_value);
-
-		}
-
-		if (global.wind_bearing < 0) front_sail_servo.write(180);
-		else front_sail_servo.write(0);
-
 	}
 
 	void guidance_start()
