@@ -28,8 +28,6 @@ public:
 	bool wind_direction_debug;
 	bool show_sim_info = true;
 
-	
-
 private:
 
 };

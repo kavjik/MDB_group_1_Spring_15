@@ -150,13 +150,7 @@ public:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
 		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
 		wind_direction_relative_to_boat = ((int((((analogRead(A4)-46)/840.0)*360.0)+210))%360)-180; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-		//while (wind_direction_relative_to_boat > 180) wind_direction_relative_to_boat -= 360;
-		//while (wind_direction_relative_to_boat < -180) wind_direction_relative_to_boat += 360;
-		//wind_direction_relative_to_boat = wind_direction_relative_to_boat % 360;
-		//wind_direction_relative_to_boat -= 180;//modulus, takes care of over and underflow, if its in range, this does nothing
-		//TODO test that the values that comes from here are correct, since the algorith has changed somewhat. 
 
-		//global.wind_bearing -= 180; //change the range from 0 to 360 to -180 to 180, since its the angle relative to north we are interested in.
 		global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
 
 		if (wind_direction_bearing_tracking_counter % STEPS_BETWEEN_WIND_DIRECTION_SAMPLES == 0){

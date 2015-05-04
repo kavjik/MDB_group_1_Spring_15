@@ -51,7 +51,6 @@ void setup() {
 		Scheduler.startLoop(wireless_cummonication);
 		Scheduler.startLoop(wireless_recieve_thread);
 		Scheduler.startLoop(path_finding);
-		//Scheduler.startLoop(rudder_and_sail_control);
 		//Scheduler.startLoop(gps_tracking); 
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
@@ -67,7 +66,6 @@ void setup() {
 		Scheduler.startLoop(wireless_cummonication);
 		Scheduler.startLoop(wireless_recieve_thread);
 		Scheduler.startLoop(path_finding);
-		Scheduler.startLoop(rudder_and_sail_control);
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
 	}
