@@ -93,17 +93,17 @@ void Data_logging() {
 	//Then make the string containing all the data
 	dataString += String("millis()"); //timestamp in ms
 	dataString += ";";
-	dataString += String("global.GPS_module.latitude");
+	dataString += String("global.GPS_module.latitude*1000000000");
 	dataString += ";";
-	dataString += String("global.GPS_module.longitude");
+	dataString += String("global.GPS_module.longitude*1000000000");
 	dataString += ";";
 	dataString += String("global.gps_data.fix");
 	dataString += ";";
 	dataString += String("global.gps_data.gps_bearing");
 	dataString += ";";
-	dataString += String("(global.gps_data.location.latitude) * 1000000"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+	dataString += String("(global.gps_data.location.latitude)"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 	dataString += ";";
-	dataString += String("(global.gps_data.location.longtitude) * 1000000");
+	dataString += String("(global.gps_data.location.longtitude)");
 	dataString += ";";
 	dataString += String("global.gps_data.speed");
 	dataString += ";";
@@ -167,17 +167,17 @@ void Data_logging() {
 		//Then make the string containing all the data
 		dataString += String(millis()); //timestamp in ms
 		dataString += ";";
-		dataString += String(global.GPS_module.latitude);
+		dataString += String(global.GPS_module.latitude * 1000000000);
 		dataString += ";";
-		dataString += String(global.GPS_module.longitude);
+		dataString += String(global.GPS_module.longitude * 1000000000);
 		dataString += ";";
 		dataString += String(global.gps_data.fix);
 		dataString += ";";
 		dataString += String(global.gps_data.gps_bearing);
 		dataString += ";";
-		dataString += String((global.gps_data.location.latitude) * 1000000); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+		dataString += String((global.gps_data.location.latitude)); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 		dataString += ";";
-		dataString += String((global.gps_data.location.longtitude) * 1000000);
+		dataString += String((global.gps_data.location.longtitude));
 		dataString += ";";
 		dataString += String(global.gps_data.speed);
 		dataString += ";";

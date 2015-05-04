@@ -22,9 +22,9 @@ void path_finding(){
 	guidance_object.sail_servo.attach(sail_servo_pin);
 	guidance_object.front_sail_servo.attach(FRONT_SAIL_PIN);
 	
-	while (!global.gps_data.fix && SIMULATOR_MODE == false){ // while we dont have a GPS fix and simulator mode is false, wait.
+	/*while (!global.gps_data.fix && SIMULATOR_MODE == false){ // while we dont have a GPS fix and simulator mode is false, wait.
 		delay(100);
-	}
+	}*/ //TODO insert this back, removed for testing purposes
 	while (1){
 	
 		guidance_object.guidance();

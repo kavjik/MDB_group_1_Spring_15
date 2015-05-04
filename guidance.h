@@ -66,7 +66,7 @@ public:
 		handle_target(); //checks if we are at the target, if we are, go to next
 		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
-		do_colission_avoidance(); //may overwrite the next state logic
+		//do_colission_avoidance(); //may overwrite the next state logic
 		state = next_state; //this is here to ensure that collision avoidance can "avoid" this thing. 
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		sail_control();
@@ -225,6 +225,23 @@ public:
 		sail_control_value *= -1; //inverting
 		sail_control_value += 180; //inverting
 		sail_servo.write(sail_control_value);
+
+		if (global.debug_handler.path_finding_debug) {
+			Serial.print("main sail: ");
+			Serial.print(sail_control_value);
+			Serial.println("");
+
+
+		}
+		if (global.wind_bearing > 0){
+			front_sail_servo.write(0);
+			if(global.debug_handler.path_finding_debug) Serial.println("wind from right");
+		}
+		else {
+			front_sail_servo.write(180);
+			if (global.debug_handler.path_finding_debug) Serial.println("wind from left");
+		}
+		
 	}
 
 	void guidance_start()

@@ -84,6 +84,9 @@ public:
 		}
 		global.waypoints.enqueue(target);
 	}
+	void toggle_compass_calibration(void){
+		global.toggle_compass_calibration = !global.toggle_compass_calibration;
+	}
 private:
 	DATA_ outData;
 	DATA_ inData;
