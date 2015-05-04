@@ -83,6 +83,13 @@ public:
 			global.waypoints.dequeue();
 		}
 		global.waypoints.enqueue(target);
+		global.force_load_waypoint_in_guidance = true;
+	}
+	void turn_compass_calibration_on(void){
+		global.toggle_compass_calibration = true;
+	}
+	void turn_compass_calibration_off(void){
+		global.toggle_compass_calibration = false;
 	}
 private:
 	DATA_ outData;
