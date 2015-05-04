@@ -72,7 +72,7 @@ public:
 		sail_control();
 		send_data_to_data_logging();
 	}
-	void do_colission_avoidance(void){
+	void do_colission_avoidance(void){ //TODO add debug messages to this
 		//first determine if we should do collision avoidance
 		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
 		bool forced = false; //this determine wheter we avoid no mater what, this is the case if we are very close to the other boat.
