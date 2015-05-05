@@ -85,7 +85,7 @@ public:
 				do_avoidance = i;
 			}
 		}
-
+		//TODO put collision avoidance here
 	}
 	void send_data_to_data_logging(void){
 		/*	

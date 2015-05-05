@@ -79,7 +79,7 @@ void computer_input_handler()
 						global.wind_bearing += 360;
 					}
 
-				}
+				}9
 				break;
 			case 'y':
 			case '7': 
@@ -157,6 +157,9 @@ void computer_input_handler()
 				if (SIMULATOR_MODE) {
 					global.gps_data.location.longtitude += 0; //TODO insert //63994 meters on a degree
 					global.gps_data.location.latitude += 0; //TODO insert //111323 meters on a degree
+					//compass bearing in degrees: global.bearing_container.compass_bearing;
+					//remeber sin() and cos() excpect radians
+
 				}
 				break;
 			default:
