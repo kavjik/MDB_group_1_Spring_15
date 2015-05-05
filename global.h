@@ -22,7 +22,7 @@ union XYZBuffer { //this is used for reading the 9DOF sensor, its declared here 
 	byte buff[6];
 };
 
-struct Data_from_navigation_to_log { //this is for creating an easy way to get a lot of data from the navigation to the datalogger
+struct Data_from_navigation_to_log { //this is for creating an easy way to get a lot of data from the navigation to the datalogger, without cluttering the global object to much, therefore its put here
 public:
 
 	double Boat1_Data_X_T_b_real;
