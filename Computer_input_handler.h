@@ -79,7 +79,7 @@ void computer_input_handler()
 						global.wind_bearing += 360;
 					}
 
-				}9
+				}
 				break;
 			case 'y':
 			case '7': 
