@@ -86,6 +86,7 @@ void benchmark_loop(void){
 			previous_time = millis();
 		}
 		counter++;
+		yield();
 	}
 }
 
