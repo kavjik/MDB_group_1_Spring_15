@@ -72,6 +72,23 @@ void setup() {
 
 }
 
+void benchmark_loop(void){
+	long int previous_time = millis();
+	long int counter = 0;
+	while (1){
+		int j;
+		for (int i = 0; i < 100; i++){
+			j = i + 2 + j;
+		}
+		if ((millis() - previous_time) > 10000){
+			Serial.println(counter);
+			counter = 0;
+			previous_time = millis();
+		}
+		counter++;
+	}
+}
+
 
 void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		Stayin' alive.		Ah, ha, ha, ha,		Stayin' alive. 
 	digitalWrite(HEART_BEAT_LED, HIGH);
