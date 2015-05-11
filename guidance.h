@@ -52,7 +52,7 @@ public:
 #define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
-#define TIMEOUT_FOR_COMPLETED_TACKING 5000
+#define TIMEOUT_FOR_COMPLETED_TACKING 15000
 #define RUDDER_LIMIT 35 
 #define COLLISION_AVOIDANCE_INNER_LIMIT 10
 #define COLLISION_AVOIDANCE_OUTER_LIMIT 15
@@ -411,7 +411,7 @@ public:
 				time_stamp_for_tacking = millis();
 			}
 			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
-				next_state = close_hauled_wind_from_right;
+				next_state = close_hauled_wind_from_left;
 			}
 			break;
 

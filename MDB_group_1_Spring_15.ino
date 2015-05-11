@@ -68,11 +68,12 @@ void setup() {
 		Scheduler.startLoop(path_finding);
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
+		//Scheduler.startLoop(benchmark_loop);
 	}
 
 }
 
-void benchmark_loop(void){
+void benchmark_loop(void){ //the cpu is currently being used 72% of the time
 	long int previous_time = millis();
 	long int counter = 0;
 	while (1){

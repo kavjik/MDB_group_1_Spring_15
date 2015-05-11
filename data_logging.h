@@ -179,7 +179,7 @@ void Data_logging() {
 		dataString += ";";
 		dataString += String((global.gps_data.location.longtitude));
 		dataString += ";";
-		dataString += String(global.gps_data.speed);
+		dataString += String(global.gps_data.location.speed);
 		dataString += ";";
 		dataString += String(global.bearing_container.compass_bearing);
 		dataString += ";";
