@@ -12,8 +12,16 @@
 
 void computer_input_handler() 
 {
+	//below variables is for calculating going forward in simulator mode
+	double a1; // Latitude of the given point in radian
+	double b1; // Longitude of the given point in radian
+	double a2; // Latitude of the destination point in radian
+	double b2; // Latitude of the destination point in radian
+	double d; // Distance from the given point to the destination point in km
+	double R; // The earth radius in km
+	double cb; // The compass bearing from the 0 degree of north in clockwise direction (in radian) 
 
-	
+
 	while (1){
 
 	
@@ -155,10 +163,20 @@ void computer_input_handler()
 				break;
 			case '+': // forward
 				if (SIMULATOR_MODE) {
-					global.gps_data.location.longtitude += 0; //TODO insert //63994 meters on a degree
-					global.gps_data.location.latitude += 0; //TODO insert //111323 meters on a degree
-					//compass bearing in degrees: global.bearing_container.compass_bearing;
-					//remeber sin() and cos() excpect radians
+
+
+					a1 = global.gps_data.location.latitude * PI / 180.0;
+					b1 = global.gps_data.location.longtitude * PI / 180.0;
+					R = 6378.137;
+					d = 2 / 1000.0;
+					cb = global.bearing_container.compass_bearing * PI / 180.0;
+
+					a2 = asin(sin(a1)*cos(d / R) + cos(a1)*sin(d / R)*cos(cb));
+					b2 = b1 + atan2(sin(cb)*sin(d / R)*cos(a1), cos(d / R) - sin(a1)*sin(a2));
+
+					global.gps_data.location.latitude = a2 * 180 / PI; // Latitude of destination is a2 that we convert it again to degree
+					global.gps_data.location.longtitude = b2 * 180 / PI; // Longitude of destination is b2 that we convert it again to degree
+
 
 				}
 				break;
