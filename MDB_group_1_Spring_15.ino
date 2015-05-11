@@ -80,7 +80,7 @@ void benchmark_loop(void){
 		for (int i = 0; i < 100; i++){
 			j = i + 2 + j;
 		}
-		if ((millis() - previous_time) > 10000){
+		if ((millis() - previous_time) > 10000 && j>2){ //the last statement is to ensure the compiler dosnt throw to much away
 			Serial.println(counter);
 			counter = 0;
 			previous_time = millis();
