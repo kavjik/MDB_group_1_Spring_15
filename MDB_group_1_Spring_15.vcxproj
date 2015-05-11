@@ -99,6 +99,9 @@
     <ClInclude Include="guidance.h" />
     <ClInclude Include="path_finding.h" />
     <ClInclude Include="QueueArray.h" />
+    <ClInclude Include="rudder_and_sail_control.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
     <ClInclude Include="Visual Micro\.MDB_group_1_Spring_15.vsarduino.h" />
     <ClInclude Include="wireless_cummonication.h" />
     <ClInclude Include="XBee.h">
