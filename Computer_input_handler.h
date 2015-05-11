@@ -155,8 +155,11 @@ void computer_input_handler()
 				break;
 			case '+': // forward
 				if (SIMULATOR_MODE) {
-					global.gps_data.location.longtitude += (sin(global.bearing_container.compass_bearing*PI / 180))*0.0001;
-					global.gps_data.location.latitude += (cos(global.bearing_container.compass_bearing*PI / 180))*0.00005;
+					global.gps_data.location.longtitude += 0; //TODO insert //63994 meters on a degree
+					global.gps_data.location.latitude += 0; //TODO insert //111323 meters on a degree
+					//compass bearing in degrees: global.bearing_container.compass_bearing;
+					//remeber sin() and cos() excpect radians
+
 				}
 				break;
 			default:

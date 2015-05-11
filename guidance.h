@@ -66,7 +66,7 @@ public:
 		handle_target(); //checks if we are at the target, if we are, go to next
 		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
-		//do_colission_avoidance(); //may overwrite the next state logic
+		do_colission_avoidance(); //may overwrite the next state logic
 		state = next_state; //this is here to ensure that collision avoidance can "avoid" this thing. 
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		sail_control();
@@ -76,7 +76,7 @@ public:
 		//first determine if we should do collision avoidance
 		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
 		bool forced = false; //this determine wheter we avoid no mater what, this is the case if we are very close to the other boat.
-		int minimum_distance_to_other_boat = COLLISION_AVOIDANCE_OUTER_LIMIT * 2;
+		int minimum_distance_to_other_boat = COLLISION_AVOIDANCE_OUTER_LIMIT;
 		for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++)
 		{
 
@@ -85,97 +85,7 @@ public:
 				do_avoidance = i;
 			}
 		}
-
-		if (minimum_distance_to_other_boat < COLLISION_AVOIDANCE_INNER_LIMIT) {
-			forced = true;
-		}
-		else if (minimum_distance_to_other_boat < COLLISION_AVOIDANCE_OUTER_LIMIT) {
-			forced = false;
-		}
-		else do_avoidance = -1;
-
-		if (do_avoidance != -1 && forced == false){
-			// here we use the navigational rules to determine wheter we should avoid at all, or the other boat needs to do it, adjust do_avoidance accordingly
-			//To make this simpler, we determine which way the wind is coming from for the boat we want to avoid
-			//	global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
-			float relative_wind_direction_for_other_boat = global.global_wind_bearing - global.other_boats[do_avoidance].bearing;
-			if (relative_wind_direction_for_other_boat > 180) relative_wind_direction_for_other_boat -= 360;
-			if (relative_wind_direction_for_other_boat < -180) relative_wind_direction_for_other_boat += 360;
-
-
-			if (global.wind_bearing > 0 && relative_wind_direction_for_other_boat > 0) { //wind is from the right for both boats.
-				//we have the wind from the same side, now to determine who is closest to the wind, that one moves.
-				float temp_transform_for_if_boat_is_left_or_right_from_us = global.other_boats[do_avoidance].bearing - global.bearing_container.compass_bearing;
-				if (temp_transform_for_if_boat_is_left_or_right_from_us > 180) temp_transform_for_if_boat_is_left_or_right_from_us -= 180;
-				if (temp_transform_for_if_boat_is_left_or_right_from_us < -180) temp_transform_for_if_boat_is_left_or_right_from_us += 180;
-
-				if (temp_transform_for_if_boat_is_left_or_right_from_us > 0){
-					//the boat is to the right of us, it moves
-					do_avoidance = -1;
-				}
-				else {} //we do nothing, it will continue to try and avoid it
-			}
-			else if (global.wind_bearing > 0 && relative_wind_direction_for_other_boat < 0) {
-				do_avoidance = -1; //we got it from the right, they from the left, they move
-			}
-			else if (global.wind_bearing < 0 && relative_wind_direction_for_other_boat > 0) {
-				//we do nothing, since we have to move, we dont modify the do_avoidance.
-			}
-			if (global.wind_bearing < 0 && relative_wind_direction_for_other_boat < 0) { //wind is from the left for both boats
-				//we have the wind from the same side, now to determine who is closest to the wind, that one moves.
-				float temp_transform_for_if_boat_is_left_or_right_from_us = global.other_boats[do_avoidance].bearing - global.bearing_container.compass_bearing;
-				if (temp_transform_for_if_boat_is_left_or_right_from_us > 180) temp_transform_for_if_boat_is_left_or_right_from_us -= 180;
-				if (temp_transform_for_if_boat_is_left_or_right_from_us < -180) temp_transform_for_if_boat_is_left_or_right_from_us += 180;
-
-				if (temp_transform_for_if_boat_is_left_or_right_from_us < 0){
-					//the boat is to the left it moves
-					do_avoidance = -1;
-				}
-				else {} //we do nothing, we  will continue to try and avoid it
-			}
-		}
-
-		//in this part we actually do the avoidance, if we have to
-		if (do_avoidance != -1){
-			int new_heading;
-			//now we determine wheter its easiest going to the right or left, we do that by determining wheter its to the left or right of us
-			float temp_transform_for_if_boat_is_left_or_right_from_us = global.other_boats[do_avoidance].bearing - global.bearing_container.compass_bearing;
-			if (temp_transform_for_if_boat_is_left_or_right_from_us > 180) temp_transform_for_if_boat_is_left_or_right_from_us -= 180;
-			if (temp_transform_for_if_boat_is_left_or_right_from_us < -180) temp_transform_for_if_boat_is_left_or_right_from_us += 180;
-
-			if (temp_transform_for_if_boat_is_left_or_right_from_us > 0){ //it is to the right of us, we turn left
-				//include determine wheter the new path is in a no go zone, and then do the relevant tacking
-				new_heading = bearing_to_target_relative_to_wind - 110; //todo, remove magic numbers
-				
-
-			}
-			else { //its to the left of us
-				new_heading = bearing_to_target_relative_to_wind + 110;
-			}
-
-			if (new_heading < -180) new_heading += 360; //underflow check
-			if (new_heading > 180) new_heading -= 360; //overflow check
-			/*
-			if (new_heading < TACKING_ZONE && new_heading > -TACKING_ZONE){ //new heading is in the nogo zone
-				if (state == close_hauled_wind_from_left || state == tacking_going_from_wind_from_right_to_left || state == generel_direction_wind_from_left || state == jibe_going_from_wind_from_right_to_left || state == down_wind_wind_from_left) { //wind was from the left before, so we go right 
-
-					next_state = tacking_going_from_wind_from_left_to_right;
-				}
-				else {
-					next_state = tacking_going_from_wind_from_right_to_left;
-				}
-
-			}
-			else if (new_heading > DOWN_WIND_ZONE || new_heading < -DOWN_WIND_ZONE) {
-				if (state == close_hauled_wind_from_left || state == tacking_going_from_wind_from_right_to_left || state == generel_direction_wind_from_left || state == jibe_going_from_wind_from_right_to_left || state == down_wind_wind_from_left) { //wind was from the left before, so we go right 
-					next_state = jibe_going_from_wind_from_left_to_right;
-				} 
-				else {
-					next_state = jibe_going_from_wind_from_right_to_left;
-				}
-			}
-			else*/ global.desired_heading = new_heading;
-		}
+		//TODO put collision avoidance here
 	}
 	void send_data_to_data_logging(void){
 		/*	

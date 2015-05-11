@@ -17,7 +17,8 @@
 class Bearing_thread_class //TOOO move this to another file,
 {
 public:
-
+	float initial_pitch = 0;
+	float initial_roll = 0;
 	Bearing_thread_class() {
 		wind_direction_bearing_tracking_counter = 0;
 		xMax = COMPASS_X_MAX;
@@ -33,7 +34,7 @@ public:
 		compass_x_array[SAMPLE_SIZE] = { 0 }; //default initialized to be zero
 		pitch_array[SAMPLE_SIZE] = { 0 };
 		roll_array[SAMPLE_SIZE] = { 0 };
-		bearing_tracking_conuter = 0;
+		bearing_tracking_counter = 0;
 
 		pinMode(NINE_DOF_SENSOR_POWER_PIN, OUTPUT); //this pin powers the sensor
 		digitalWrite(NINE_DOF_SENSOR_POWER_PIN, HIGH);
@@ -42,7 +43,8 @@ public:
 		Wire.setClock(1000000UL); //set the speed to 10 times the standard, ensures quick communication
 		Bearing_hardware_object.return_on_sensor_contact(); //establishes contact and returns when its succesfull
 		
-		//this for loop fills up the arrays that are used for calulating the avarage values, this simplifies a lot of stuff later.
+		//this for loop fills up the arrays that are used for calulating the avarage values, this simplifies a lot of stuff later, since i can asume the array is populated with valid data at all times
+		delay(100);
 		for (int i = 0; i < SAMPLE_SIZE; i++){
 			Bearing_hardware_object.readAccel(ACCELADDR, &Bearing_hardware_object.accel);
 			Bearing_hardware_object.readCompass(COMPASSADDR, &Bearing_hardware_object.compass);
@@ -51,16 +53,20 @@ public:
 			if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
 			if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
 
-			if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
-			if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
+			if (Bearing_hardware_object.accel.value.z>255.9) Bearing_hardware_object.accel.value.z = 255.9;
+			if (Bearing_hardware_object.accel.value.z<-255.9) Bearing_hardware_object.accel.value.z = -255.9;
 
 			compass_y_array[i] = Bearing_hardware_object.compass.value.z;
 			compass_x_array[i] = Bearing_hardware_object.compass.value.x;
 
-			pitch_array[i] = asin(Bearing_hardware_object.accel.value.y / 256.0f)*57.29576f;
-			roll_array[i] = asin(Bearing_hardware_object.accel.value.x / 256.0f)*57.29576f;
-			yield();
+			roll_array[i] = atan2((float)Bearing_hardware_object.accel.value.z, (float)Bearing_hardware_object.accel.value.x) *57.29577f; // asin(Bearing_hardware_object.accel.value.x / 256.0f)*57.29577f;
+			pitch_array[i] = atan2((float)Bearing_hardware_object.accel.value.z, (float)Bearing_hardware_object.accel.value.y) *57.29577f;
+
+			delay(5);
 		}
+
+		//below is to calculate the initial pitch and roll
+
 
 	}
 
@@ -70,7 +76,7 @@ public:
 		this->read_9DOF_sensor();			  //reads the durect data from the 9DOF sensor, this does no calculations on its own
 		this->update_pitch_and_roll();		  //based on the above data, this calculates the pitch and roll of the boat
 		this->update_compass_data();		  //calculates the compass bearing of the boat
-		if (global.debug_handler.bearing_tracking_debug && bearing_tracking_conuter == 0){ //we only print debug messages if the setting for doing so is on, and we have the extra precausing that we do it corrosponding to the avarage time we sample samples, since otherwise the console would be absolutely spammed with messages. 
+		if (global.debug_handler.bearing_tracking_debug && bearing_tracking_counter == 0){ //we only print debug messages if the setting for doing so is on, and we have the extra precausing that we do it corrosponding to the avarage time we sample samples, since otherwise the console would be absolutely spammed with messages. 
 			this->print_debug();
 		}
 		if (global.toggle_compass_calibration) this->do_compass_calibration();
@@ -92,13 +98,9 @@ public:
 	}
 
 	void update_pitch_and_roll(void){
-		if (Bearing_hardware_object.accel.value.x>255.9) Bearing_hardware_object.accel.value.x = 255.9;
-		if (Bearing_hardware_object.accel.value.x<-255.9) Bearing_hardware_object.accel.value.x = -255.9;
-		roll_array[bearing_tracking_conuter] = asin(Bearing_hardware_object.accel.value.x / 256.0f)*57.29577f;
 
-		if (Bearing_hardware_object.accel.value.z>255.9) Bearing_hardware_object.accel.value.z = 255.9;
-		if (Bearing_hardware_object.accel.value.z<-255.9) Bearing_hardware_object.accel.value.z = -255.9;
-		pitch_array[bearing_tracking_conuter] = asin(Bearing_hardware_object.accel.value.y / 256.0f)*57.29577f;
+		roll_array[bearing_tracking_counter] = atan2((float)Bearing_hardware_object.accel.value.z, (float)Bearing_hardware_object.accel.value.x) *57.29577f; // asin(Bearing_hardware_object.accel.value.x / 256.0f)*57.29577f;
+		pitch_array[bearing_tracking_counter] = atan2((float)Bearing_hardware_object.accel.value.z, (float)Bearing_hardware_object.accel.value.y) *57.29577f;
 
 		pitch_sum = 0;
 		roll_sum = 0;
@@ -109,14 +111,18 @@ public:
 			roll_sum += roll_array[i];
 
 		}
-		global.bearing_container.pitch = pitch_sum / SAMPLE_SIZE;
-		global.bearing_container.roll = roll_sum / SAMPLE_SIZE;
+		global.bearing_container.pitch = (pitch_sum / SAMPLE_SIZE) - initial_pitch;
+		global.bearing_container.roll = (roll_sum / SAMPLE_SIZE) - initial_roll;
+		if (global.bearing_container.pitch > 180) global.bearing_container.pitch -= 360;
+		if (global.bearing_container.pitch < -180) global.bearing_container.pitch += 360;
+		if (global.bearing_container.roll > 180) global.bearing_container.roll -= 360;
+		if (global.bearing_container.roll < -180) global.bearing_container.roll += 360;
 
 	}
 
 	void update_compass_data(void){
-		compass_x_array[bearing_tracking_conuter] = (Bearing_hardware_object.compass.value.x - ((xMin + xMax) / 2.0f)) / ((xMax - xMin) / 200.0f);
-		compass_y_array[bearing_tracking_conuter] = (Bearing_hardware_object.compass.value.z - ((yMin + yMax) / 2.0f)) / ((yMax - yMin) / 200.0f); //changed to z temporarely, becuase it actually works, which y dosnt.
+		compass_x_array[bearing_tracking_counter] = (Bearing_hardware_object.compass.value.x - ((xMin + xMax) / 2.0f)) / ((xMax - xMin) / 200.0f);
+		compass_y_array[bearing_tracking_counter] = (Bearing_hardware_object.compass.value.z - ((yMin + yMax) / 2.0f)) / ((yMax - yMin) / 200.0f); //changed to z temporarely, becuase it actually works, which y dosnt.
 		compass_y_sum = 0;
 		compass_x_sum = 0;
 
@@ -136,8 +142,8 @@ public:
 	}
 
 	void maintain_tracking_counter(void){
-		bearing_tracking_conuter++; //we use this to keep track of where we are in the array, so we always overwrite the oldest entry
-		if (bearing_tracking_conuter == SAMPLE_SIZE) bearing_tracking_conuter = 0; //wrap around
+		bearing_tracking_counter++; //we use this to keep track of where we are in the array, so we always overwrite the oldest entry
+		if (bearing_tracking_counter == SAMPLE_SIZE) bearing_tracking_counter = 0; //wrap around
 		yield();
 	}
 
@@ -291,6 +297,7 @@ private:
 
 	float compass_y_sum = 0;
 	float compass_x_sum = 0;
+
 	float pitch_sum = 0;
 	float roll_sum = 0;
 	//float global_wind_direction_sum = 0;
@@ -302,7 +309,7 @@ private:
 	//float global_wind_direction_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
 	float wind_direction_sin_array[WIND_DIRECTION_SAMPLE_SIZE] = { 0 };
 	int wind_direction_bearing_tracking_counter = 0;
-	int bearing_tracking_conuter = 0;
+	int bearing_tracking_counter = 0;
 	long int timestamp;
 	long int previous_time;
 
@@ -313,9 +320,15 @@ private:
 void Bearing_tracking() {
 
 	Bearing_thread_class bearing_thread_object;
+	int i = 0;
 	while (1) {
 		bearing_thread_object.update_data();
 		delay(10);
+		if (i == 50) {
+			bearing_thread_object.initial_pitch = global.bearing_container.pitch;
+			bearing_thread_object.initial_roll = global.bearing_container.roll;
+		}
+		i++;
 	}
 }
 
