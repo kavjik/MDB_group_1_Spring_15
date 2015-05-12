@@ -85,7 +85,183 @@ public:
 				do_avoidance = i;
 			}
 		}
-		//TODO put collision avoidance here
+		// HARD COLLISION AVOIDANCE 
+
+		if (do_avoidance != -1) {
+
+			float theta_A = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat A heading direction refers to winding direction
+			if (theta_A > 180) theta_A -= 360;
+			float theta_B = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat B heading direction refers to winding direction //TODO change to boat b
+			if (theta_B > 180) theta_B -= 360;
+			float theta_AB = (int)(global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing)%360;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
+			if (theta_AB > 180) theta_AB -= 360;
+			float theta_BA = (int)(theta_AB - 180) % 360;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
+			if (theta_BA > 180) theta_BA -= 360;
+			
+			float v_A = global.gps_data.location.speed;//the velocity of Boat A
+			float v_B = global.other_boats[do_avoidance].speed;//the velocity of Boat B
+			float x = global.gps_data.location.distance_to(global.other_boats[do_avoidance]);//is the distance between boat A and boat B
+			float theta_rub = int(global.global_wind_bearing + TACKING_ZONE) % 360;
+			float theta_lub = int(global.global_wind_bearing - TACKING_ZONE) % 360;
+			float theta_rdb = int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360;
+			float theta_ldb = int(global.global_wind_bearing - DOWN_WIND_ZONE) % 360;
+
+
+			if (x < 10)
+			{// meters
+				if (theta_AB >= 0)
+				{
+					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
+				}
+				else
+				{
+					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
+				}
+			}
+
+			// SOFT COLLISION AVOIDANCE
+
+			else if (10 <= x && x < 20)
+			{
+				if (theta_A*theta_B < 0)// meeting/cross-path
+				{
+					if (theta_A > 0)
+					{
+						if (-180 < theta_B && theta_B < theta_BA)
+						{
+							if (theta_AB - 30 < theta_rub)//the right up barrier to determine if there is need to tack
+							{
+								do_tack_for_collision_avoidance();
+							}
+							else
+							{
+								global.desired_heading = (int)(theta_AB - 30)%360;
+							}
+						}
+						else if (theta_BA < theta_B && theta_B < 180)
+						{
+							if (theta_AB + 30 > theta_rdb)//the right down barrier to determine if there is need to jibe
+							{
+								do_jibe_for_collision_avoidance();
+							}
+							else
+							{
+								global.desired_heading = (int)(theta_AB + 30)%360;
+							}
+						}
+						else
+						{
+							//Do nothing theta_A = theta_A;
+						}
+
+					}
+					else // theta_A < 0
+					{
+						// do nothing theta_A = theta_A;
+					}
+				}
+				else if (-90 < theta_AB && theta_AB < 90) // theta_A*theta_B > 0
+				{
+					// do nothing theta_A = theta_A;
+				}
+				else
+				{
+					if ((theta_A - theta_AB)*(theta_B - theta_AB) < 0)
+					{
+						// do nothing theta_A = theta_A;
+					}
+					else
+					{
+						if (theta_AB > 0)
+						{
+							if (theta_A > 0)
+							{
+								if (v_A < v_B)// speeds of the boats
+								{
+									// do nothing theta_A = theta_A;
+								}
+								else
+								{
+									if (theta_B - 30 < theta_rub)
+									{
+										do_tack_for_collision_avoidance();
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B - 30)%360;
+									}
+								}
+							}
+							else//theta_A<0
+							{
+								if (v_A > v_B)
+								{
+									// do nothing theta_A = theta_A;
+								}
+								else
+								{
+									if (theta_B + 30 > theta_lub)//the left up barrier to determine if there is need to tack
+									{
+										//theta_A = tack(right);
+										next_state = tacking_going_from_wind_from_left_to_right; //TODO determine wheter this is right
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B + 30)%360;
+									}
+								}
+							}
+						}
+						else // theta_AB < 0
+						{
+							if (theta_A < 0)
+							{
+								if (v_A < v_B)
+								{
+									// do nothing theta_A = theta_A;
+								}
+								else
+								{
+									if (theta_B + 30 > theta_lub)//the left up barrier to determine if there is need to tack
+									{
+										do_tack_for_collision_avoidance();
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B + 30) % 360;
+									}
+								}
+							}
+							else//theta_A>0
+							{
+								if (v_A > v_B)
+								{
+									// do nothing theta_A = theta_A;
+								}
+								else
+								{
+									if (theta_B + 30 < theta_rub)//the right up barrier to determine if there is need to tack
+									{
+										//theta_A = tack(right);
+										next_state = tacking_going_from_wind_from_left_to_right; //TODO determine wheter this is right
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B + 30)%360;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	void do_tack_for_collision_avoidance(void){
+		//TODO implement
+	}
+	void do_jibe_for_collision_avoidance(void){
+		//TODO implement
 	}
 	void send_data_to_data_logging(void){
 		/*	
