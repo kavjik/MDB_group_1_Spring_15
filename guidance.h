@@ -71,6 +71,10 @@ public:
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		sail_control();
 		send_data_to_data_logging();
+		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
+			global.bearing_container.compass_bearing = global.desired_heading; //turn to the way we want to go
+			simulator_mode_move_forward(); //move forward
+		}
 	}
 	void do_colission_avoidance(void){ //TODO add debug messages to this
 		//first determine if we should do collision avoidance
@@ -134,6 +138,9 @@ public:
 		sail_control_value *= 2.25;
 		sail_control_value *= -1; //inverting
 		sail_control_value += 180; //inverting
+		if (global.bearing_container.roll > 30 || global.bearing_container.roll < -30){
+			sail_control_value = 0;
+		}
 		sail_servo.write(sail_control_value);
 
 		if (global.debug_handler.path_finding_debug) {
