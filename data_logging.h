@@ -58,14 +58,14 @@ void Data_logging() {
 	//it takes the form "yy.mm.dd.hh.mm.ss"
 	//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
 	delay(5000); //wait til everything is set up
-	while (!global.gps_data.fix && global.GPS_module.year == 80){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
+	while (!global.gps_data.fix && global.GPS_module.year == 80 && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
 		if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
 		if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
 		delay(100); //wait till gps fix, that way we have the current time
 
 	}
 	if (global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
-	char filename[] = "mmddhhmm.csv"; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour and minuttes
+	char filename[] = "mmddhhmm.csv"; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour,minuttes
 	if (SIMULATOR_MODE){
 		filename[0] = 's';
 		filename[1] = 'i';

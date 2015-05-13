@@ -1,5 +1,6 @@
 #define mySerial Serial1
 #define SIMULATOR_MODE false
+#define SIMULATOR_MODE_MOVE_AUTOMATICALLY true //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
 #include <Scheduler.h>
@@ -45,7 +46,7 @@ void setup() {
 
 
 	if (SIMULATOR_MODE) {
-		//Scheduler.startLoop(Data_logging);
+		Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);
 		//Scheduler.startLoop(Location_tracking);
 		Scheduler.startLoop(wireless_cummonication);
