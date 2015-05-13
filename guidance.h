@@ -52,10 +52,11 @@ public:
 #define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
-#define TIMEOUT_FOR_COMPLETED_TACKING 15000
+#define TIMEOUT_FOR_COMPLETED_TACKING 8000
 #define RUDDER_LIMIT 35 
 #define COLLISION_AVOIDANCE_INNER_LIMIT 10
 #define COLLISION_AVOIDANCE_OUTER_LIMIT 15
+#define MAX_ALLOWED_ROLL_BEFORE_CORRECTION 30
 
 
 	
@@ -76,6 +77,12 @@ public:
 			simulator_mode_move_forward(); //move forward
 		}
 	}
+private :
+	float theta_A;
+	float theta_B; 
+	float theta_AB; 
+	float theta_BA;
+
 	void do_colission_avoidance(void){ //TODO add debug messages to this
 		//first determine if we should do collision avoidance
 		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
@@ -93,13 +100,13 @@ public:
 
 		if (do_avoidance != -1) {
 
-			float theta_A = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat A heading direction refers to winding direction
+			theta_A = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat A heading direction refers to winding direction
 			if (theta_A > 180) theta_A -= 360;
-			float theta_B = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat B heading direction refers to winding direction //TODO change to boat b
+			theta_B = (int)(global.other_boats[do_avoidance].bearing - global.global_wind_bearing) % 360;//Boat B heading direction refers to winding direction //TODO change to boat b
 			if (theta_B > 180) theta_B -= 360;
-			float theta_AB = (int)(global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing)%360;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
+			theta_AB = (int)(global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing)%360;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
 			if (theta_AB > 180) theta_AB -= 360;
-			float theta_BA = (int)(theta_AB - 180) % 360;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
+			theta_BA = (int)(theta_AB - 180) % 360;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
 			if (theta_BA > 180) theta_BA -= 360;
 			
 			float v_A = global.gps_data.location.speed;//the velocity of Boat A
@@ -206,8 +213,7 @@ public:
 								{
 									if (theta_B + 30 > theta_lub)//the left up barrier to determine if there is need to tack
 									{
-										//theta_A = tack(right);
-										next_state = tacking_going_from_wind_from_left_to_right; //TODO determine wheter this is right
+										do_tack_for_collision_avoidance();
 									}
 									else
 									{
@@ -246,8 +252,7 @@ public:
 								{
 									if (theta_B + 30 < theta_rub)//the right up barrier to determine if there is need to tack
 									{
-										//theta_A = tack(right);
-										next_state = tacking_going_from_wind_from_left_to_right; //TODO determine wheter this is right
+										do_tack_for_collision_avoidance();
 									}
 									else
 									{
@@ -262,10 +267,21 @@ public:
 		}
 	}
 	void do_tack_for_collision_avoidance(void){
-		//TODO implement
+		if (theta_AB > 0) { //the other boat is to the right of the wind
+			next_state = tacking_going_from_wind_from_left_to_right;
+		}
+		else {
+			next_state = tacking_going_from_wind_from_right_to_left;
+		}
+	
 	}
 	void do_jibe_for_collision_avoidance(void){
-		//TODO implement
+		if (theta_AB > 0) { //the other boat is to the right of the wind
+			next_state = jibe_going_from_wind_from_left_to_right;
+		}
+		else {
+			next_state = jibe_going_from_wind_from_right_to_left;
+		}
 	}
 	void send_data_to_data_logging(void){
 		/*	
@@ -314,7 +330,7 @@ public:
 		sail_control_value *= 2.25;
 		sail_control_value *= -1; //inverting
 		sail_control_value += 180; //inverting
-		if (global.bearing_container.roll > 30 || global.bearing_container.roll < -30){
+		if (global.bearing_container.roll > MAX_ALLOWED_ROLL_BEFORE_CORRECTION || global.bearing_container.roll < -MAX_ALLOWED_ROLL_BEFORE_CORRECTION){
 			sail_control_value = 0;
 		}
 		sail_servo.write(sail_control_value);
