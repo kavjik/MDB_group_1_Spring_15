@@ -8,7 +8,7 @@
 #define sail_servo_pin 9
 #define PATH_FINDING_SIMULATOR_MODE_WAIT_TIME 750
 #define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
-
+#define PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME 100
 
 void path_finding(){
 	//this code is build like this, since the Navigation_guidance class is based on code from the previous group, which used a lot of global variables, i dont like global variables, so i have contained them in a class.
@@ -26,7 +26,17 @@ void path_finding(){
 	
 		guidance_object.guidance();
 		guidance_object.rudder_pid_controller();
-		SIMULATOR_MODE ? delay(PATH_FINDING_SIMULATOR_MODE_WAIT_TIME) : delay(PATH_FINDING_DEFAULT_MODE_WAIT_TIME);
+		if (SIMULATOR_MODE) {
+			if (SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
+				delay(PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME);
+			}
+			else {
+				delay(PATH_FINDING_SIMULATOR_MODE_WAIT_TIME);
+			}
+		}
+		else {
+			delay(PATH_FINDING_DEFAULT_MODE_WAIT_TIME);
+		}
 
 	}
 	yield();

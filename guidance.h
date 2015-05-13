@@ -2,6 +2,7 @@
 #define guidance_h
 
 #include "global.h"
+#include "Computer_input_handler.h"
 
 
 enum boat_states
@@ -33,10 +34,21 @@ private:
 	
 	float real_part_of_complex_from_old_code = 0;
 	float imaginary_part_of_complex_from_old_code = 0;
+
+
+
 public:
 	Servo Rudder_Servo;
 	Servo sail_servo;
 	Servo front_sail_servo;
+
+
+	float theta_A;
+	float theta_B;
+	float theta_AB;
+	float theta_BA;
+	float x;
+	bool collision_avoidance_active = false;
 
 
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
@@ -73,15 +85,15 @@ public:
 		sail_control();
 		send_data_to_data_logging();
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
+			global.global_wind_bearing = 0;
+
 			global.bearing_container.compass_bearing = global.desired_heading; //turn to the way we want to go
+			global.wind_bearing = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;
+			if (global.wind_bearing > 180) global.wind_bearing -= 360;
 			simulator_mode_move_forward(); //move forward
+			//Serial.println(global.wind_bearing);
 		}
 	}
-private :
-	float theta_A;
-	float theta_B; 
-	float theta_AB; 
-	float theta_BA;
 
 	void do_colission_avoidance(void){ //TODO add debug messages to this
 		//first determine if we should do collision avoidance
@@ -98,9 +110,9 @@ private :
 		}
 
 		// HARD COLLISION AVOIDANCE 
-
+		collision_avoidance_active = false;
 		if (do_avoidance != -1) {
-
+			collision_avoidance_active = true;
 			theta_A = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat A heading direction refers to winding direction
 			if (theta_A > 180) theta_A -= 360;
 			theta_B = (int)(global.other_boats[do_avoidance].bearing - global.global_wind_bearing) % 360;//Boat B heading direction refers to winding direction //TODO change to boat b
@@ -112,7 +124,7 @@ private :
 			
 			float v_A = global.gps_data.location.speed;//the velocity of Boat A
 			float v_B = global.other_boats[do_avoidance].speed;//the velocity of Boat B
-			float x = global.gps_data.location.distance_to(global.other_boats[do_avoidance]);//is the distance between boat A and boat B
+			x = global.gps_data.location.distance_to(global.other_boats[do_avoidance]);//is the distance between boat A and boat B
 			float theta_rub = int(global.global_wind_bearing + TACKING_ZONE) % 360;
 			float theta_lub = int(global.global_wind_bearing - TACKING_ZONE) % 360;
 			float theta_rdb = int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360;
@@ -353,7 +365,7 @@ private :
 		}
 		
 	}
-
+	 public:
 	void guidance_start()
 	{
 		//test comment
@@ -602,6 +614,13 @@ private :
 			if ((millis() - time_stamp_for_tacking) > TIMEOUT_FOR_COMPLETED_TACKING && has_boat_been_at_tacking_target == true) {
 				next_state = close_hauled_wind_from_right;
 			}
+			if (bearing_to_target_relative_to_wind < (-TACKING_ZONE-5)) {
+				next_state = generel_direction_wind_from_right;
+			}
+			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE+5)){
+				next_state = generel_direction_wind_from_left;
+			}
+
 			break;
 			/*#define TOLERANCE_FOR_COMPLETED_TACKING 15
 #define TIMEOUT_FOR_COMPLETED_TACKING 5000*/
@@ -612,6 +631,12 @@ private :
 			}
 			if ((millis() - time_stamp_for_tacking) > 5000 && has_boat_been_at_tacking_target == true) {
 				next_state = close_hauled_wind_from_left;
+			}
+			if (bearing_to_target_relative_to_wind < (-TACKING_ZONE - 5)) {
+				next_state = generel_direction_wind_from_right;
+			}
+			else if (bearing_to_target_relative_to_wind >(TACKING_ZONE + 5)){
+				next_state = generel_direction_wind_from_left;
 			}
 			break;
 
@@ -635,7 +660,7 @@ private :
 			break;
 
 		case jibe_going_from_wind_from_left_to_right:
-			if (angle_between_two_angles(global.bearing_container.compass_bearing, int(global.global_wind_bearing - DOWN_WIND_ZONE) % 360) < 10) {
+			if (angle_between_two_angles(global.bearing_container.compass_bearing, int(global.global_wind_bearing - DOWN_WIND_ZONE) % 360) < 20) {
 				//we are there
 				next_state = down_wind_wind_from_right;
 			}
@@ -648,9 +673,9 @@ private :
 			break;
 
 		case	jibe_going_from_wind_from_right_to_left:
-			if (angle_between_two_angles(global.bearing_container.compass_bearing, int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360) < 10) {
+			if (angle_between_two_angles(global.bearing_container.compass_bearing, int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360) < 20) {
 				//we are there
-				next_state = down_wind_wind_from_right;
+				next_state = down_wind_wind_from_left;
 			}
 			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;

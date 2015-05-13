@@ -26,7 +26,7 @@ void control_simulator()
 
 			Serial.println("");
 		}
-		global.global_wind_bearing = global.bearing_container.compass_bearing + global.wind_bearing; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
+		if (!SIMULATOR_MODE_MOVE_AUTOMATICALLY)	global.global_wind_bearing = global.bearing_container.compass_bearing + global.wind_bearing; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
 
 		if (global.global_wind_bearing > 360)
 		{
