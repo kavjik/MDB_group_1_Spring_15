@@ -85,6 +85,7 @@ public:
 				do_avoidance = i;
 			}
 		}
+
 		// HARD COLLISION AVOIDANCE 
 
 		if (do_avoidance != -1) {
