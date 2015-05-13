@@ -98,7 +98,7 @@
     <ClInclude Include="GPS_sensor.h" />
     <ClInclude Include="guidance.h" />
     <ClInclude Include="path_finding.h" />
-    <ClInclude Include="QueueArray.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="rudder_and_sail_control.h">
       <FileType>CppCode</FileType>
     </ClInclude>

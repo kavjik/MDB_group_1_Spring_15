@@ -9,10 +9,10 @@
 
 #include "Location.h"
 #include "GPS.h"
-#include "QueueArray.h"
 #include "Adafruit_GPS.h"
 #include "Debug_handler.h"
 #include "Bearing_container.h"
+#include "queue.h"
 
 
 union XYZBuffer { //this is used for reading the 9DOF sensor, its declared here so that others might also read the data from the 9DOF sensor directly, although i dont think its going to be used.
@@ -34,6 +34,15 @@ public:
 	float bearing_to_target;
 	float bearing_to_target_relative_to_wind;
 	int current_state;
+
+	//from collision avoidance
+	float theta_A;
+	float theta_B;
+	float theta_AB;
+	float theta_BA;
+	float x;
+	bool collision_avoidance_active = false;
+	bool collision_avoidance_did_evasion = false;
 };
 
 //this class contains all the global elements, its meant as being the only thing defined in the global scope
@@ -47,10 +56,10 @@ public:
 	}
 	Adafruit_GPS  GPS_module = 0; //used in the gps sensor thread
 	Gps gps_data; //contains the filtered gps data, usefull for all the other threads
-	QueueArray <Location> waypoints; //a queue containging the waypoints we want to go to, excluding the current objective, which the path finding should maintain
+	Location_queue waypoints; //a queue containging the waypoints we want to go to, excluding the current objective, which the path finding should maintain
 	float desired_heading = 0; //bearing we want the boat to travel, this is used by the rudder control
 	Location other_boats[NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY]; //a simple array containing the location of the other boats, due to lack of vectors, its kept as an array
-	QueueArray <String> messages_to_be_logged; //special messages we want to log specifically //TODO implement.
+	Location_queue messages_to_be_logged; //special messages we want to log specifically //TODO implement.
 	Debug_handler debug_handler; //contains the boolean values for wheter we want to look at debug messages in the console.
 	Bearing_container bearing_container;
 	bool toggle_compass_calibration;

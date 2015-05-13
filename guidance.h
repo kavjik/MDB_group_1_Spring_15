@@ -49,6 +49,7 @@ public:
 	float theta_BA;
 	float x;
 	bool collision_avoidance_active = false;
+	bool collision_avoidance_did_evasion = false;
 
 
 #define INTEGRATOR_MAX 20 // [degrees], influence of the integrator
@@ -57,7 +58,7 @@ public:
 #define GAIN_I 0 //PID Controller Setting
 #define TACKING_ZONE 55
 #define SAIL_CONTROL_ZERO_POINT 45
-#define IN_RANGE_DISTANCE 5
+#define IN_RANGE_DISTANCE 6
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
 #define TACKING_ZONE_DISTANCE 20
@@ -79,9 +80,10 @@ public:
 		handle_target(); //checks if we are at the target, if we are, go to next
 		get_target_info();//calculate distance to target beraing to target and so on
 		next_state_logic();
-		do_colission_avoidance(); //may overwrite the next state logic
 		state = next_state; //this is here to ensure that collision avoidance can "avoid" this thing. 
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
+		do_colission_avoidance(); //may overwrite the next state logic
+		
 		sail_control();
 		send_data_to_data_logging();
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
@@ -111,15 +113,21 @@ public:
 
 		// HARD COLLISION AVOIDANCE 
 		collision_avoidance_active = false;
+		collision_avoidance_did_evasion = false;
 		if (do_avoidance != -1) {
 			collision_avoidance_active = true;
-			theta_A = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;//Boat A heading direction refers to winding direction
+			collision_avoidance_did_evasion = true;
+			theta_A = global.bearing_container.compass_bearing - global.global_wind_bearing;//Boat A heading direction refers to winding direction
 			if (theta_A > 180) theta_A -= 360;
-			theta_B = (int)(global.other_boats[do_avoidance].bearing - global.global_wind_bearing) % 360;//Boat B heading direction refers to winding direction //TODO change to boat b
+			if (theta_A < -180) theta_A += 360;
+			theta_B = global.other_boats[do_avoidance].bearing - global.global_wind_bearing;//Boat B heading direction refers to winding direction //TODO change to boat b
 			if (theta_B > 180) theta_B -= 360;
-			theta_AB = (int)(global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing)%360;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
+			if (theta_B < -180) theta_B += 360;
+			theta_AB = global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
 			if (theta_AB > 180) theta_AB -= 360;
-			theta_BA = (int)(theta_AB - 180) % 360;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
+			if (theta_AB < -180) theta_AB += 360;
+			theta_BA = theta_AB - 180;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
+			if (theta_BA < -180) theta_BA += 360; //dont know why i need to flip the sign here, but according to datalog i do.
 			if (theta_BA > 180) theta_BA -= 360;
 			
 			float v_A = global.gps_data.location.speed;//the velocity of Boat A
@@ -176,23 +184,27 @@ public:
 						else
 						{
 							//Do nothing theta_A = theta_A;
+							collision_avoidance_did_evasion = false;
 						}
 
 					}
 					else // theta_A < 0
 					{
 						// do nothing theta_A = theta_A;
+						collision_avoidance_did_evasion = false;
 					}
 				}
 				else if (-90 < theta_AB && theta_AB < 90) // theta_A*theta_B > 0
 				{
 					// do nothing theta_A = theta_A;
+					collision_avoidance_did_evasion = false;
 				}
 				else
 				{
 					if ((theta_A - theta_AB)*(theta_B - theta_AB) < 0)
 					{
 						// do nothing theta_A = theta_A;
+						collision_avoidance_did_evasion = false;
 					}
 					else
 					{
@@ -203,6 +215,7 @@ public:
 								if (v_A < v_B)// speeds of the boats
 								{
 									// do nothing theta_A = theta_A;
+									collision_avoidance_did_evasion = false;
 								}
 								else
 								{
@@ -221,6 +234,7 @@ public:
 								if (v_A > v_B)
 								{
 									// do nothing theta_A = theta_A;
+									collision_avoidance_did_evasion = false;
 								}
 								else
 								{
@@ -242,6 +256,7 @@ public:
 								if (v_A < v_B)
 								{
 									// do nothing theta_A = theta_A;
+									collision_avoidance_did_evasion = false;
 								}
 								else
 								{
@@ -260,6 +275,7 @@ public:
 								if (v_A > v_B)
 								{
 									// do nothing theta_A = theta_A;
+									collision_avoidance_did_evasion = false;
 								}
 								else
 								{
@@ -310,12 +326,29 @@ public:
 		global.data_from_navigation_to_log.Boat1_Data_X_T_b_real = real_part_of_complex_from_old_code;
 		global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag = imaginary_part_of_complex_from_old_code;
 		global.data_from_navigation_to_log.global_Rudder_Desired_Angle = global.Rudder_Desired_Angle;
-		global.data_from_navigation_to_log.waypoints_count = global.waypoints.count();
+		global.data_from_navigation_to_log.waypoints_count = global.waypoints.actual_size;
 		global.data_from_navigation_to_log.desired_heading = global.desired_heading;
 		global.data_from_navigation_to_log.distance_to_target = distance_to_target;
 		global.data_from_navigation_to_log.bearing_to_target = bearing_to_target;
 		global.data_from_navigation_to_log.bearing_to_target_relative_to_wind = bearing_to_target_relative_to_wind;
 		global.data_from_navigation_to_log.current_state = state;
+		global.data_from_navigation_to_log.theta_A = theta_B;
+		global.data_from_navigation_to_log.theta_B = theta_B;
+		global.data_from_navigation_to_log.theta_AB = theta_AB;
+		global.data_from_navigation_to_log.theta_BA = theta_BA;
+		global.data_from_navigation_to_log.x = x;
+		global.data_from_navigation_to_log.collision_avoidance_active = collision_avoidance_active;
+		global.data_from_navigation_to_log.collision_avoidance_did_evasion = collision_avoidance_did_evasion;
+
+		/*
+			float theta_A;
+	float theta_B;
+	float theta_AB;
+	float theta_BA;
+	float x;
+	bool collision_avoidance_active = false;
+	bool collision_avoidance_did_evasion = false;
+	*/
 
 			/*		distance_to_target = global.gps_data.location.distance_to(target_location);
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
@@ -369,7 +402,7 @@ public:
 	void guidance_start()
 	{
 		//test comment
-		if (global.waypoints.count() == 0) { //there is no targets
+		if (global.waypoints.actual_size== 0) { //there is no targets
 			target_location.latitude = 55;
 			target_location.longtitude = 9; //we default to somewhere
 			Serial.println("no waypoints avaliable, defaulted to build in guidance target");
@@ -407,7 +440,7 @@ public:
 
 	void handle_target(void){
 		if (global.gps_data.location.distance_to(target_location) < IN_RANGE_DISTANCE || global.force_load_waypoint_in_guidance){ 
-			if (global.waypoints.count() != 0){ //there are still waypoints to take
+			if (global.waypoints.actual_size> 0){ //there are still waypoints to take
 				target_location = global.waypoints.dequeue();
 				global.force_load_waypoint_in_guidance = false;
 			}

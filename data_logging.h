@@ -57,7 +57,7 @@ void Data_logging() {
 	//in this part i am going to make the filename to use
 	//it takes the form "yy.mm.dd.hh.mm.ss"
 	//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
-	delay(5000); //wait til everything is set up
+	delay(200); //wait til everything is set up
 	while (!global.gps_data.fix && global.GPS_module.year == 80 && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
 		if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
 		if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
@@ -145,6 +145,21 @@ void Data_logging() {
 	dataString += String("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
 	dataString += ";";
 	dataString += String("global.data_from_navigation_to_log.current_state");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.theta_A");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.theta_B");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.theta_AB");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.theta_BA");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.x");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.collision_avoidance_active");
+	dataString += ";";
+	dataString += String("global.data_from_navigation_to_log.collision_avoidance_did_evasion");
+
 
 
 	File dataFile = SD.open(filename, FILE_WRITE);
@@ -191,7 +206,7 @@ void Data_logging() {
 		dataString += ";";
 		dataString += String(global.global_wind_bearing);
 		dataString += ";";
-		dataString += String(global.waypoints.count());
+		dataString += String(global.waypoints.actual_size);
 		dataString += ";";
 		dataString += String(digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN));
 		dataString += ";";
@@ -217,7 +232,20 @@ void Data_logging() {
 		dataString += String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.current_state);
-
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.theta_A);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.theta_B);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.theta_AB);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.theta_BA);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.x);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.collision_avoidance_active);
+		dataString += ";";
+		dataString += String(global.data_from_navigation_to_log.collision_avoidance_did_evasion);
 
 
 

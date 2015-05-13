@@ -114,7 +114,7 @@ public:
 		global.waypoints.enqueue(target);
 	}
 	void force_waypoint(Location target){
-		while (global.waypoints.count() > 0) {
+		while (global.waypoints.actual_size > 0) {
 			global.waypoints.dequeue();
 		}
 		global.waypoints.enqueue(target);

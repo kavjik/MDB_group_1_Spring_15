@@ -58,6 +58,14 @@ void setup() {
 		global.gps_data.fix = true;
 		global.gps_data.location.latitude = 54.910513888889;
 		global.gps_data.location.longtitude = 9.781272222222;
+
+		global.other_boats[0].bearing = 180;
+		global.other_boats[0].is_valid_boat = true;
+		global.other_boats[0].latitude = 54.9129768;
+		global.other_boats[0].longtitude = 9.7798641;
+		global.other_boats[0].speed = 2;
+
+
 	}
 	else
 	{

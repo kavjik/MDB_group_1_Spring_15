@@ -77,7 +77,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <GPS.h>
 #include <GPS_sensor.h>
 #include <Location.h>
-#include <QueueArray.h>
 #include <XBee.cpp>
 #include <XBee.h>
 #include <bearing_tracking.h>
@@ -89,6 +88,7 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <gps_tracking.h>
 #include <guidance.h>
 #include <path_finding.h>
+#include <queue.h>
 #include <rudder_and_sail_control.h>
 #include <wireless_cummonication.h>
 #endif
