@@ -34,6 +34,7 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
+	/*
 	target.latitude = 54.91382778; //first point in water
 	target.longtitude = 9.779919444;
 	global.waypoints.enqueue(target);
@@ -42,7 +43,24 @@ void setup() {
 	global.waypoints.enqueue(target);
 	target.latitude = 54.91382778; //back to the first point
 	target.longtitude = 9.779919444;
-	global.waypoints.enqueue(target);
+	*/ // setup to outside alsion
+	
+
+	target.latitude = 54.896841667; //¨setup at beach
+	target.longtitude = 9.799458333;
+	global.waypoints.enqueue(target); //first target 
+	target.latitude = 54.896663889;
+	target.longtitude = 9.799566667;
+	global.waypoints.enqueue(target); // second target
+	target.latitude = 54.896630556;
+	target.longtitude = 9.799941667;
+	global.waypoints.enqueue(target); // thirds target
+	target.latitude = 54.896663889;
+	target.longtitude = 9.799566667;
+	global.waypoints.enqueue(target); // second target
+	target.latitude = 54.896841667; 
+	target.longtitude = 9.799458333;
+	global.waypoints.enqueue(target); //first target 
 
 
 	if (SIMULATOR_MODE) {
@@ -56,8 +74,10 @@ void setup() {
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		global.gps_data.location.latitude = 54.910513888889;
-		global.gps_data.location.longtitude = 9.781272222222;
+		//global.gps_data.location.latitude = 54.910513888889; 
+		//global.gps_data.location.longtitude = 9.781272222222;// ALSION
+		global.gps_data.location.latitude = 54.896811111;
+		global.gps_data.location.longtitude = 9.799813889;
 
 		global.other_boats[0].bearing = 180;
 		global.other_boats[0].is_valid_boat = true;

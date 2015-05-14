@@ -302,6 +302,7 @@ public:
 		else {
 			next_state = tacking_going_from_wind_from_right_to_left;
 		}
+		determine_path_bearing();//TODO determine wheter this is a good idea
 	
 	}
 	void do_jibe_for_collision_avoidance(void){
@@ -311,6 +312,7 @@ public:
 		else {
 			next_state = jibe_going_from_wind_from_right_to_left;
 		}
+		determine_path_bearing(); //TODO determine wheter this is a good idea
 	}
 	void send_data_to_data_logging(void){
 		/*	
