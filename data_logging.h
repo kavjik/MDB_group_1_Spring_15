@@ -6,194 +6,217 @@
 #define BATTERY_VOLTAGE_READ_PIN A1
 
 
-void Data_logging() {
-	delay(100);
-	//code taken from the arduino example of SD card datalogger, with mayor modifications
+class Sd_card_data_logging { //this contains the data one could need from the gps
+public:
+	int chipSelect = 4;
+	String dataString;
+	char filename[12]; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour,minuttes
+	Sd_card_data_logging() :chipSelect(4) {
+		delay(100);
+		//code taken from the arduino example of SD card datalogger, with mayor modifications
 
-	/*
-	SD card datalogger
+		/*
+		SD card datalogger
 
-	This example shows how to log data from three analog sensors
-	to an SD card using the SD library.
+		This example shows how to log data from three analog sensors
+		to an SD card using the SD library.
 
-	The circuit:
-	* analog sensors on analog ins 0, 1, and 2
-	* SD card attached to SPI bus as follows:
-	** MOSI - pin 11
-	** MISO - pin 12
-	** CLK - pin 13
-	** CS - pin 4
+		The circuit:
+		* analog sensors on analog ins 0, 1, and 2
+		* SD card attached to SPI bus as follows:
+		** MOSI - pin 11
+		** MISO - pin 12
+		** CLK - pin 13
+		** CS - pin 4
 
-	created  24 Nov 2010
-	modified 9 Apr 2012
-	by Tom Igoe
+		created  24 Nov 2010
+		modified 9 Apr 2012
+		by Tom Igoe
 
-	This example code is in the public domain.
+		This example code is in the public domain.
 
-	*/
-
-	const int chipSelect = 4;
-
-
-	// make sure that the default chip select pin is set to
-	// output, even if you don't use it:
-	pinMode(10, OUTPUT);
-
-	// see if the card is present and can be initialized:
-	while (1){ //modified the code so it constantly tries to establish a connection, but dosnt lock up the board in an infinte loop, or return the program.
+		*/
+		
+		chipSelect = 4;
+		
 
 
-		if (!SD.begin(chipSelect)) {
-			/*if (global.debug_handler.data_logging_debug)*/ Serial.println("Card failed, or not present"); //we want to know this no matter what
-			// don't do anything more:
-			delay(5000); //wait 5 seconds and try again
-			continue;
+		// make sure that the default chip select pin is set to
+		// output, even if you don't use it:
+		pinMode(10, OUTPUT);
+
+		// see if the card is present and can be initialized:
+		while (1){ //modified the code so it constantly tries to establish a connection, but dosnt lock up the board in an infinte loop, or return the program.
+
+
+			if (!SD.begin(chipSelect)) {
+				/*if (global.debug_handler.data_logging_debug)*/ Serial.println("Card failed, or not present"); //we want to know this no matter what
+				// don't do anything more:
+				delay(5000); //wait 5 seconds and try again
+				continue;
+
+			}
+			break;
+		}
+		if (global.debug_handler.data_logging_debug) Serial.println("card initialized.");
+
+		//in this part i am going to make the filename to use
+		//it takes the form "yy.mm.dd.hh.mm.ss"
+		//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
+		delay(200); //wait til everything is set up
+		while (!global.gps_data.fix && global.GPS_module.year == 80 && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
+			if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
+			if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
+			delay(100); //wait till gps fix, that way we have the current time
 
 		}
-		break;
-	}
-	if (global.debug_handler.data_logging_debug) Serial.println("card initialized.");
+		if (global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
+		
+		if (SIMULATOR_MODE){
+			filename[0] = 's';
+			filename[1] = 'i';
+			filename[2] = 'm';
+			filename[3] = 'u';
+			filename[4] = 'l';
+			filename[5] = 'a';
+			filename[6] = 't';
+			filename[7] = 'e';
+		}
+		else {
+			filename[0] = global.GPS_module.month / 10 + '0';
+			filename[1] = global.GPS_module.month % 10 + '0';
+			filename[2] = global.GPS_module.day / 10 + '0';
+			filename[3] = global.GPS_module.day % 10 + '0';
+			filename[4] = global.GPS_module.hour / 10 + '0';
+			filename[5] = global.GPS_module.hour % 10 + '0';
+			filename[6] = global.GPS_module.minute / 10 + '0';
+			filename[7] = global.GPS_module.minute % 10 + '0';
+		}
+		filename[8] = '.';
+		filename[9] = 'c';
+		filename[10] = 's';
+		filename[11] = 'v';
 
-	//in this part i am going to make the filename to use
-	//it takes the form "yy.mm.dd.hh.mm.ss"
-	//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
-	delay(200); //wait til everything is set up
-	while (!global.gps_data.fix && global.GPS_module.year == 80 && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
-		if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
-		if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
-		delay(100); //wait till gps fix, that way we have the current time
+		
+		// make a string for assembling the data to log:
+		dataString = "";
+		//Then make the string containing all the data
+		dataString += String("millis()"); //timestamp in ms
+		dataString += ";";
+		dataString += String("global.GPS_module.latitude");
+		dataString += ";";
+		dataString += String("global.GPS_module.longitude");
+		dataString += ";";
+		dataString += String("global.gps_data.fix");
+		dataString += ";";
+		dataString += String("global.gps_data.gps_bearing");
+		dataString += ";";
+		dataString += String("(global.gps_data.location.latitude)"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+		dataString += ";";
+		dataString += String("(global.gps_data.location.longtitude)");
 
-	}
-	if (global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
-	char filename[] = "mmddhhmm.csv"; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour,minuttes
-	if (SIMULATOR_MODE){
-		filename[0] = 's';
-		filename[1] = 'i';
-		filename[2] = 'm';
-		filename[3] = 'u';
-		filename[4] = 'l';
-		filename[5] = 'a';
-		filename[6] = 't';
-		filename[7] = 'e';
-	}
-	else {
-		filename[0] = global.GPS_module.month / 10 + '0';
-		filename[1] = global.GPS_module.month % 10 + '0';
-		filename[2] = global.GPS_module.day / 10 + '0';
-		filename[3] = global.GPS_module.day % 10 + '0';
-		filename[4] = global.GPS_module.hour / 10 + '0';
-		filename[5] = global.GPS_module.hour % 10 + '0';
-		filename[6] = global.GPS_module.minute / 10 + '0';
-		filename[7] = global.GPS_module.minute % 10 + '0';
-	}
+		write_to_SD_card();
+		dataString = "";
 
-	String dataString;
-	// make a string for assembling the data to log:
-	dataString = "";
-	//Then make the string containing all the data
-	dataString += String("millis()"); //timestamp in ms
-	dataString += ";";
-	dataString += String("global.GPS_module.latitude");
-	dataString += ";";
-	dataString += String("global.GPS_module.longitude");
-	dataString += ";";
-	dataString += String("global.gps_data.fix");
-	dataString += ";";
-	dataString += String("global.gps_data.gps_bearing");
-	dataString += ";";
-	dataString += String("(global.gps_data.location.latitude)"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
-	dataString += ";";
-	dataString += String("(global.gps_data.location.longtitude)");
-	dataString += ";";
-	dataString += String("global.gps_data.speed");
-	dataString += ";";
-	dataString += String("global.bearing_container.compass_bearing");
-	dataString += ";";
-	dataString += String("global.bearing_container.pitch");
-	dataString += ";";
-	dataString += String("global.bearing_container.roll");
-	dataString += ";";
-	dataString += String("global.wind_bearing");
-	dataString += ";";
-	dataString += String("global.global_wind_bearing");
-	dataString += ";";
-	dataString += String("global.waypoints.count()");
-	dataString += ";";
-	dataString += String("When 1 we are not controlling servos");
-	dataString += ";";
-	dataString += String("battery current");
-	dataString += ";";
-	dataString += String("battery voltage");
-	dataString += ";";
+		dataString += ";";
+		dataString += String("global.gps_data.speed");
+		dataString += ";";
+		dataString += String("global.bearing_container.compass_bearing");
+		dataString += ";";
+		dataString += String("global.bearing_container.pitch");
+		dataString += ";";
+		dataString += String("global.bearing_container.roll");
+		dataString += ";";
+		dataString += String("global.wind_bearing");
+		dataString += ";";
+		dataString += String("global.global_wind_bearing");
+		dataString += ";";
+		dataString += String("global.waypoints.count()");
+
+		write_to_SD_card();
+		dataString = "";
+
+		dataString += ";";
+		dataString += String("When 1 we are not controlling servos");
+		dataString += ";";
+		dataString += String("battery current");
+		dataString += ";";
+		dataString += String("battery voltage");
+		dataString += ";";
 
 
-	//The below part comes from guidance.h
-	dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.global_Rudder_Desired_Angle");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.waypoints_count");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.desired_heading");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.distance_to_target");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.bearing_to_target");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.current_state");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.theta_A");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.theta_B");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.theta_AB");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.theta_BA");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.x");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.collision_avoidance_active");
-	dataString += ";";
-	dataString += String("global.data_from_navigation_to_log.collision_avoidance_did_evasion");
+		write_to_SD_card();
+		dataString = "";
+
+
+		//The below part comes from guidance.h
+		dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.global_Rudder_Desired_Angle");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.waypoints_count");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.desired_heading");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.distance_to_target");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.bearing_to_target");
+
+		write_to_SD_card();
+		dataString = "";
+
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.current_state");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.theta_A");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.theta_B");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.theta_AB");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.theta_BA");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.x");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.collision_avoidance_active");
+		dataString += ";";
+		dataString += String("global.data_from_navigation_to_log.collision_avoidance_did_evasion");
+
+		write_to_SD_card();
+		dataString = "";
 
 
 
-	File dataFile = SD.open(filename, FILE_WRITE);
+	
+	
+	} //initialize to dummy values, they are overwritten when real world data makes sense
 
-	// if the file is available, write to it:
-	if (dataFile) {
-		dataFile.println(dataString);
-		dataFile.close();
-		// print to the SerialUSB port too:
-		if (global.debug_handler.data_logging_debug) Serial.println(dataString);
-	}
-	// if the file isn't open, pop up an error:
-	else {
-		if (global.debug_handler.data_logging_debug) Serial.println("error opening datalog.txt");
-	}
-
-	while (1) {
+	void loop(void) {
 		// make a string for assembling the data to log:
 		dataString = "";
 		//Then make the string containing all the data
 		dataString += String(millis()); //timestamp in ms
 		dataString += ";";
-		dataString += String(global.GPS_module.latitude,10);
+		dataString += String(global.GPS_module.latitude, 10);
 		dataString += ";";
-		dataString += String(global.GPS_module.longitude,10);
+		dataString += String(global.GPS_module.longitude, 10);
 		dataString += ";";
 		dataString += String(global.gps_data.fix);
 		dataString += ";";
 		dataString += String(global.gps_data.gps_bearing);
 		dataString += ";";
-		dataString += String((global.gps_data.location.latitude)*1000000); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+		dataString += String((global.gps_data.location.latitude) * 1000000); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 		dataString += ";";
-		dataString += String((global.gps_data.location.longtitude)*1000000);
+		dataString += String((global.gps_data.location.longtitude) * 1000000);
 		dataString += ";";
+
+		write_to_SD_card();
+		dataString = "";
+
 		dataString += String(global.gps_data.location.speed);
 		dataString += ";";
 		dataString += String(global.bearing_container.compass_bearing);
@@ -215,6 +238,10 @@ void Data_logging() {
 		dataString += String(analogRead(BATTERY_VOLTAGE_READ_PIN));
 		dataString += ";";
 
+		write_to_SD_card();
+		dataString = "";
+
+
 		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag);
@@ -230,6 +257,10 @@ void Data_logging() {
 		dataString += String(global.data_from_navigation_to_log.bearing_to_target);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind);
+
+		write_to_SD_card();
+		dataString = "";
+
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.current_state);
 		dataString += ";";
@@ -246,17 +277,26 @@ void Data_logging() {
 		dataString += String(global.data_from_navigation_to_log.collision_avoidance_active);
 		dataString += ";";
 		dataString += String(global.data_from_navigation_to_log.collision_avoidance_did_evasion);
+		dataString += '\n';
+
+
+		write_to_SD_card();
+		dataString = "";
 
 
 
 
 		// open the file. note that only one file can be open at a time,
 		// so you have to close this one before opening another.
+
+	}
+
+	void write_to_SD_card(void){
 		File dataFile = SD.open(filename, FILE_WRITE);
 
 		// if the file is available, write to it:
 		if (dataFile) {
-			dataFile.println(dataString);
+			dataFile.print(dataString);
 			//dataFile.println(global.data_from_path_to_log);
 
 			dataFile.close();
@@ -270,11 +310,27 @@ void Data_logging() {
 		else {
 			if (global.debug_handler.data_logging_debug) Serial.println("error opening datalog.txt");
 		}
-		dataString = "";
-		delay(30); //log 2 times a seconds, supject to change //with 30ms delay, it logs 20 times a second
+	}
+
+	
+
+};
+
+
+
+
+
+void Data_logging() {
+	
+	Sd_card_data_logging data_logger;
+	while (1) {
+		data_logger.loop();
+		delay(30);
 	}
 
 
+
 }
+
 
 #endif

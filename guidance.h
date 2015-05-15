@@ -391,11 +391,11 @@ public:
 
 		}
 		if (global.wind_bearing > 0){
-			front_sail_servo.write(0);
+			front_sail_servo.write(180);
 			if(global.debug_handler.path_finding_debug) Serial.println("wind from right");
 		}
 		else {
-			front_sail_servo.write(180);
+			front_sail_servo.write(0);
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from left");
 		}
 		
