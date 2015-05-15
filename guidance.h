@@ -21,7 +21,7 @@ enum boat_states
 
 
 class Navigation_guidance{ //this class contains all the previous groups work on navigating the boat, with mayor changes to suit the way i have made the program.
-private:
+public:
 	boat_states state = close_hauled_wind_from_left;
 	boat_states next_state;
 	float bearing_to_target; //compass bearing to target
@@ -36,8 +36,6 @@ private:
 	float imaginary_part_of_complex_from_old_code = 0;
 
 
-
-public:
 	Servo Rudder_Servo;
 	Servo sail_servo;
 	Servo front_sail_servo;
@@ -85,7 +83,7 @@ public:
 		do_colission_avoidance(); //may overwrite the next state logic
 		
 		sail_control();
-		send_data_to_data_logging();
+		
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
 			global.global_wind_bearing = 0;
 
@@ -314,56 +312,7 @@ public:
 		}
 		determine_path_bearing(); //TODO determine wheter this is a good idea
 	}
-	void send_data_to_data_logging(void){
-		/*	
-	double Boat1_Data_X_T_b_real;
-	double Boat1_Data_X_T_b_imag;
-	double global_Rudder_Desired_Angle;
-	int waypoints_count;
-	float desired_heading;
-	float distance_to_target;
-	float bearing_to_target;
-	float current_state;*/
 
-		global.data_from_navigation_to_log.Boat1_Data_X_T_b_real = real_part_of_complex_from_old_code;
-		global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag = imaginary_part_of_complex_from_old_code;
-		global.data_from_navigation_to_log.global_Rudder_Desired_Angle = global.Rudder_Desired_Angle;
-		global.data_from_navigation_to_log.waypoints_count = global.waypoints.actual_size;
-		global.data_from_navigation_to_log.desired_heading = global.desired_heading;
-		global.data_from_navigation_to_log.distance_to_target = distance_to_target;
-		global.data_from_navigation_to_log.bearing_to_target = bearing_to_target;
-		global.data_from_navigation_to_log.bearing_to_target_relative_to_wind = bearing_to_target_relative_to_wind;
-		global.data_from_navigation_to_log.current_state = state;
-		global.data_from_navigation_to_log.theta_A = theta_B;
-		global.data_from_navigation_to_log.theta_B = theta_B;
-		global.data_from_navigation_to_log.theta_AB = theta_AB;
-		global.data_from_navigation_to_log.theta_BA = theta_BA;
-		global.data_from_navigation_to_log.x = x;
-		global.data_from_navigation_to_log.collision_avoidance_active = collision_avoidance_active;
-		global.data_from_navigation_to_log.collision_avoidance_did_evasion = collision_avoidance_did_evasion;
-
-		/*
-			float theta_A;
-	float theta_B;
-	float theta_AB;
-	float theta_BA;
-	float x;
-	bool collision_avoidance_active = false;
-	bool collision_avoidance_did_evasion = false;
-	*/
-
-			/*		distance_to_target = global.gps_data.location.distance_to(target_location);
-		bearing_to_target = global.gps_data.location.bearing_to(target_location);
-		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
-		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
-	
-		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
-		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
-		
-		real_part_of_complex_from_old_code = sin(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
-		imaginary_part_of_complex_from_old_code = cos(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
-*/
-	}
 	void sail_control(void){
 		int sail_control_value = global.desired_heading - global.global_wind_bearing;// SAIL_CONTROL_ZERO_POINT;
 		if (sail_control_value < 0) sail_control_value *= -1;

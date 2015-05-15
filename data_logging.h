@@ -4,7 +4,7 @@
 #define DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN 50
 #define BATTERY_CURRENT_READ_PIN A0
 #define BATTERY_VOLTAGE_READ_PIN A1
-
+#include "path_finding.h"
 
 class Sd_card_data_logging { //this contains the data one could need from the gps
 public:
@@ -159,26 +159,24 @@ public:
 		write_to_SD_card(String(digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN)));
 		write_to_SD_card(String(analogRead(BATTERY_CURRENT_READ_PIN)));
 		write_to_SD_card(String(analogRead(BATTERY_VOLTAGE_READ_PIN)));
-		write_to_SD_card(String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real));
-		write_to_SD_card(String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag));
-		write_to_SD_card(String(global.data_from_navigation_to_log.global_Rudder_Desired_Angle));
-		write_to_SD_card(String(global.data_from_navigation_to_log.waypoints_count));
-		write_to_SD_card(String(global.data_from_navigation_to_log.desired_heading));
-		write_to_SD_card(String(global.data_from_navigation_to_log.distance_to_target));
-		write_to_SD_card(String(global.data_from_navigation_to_log.bearing_to_target));
-		write_to_SD_card(String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind));
-		write_to_SD_card(String(global.data_from_navigation_to_log.current_state));
-		write_to_SD_card(String(global.data_from_navigation_to_log.theta_A));
-		write_to_SD_card(String(global.data_from_navigation_to_log.theta_B));
-		write_to_SD_card(String(global.data_from_navigation_to_log.theta_AB));
-		write_to_SD_card(String(global.data_from_navigation_to_log.theta_BA));
-		write_to_SD_card(String(global.data_from_navigation_to_log.x));
-		write_to_SD_card(String(global.data_from_navigation_to_log.collision_avoidance_active));
-		write_to_SD_card(String(global.data_from_navigation_to_log.collision_avoidance_did_evasion));
+		write_to_SD_card(String(guidance_object.real_part_of_complex_from_old_code));
+		write_to_SD_card(String(guidance_object.imaginary_part_of_complex_from_old_code));
+		write_to_SD_card(String(global.Rudder_Desired_Angle));
+		write_to_SD_card(String(global.waypoints.actual_size));
+		write_to_SD_card(String(global.desired_heading));
+		write_to_SD_card(String(guidance_object.distance_to_target));
+		write_to_SD_card(String(guidance_object.bearing_to_target));
+		write_to_SD_card(String(guidance_object.bearing_to_target_relative_to_wind));
+		write_to_SD_card(String(guidance_object.state));
+		write_to_SD_card(String(guidance_object.theta_A));
+		write_to_SD_card(String(guidance_object.theta_B));
+		write_to_SD_card(String(guidance_object.theta_AB));
+		write_to_SD_card(String(guidance_object.theta_BA));
+		write_to_SD_card(String(guidance_object.x));
+		write_to_SD_card(String(guidance_object.collision_avoidance_active));
+		write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
 		write_to_SD_card("\n");
 
-		// open the file. note that only one file can be open at a time,
-		// so you have to close this one before opening another.
 
 	}
 

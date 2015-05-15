@@ -22,28 +22,7 @@ union XYZBuffer { //this is used for reading the 9DOF sensor, its declared here 
 	byte buff[6];
 };
 
-struct Data_from_navigation_to_log { //this is for creating an easy way to get a lot of data from the navigation to the datalogger, without cluttering the global object to much, therefore its put here
-public:
 
-	double Boat1_Data_X_T_b_real;
-	double Boat1_Data_X_T_b_imag;
-	double global_Rudder_Desired_Angle;
-	int waypoints_count;
-	float desired_heading;
-	float distance_to_target;
-	float bearing_to_target;
-	float bearing_to_target_relative_to_wind;
-	int current_state;
-
-	//from collision avoidance
-	float theta_A;
-	float theta_B;
-	float theta_AB;
-	float theta_BA;
-	float x;
-	bool collision_avoidance_active = false;
-	bool collision_avoidance_did_evasion = false;
-};
 
 //this class contains all the global elements, its meant as being the only thing defined in the global scope
 //this makes it very clear in all the different threds when a global variable is accesed, instead of a local variable
@@ -67,8 +46,6 @@ public:
 	float global_wind_bearing;
 	float Rudder_Desired_Angle;
 	bool force_load_waypoint_in_guidance;
-
-	Data_from_navigation_to_log data_from_navigation_to_log;
 	
 };
 

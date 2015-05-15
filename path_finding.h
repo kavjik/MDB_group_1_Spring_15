@@ -10,9 +10,11 @@
 #define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
 #define PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME 100
 
+Navigation_guidance guidance_object;
+
 void path_finding(){
 	//this code is build like this, since the Navigation_guidance class is based on code from the previous group, which used a lot of global variables, i dont like global variables, so i have contained them in a class.
-	Navigation_guidance guidance_object;
+	
 	guidance_object.guidance_start();
 
 	guidance_object.Rudder_Servo.attach(rudder_servo_pin); //TODO move this to guidance.h
