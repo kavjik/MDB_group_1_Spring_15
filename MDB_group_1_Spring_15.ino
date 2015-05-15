@@ -1,6 +1,6 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE false
-#define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
+#define SIMULATOR_MODE true
+#define SIMULATOR_MODE_MOVE_AUTOMATICALLY true //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
 #include <Scheduler.h>
@@ -16,7 +16,6 @@
 #include "data_logging.h"
 #include "GPS_sensor.h"
 #include "path_finding.h"
-#include "rudder_and_sail_control.h"
 #include "wireless_cummonication.h"
 #include "global.h"
 #include "gps_tracking.h"
@@ -34,7 +33,7 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-	/*
+	
 	target.latitude = 54.91382778; //first point in water
 	target.longtitude = 9.779919444;
 	global.waypoints.enqueue(target);
@@ -43,9 +42,9 @@ void setup() {
 	global.waypoints.enqueue(target);
 	target.latitude = 54.91382778; //back to the first point
 	target.longtitude = 9.779919444;
-	*/ // setup to outside alsion
+	 // setup to outside alsion
 	
-
+	/*
 	target.latitude = 54.896841667; //¨setup at beach
 	target.longtitude = 9.799458333;
 	global.waypoints.enqueue(target); //first target 
@@ -61,7 +60,7 @@ void setup() {
 	target.latitude = 54.896841667; 
 	target.longtitude = 9.799458333;
 	global.waypoints.enqueue(target); //first target 
-
+	*/
 
 	if (SIMULATOR_MODE) {
 		Scheduler.startLoop(Data_logging);
@@ -74,10 +73,10 @@ void setup() {
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		//global.gps_data.location.latitude = 54.910513888889; 
-		//global.gps_data.location.longtitude = 9.781272222222;// ALSION
-		global.gps_data.location.latitude = 54.896811111;
-		global.gps_data.location.longtitude = 9.799813889;
+		global.gps_data.location.latitude = 54.910513888889; 
+		global.gps_data.location.longtitude = 9.781272222222;// ALSION
+		//global.gps_data.location.latitude = 54.896811111;
+		//global.gps_data.location.longtitude = 9.799813889;
 
 		global.other_boats[0].bearing = 180;
 		global.other_boats[0].is_valid_boat = true;
@@ -126,15 +125,8 @@ void loop() { //stayin' alive, stayin' alive.	Ah, ha, ha, ha,		Stayin' alive.		S
 	delay(500);
 	digitalWrite(HEART_BEAT_LED, LOW);
 	delay(500);
-
-
-
-
 	if (digitalRead(51) && global.debug_handler.main_debug){
 		Serial.println("WE ARE NOT IN CONTROL");
 	}
-
-
-
 }
 

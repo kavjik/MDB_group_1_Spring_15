@@ -87,6 +87,5 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <guidance.h>
 #include <path_finding.h>
 #include <queue.h>
-#include <rudder_and_sail_control.h>
 #include <wireless_cummonication.h>
 #endif

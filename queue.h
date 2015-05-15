@@ -33,7 +33,9 @@ public:
 		}
 
 	}
-
+	int count(void) {
+		return actual_size;
+	}
 
 	int actual_size;
 private:

@@ -72,9 +72,6 @@
     <ClInclude Include="XBee.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="rudder_and_sail_control.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
