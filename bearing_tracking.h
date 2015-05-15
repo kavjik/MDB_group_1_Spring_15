@@ -1,8 +1,8 @@
 #ifndef bearing_h
 #define bearing_h
-#define SAMPLE_SIZE 10
+#define SAMPLE_SIZE 5
 #define NINE_DOF_SENSOR_POWER_PIN 26
-#define WIND_DIRECTION_SAMPLE_SIZE 10
+#define WIND_DIRECTION_SAMPLE_SIZE 5
 #define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
 #define COMPASS_X_MAX -145
 #define COMPASS_X_MIN -305
@@ -64,8 +64,6 @@ public:
 
 			delay(5);
 		}
-
-		//below is to calculate the initial pitch and roll
 
 
 	}
@@ -167,28 +165,29 @@ public:
 			if (global.debug_handler.wind_direction_debug){
 				this->print_wind_direction_debug();
 			}
+			float sin_array_sum = 0;
+			float cos_array_sum = 0;
+			//global_wind_direction_sum = 0;
+			for (int i = 0; i < WIND_DIRECTION_SAMPLE_SIZE; i++){
+				cos_array_sum += wind_direction_cos_array[i];
+				sin_array_sum += wind_direction_sin_array[i];
+				//global_wind_direction_sum += global_wind_direction_array[i];
+			}
+			global.global_wind_bearing = atan2(sin_array_sum, cos_array_sum) * 180 / PI; //TODO CHECK IF THIS WORKS
+			//global.global_wind_bearing = (int)(global_wind_direction_sum / WIND_DIRECTION_SAMPLE_SIZE) % 360;
+			//global.global_wind_bearing = global_wind_bearing; //TODO implemhjvt the above averaging in an working function
+			global.wind_bearing = global.global_wind_bearing - global.bearing_container.compass_bearing;
+
+			if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
+			if (global.global_wind_bearing < 0) global.global_wind_bearing += 360;
+
+			if (global.wind_bearing > 180) global.wind_bearing = -360;
+			if (global.wind_bearing < -180) global.wind_bearing += 360;
 		}
 
 		wind_direction_bearing_tracking_counter = (++wind_direction_bearing_tracking_counter) % (WIND_DIRECTION_SAMPLE_SIZE*STEPS_BETWEEN_WIND_DIRECTION_SAMPLES);
 
-		float sin_array_sum = 0;
-		float cos_array_sum = 0;
-		//global_wind_direction_sum = 0;
-		for (int i = 0; i < WIND_DIRECTION_SAMPLE_SIZE; i++){
-			cos_array_sum += wind_direction_cos_array[i];
-			sin_array_sum += wind_direction_sin_array[i];
-			//global_wind_direction_sum += global_wind_direction_array[i];
-		}
-		global.global_wind_bearing = atan2(sin_array_sum, cos_array_sum)*180/PI; //TODO CHECK IF THIS WORKS
-		//global.global_wind_bearing = (int)(global_wind_direction_sum / WIND_DIRECTION_SAMPLE_SIZE) % 360;
-		//global.global_wind_bearing = global_wind_bearing; //TODO implemhjvt the above averaging in an working function
-		global.wind_bearing = global.global_wind_bearing - global.bearing_container.compass_bearing;
 
-		if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
-		if (global.global_wind_bearing < 0) global.global_wind_bearing += 360;
-
-		if (global.wind_bearing > 180) global.wind_bearing = -360;
-		if (global.wind_bearing < -180) global.wind_bearing += 360;
 	}
 
 	void print_wind_direction_debug(void){
@@ -258,13 +257,13 @@ public:
 				Serial.print("min x: ");
 				Serial.print(xMin);
 
-				Serial.print("max x: ");
+				Serial.print(" max x: ");
 				Serial.print(xMax);
 
-				Serial.print("min y: ");
+				Serial.print(" min y: ");
 				Serial.print(yMin);
 
-				Serial.print("max y: ");
+				Serial.print(" max y: ");
 				Serial.print(yMax);
 
 				Serial.println("");
@@ -287,10 +286,10 @@ public:
 private:
 	float global_wind_bearing;
 	int wind_direction_relative_to_boat;
-	short xMax = COMPASS_X_MAX;
-	short xMin = -COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
-	short yMax = -COMPASS_Y_MAX;
-	short yMin = -COMPASS_Y_MIN;
+	int xMax = COMPASS_X_MAX;
+	int xMin = COMPASS_X_MIN; //TODO move these to a seperate file called something like calibration.h
+	int yMax = COMPASS_Y_MAX;
+	int yMin = COMPASS_Y_MIN;
 	
 	float xCali;
 	float yCali;
@@ -301,7 +300,7 @@ private:
 	float pitch_sum = 0;
 	float roll_sum = 0;
 	//float global_wind_direction_sum = 0;
-	float compass_y_array[SAMPLE_SIZE] = { 0 }; //i dont take the avarage of the compass angle, since that may jump between 360 and 0
+	float compass_y_array[SAMPLE_SIZE] = { 0 }; //i dont take the avarage of the compass angle, since that may jump between 360 and 0, i use the vector instead
 	float compass_x_array[SAMPLE_SIZE] = { 0 }; //default initialized to be zero
 	float pitch_array[SAMPLE_SIZE] = { 0 };
 	float roll_array[SAMPLE_SIZE] = { 0 };
@@ -323,8 +322,8 @@ void Bearing_tracking() {
 	int i = 0;
 	while (1) {
 		bearing_thread_object.update_data();
-		delay(10);
-		if (i == 50) {
+		delay(25);
+		if (i == 15) {
 			bearing_thread_object.initial_pitch = global.bearing_container.pitch;
 			bearing_thread_object.initial_roll = global.bearing_container.roll;
 		}

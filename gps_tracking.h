@@ -28,8 +28,10 @@ void gps_tracking() {
 		
 		fix_counter = 0; //this is used for keeping track of how many times we dont have a gps fix, therefore its set to 0 here.
 
-		global.gps_data.location.latitude = (fmod(global.GPS_module.latitude, 100) / (60)) + floor(global.GPS_module.latitude / 100);
-		global.gps_data.location.longtitude = (fmod(global.GPS_module.longitude, 100) / (60)) + floor(global.GPS_module.longitude / 100);
+		//global.gps_data.location.latitude = (fmod(global.GPS_module.latitude, 100) / (60)) + floor(global.GPS_module.latitude / 100);
+		global.gps_data.location.latitude = floor(global.GPS_module.latitude / 100) + (global.GPS_module.latitude / 100 - floor(global.GPS_module.latitude / 100)) * 100 / 60;
+		//global.gps_data.location.longtitude = (fmod(global.GPS_module.longitude, 100) / (60)) + floor(global.GPS_module.longitude / 100);
+		global.gps_data.location.longtitude = floor(global.GPS_module.longitude / 100) + (global.GPS_module.longitude / 100 - floor(global.GPS_module.longitude / 100)) * 100 / 60;
 		global.gps_data.location.bearing = global.GPS_module.angle;
 		global.gps_data.location.speed = global.GPS_module.speed * 0.51444; //constant to convert from knots to m/s
 

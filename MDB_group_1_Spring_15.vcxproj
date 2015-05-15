@@ -80,9 +80,6 @@
     <ClInclude Include="Bearing_container.h" />
     <ClInclude Include="bearing_tracking.h" />
     <ClInclude Include="Bearing_hardware_class.h" />
-    <ClInclude Include="complex.h">
-      <FileType>CppCode</FileType>
-    </ClInclude>
     <ClInclude Include="Computer_input_handler.h" />
     <ClInclude Include="control_simulator.h">
       <FileType>CppCode</FileType>
@@ -110,7 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adafruit_GPS.cpp" />
-    <ClCompile Include="complex.cpp" />
     <ClCompile Include="XBee.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
