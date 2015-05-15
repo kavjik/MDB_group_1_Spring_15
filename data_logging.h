@@ -9,7 +9,6 @@
 class Sd_card_data_logging { //this contains the data one could need from the gps
 public:
 	int chipSelect = 4;
-	String dataString;
 	char filename[12]; //Arduino supports a max filename of 8 characters, in this case its formated as month,date,hour,minuttes
 	Sd_card_data_logging() :chipSelect(4) {
 		delay(100);
@@ -99,96 +98,41 @@ public:
 
 		
 		// make a string for assembling the data to log:
-		dataString = "";
 		//Then make the string containing all the data
-		dataString += String("millis()"); //timestamp in ms
-		dataString += ";";
-		dataString += String("global.GPS_module.latitude");
-		dataString += ";";
-		dataString += String("global.GPS_module.longitude");
-		dataString += ";";
-		dataString += String("global.gps_data.fix");
-		dataString += ";";
-		dataString += String("global.gps_data.gps_bearing");
-		dataString += ";";
-		dataString += String("(global.gps_data.location.latitude)"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
-		dataString += ";";
-		dataString += String("(global.gps_data.location.longtitude)");
-
-		write_to_SD_card();
-		dataString = "";
-
-		dataString += ";";
-		dataString += String("global.gps_data.speed");
-		dataString += ";";
-		dataString += String("global.bearing_container.compass_bearing");
-		dataString += ";";
-		dataString += String("global.bearing_container.pitch");
-		dataString += ";";
-		dataString += String("global.bearing_container.roll");
-		dataString += ";";
-		dataString += String("global.wind_bearing");
-		dataString += ";";
-		dataString += String("global.global_wind_bearing");
-		dataString += ";";
-		dataString += String("global.waypoints.count()");
-
-		write_to_SD_card();
-		dataString = "";
-
-		dataString += ";";
-		dataString += String("When 1 we are not controlling servos");
-		dataString += ";";
-		dataString += String("battery current");
-		dataString += ";";
-		dataString += String("battery voltage");
-		dataString += ";";
-
-
-		write_to_SD_card();
-		dataString = "";
-
-
-		//The below part comes from guidance.h
-		dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.global_Rudder_Desired_Angle");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.waypoints_count");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.desired_heading");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.distance_to_target");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.bearing_to_target");
-
-		write_to_SD_card();
-		dataString = "";
-
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.current_state");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.theta_A");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.theta_B");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.theta_AB");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.theta_BA");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.x");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.collision_avoidance_active");
-		dataString += ";";
-		dataString += String("global.data_from_navigation_to_log.collision_avoidance_did_evasion");
-
-		write_to_SD_card();
-		dataString = "";
-
+		write_to_SD_card("millis())"); //timestamp in ms
+		write_to_SD_card("global.GPS_module.latitude, 10");
+		write_to_SD_card("global.GPS_module.longitude, 10");
+		write_to_SD_card("global.gps_data.fix");
+		write_to_SD_card("global.gps_data.gps_bearing");
+		write_to_SD_card("(global.gps_data.location.latitude) * 1000000"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+		write_to_SD_card("(global.gps_data.location.longtitude) * 1000000)");
+		write_to_SD_card("global.gps_data.location.speed");
+		write_to_SD_card("global.bearing_container.compass_bearing");
+		write_to_SD_card("global.bearing_container.pitch");
+		write_to_SD_card("global.bearing_container.roll");
+		write_to_SD_card("global.wind_bearing");
+		write_to_SD_card("global.global_wind_bearing");
+		write_to_SD_card("global.waypoints.actual_size");
+		write_to_SD_card("digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN)");
+		write_to_SD_card("analogRead(BATTERY_CURRENT_READ_PIN)");
+		write_to_SD_card("analogRead(BATTERY_VOLTAGE_READ_PIN)");
+		write_to_SD_card("global.data_from_navigation_to_log.Boat1_Data_X_T_b_real");
+		write_to_SD_card("global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag)");
+		write_to_SD_card("global.data_from_navigation_to_log.global_Rudder_Desired_Angle");
+		write_to_SD_card("global.data_from_navigation_to_log.waypoints_count");
+		write_to_SD_card("global.data_from_navigation_to_log.desired_heading");
+		write_to_SD_card("global.data_from_navigation_to_log.distance_to_target");
+		write_to_SD_card("global.data_from_navigation_to_log.bearing_to_target)");
+		write_to_SD_card("global.data_from_navigation_to_log.bearing_to_target_relative_to_wind");
+		write_to_SD_card("global.data_from_navigation_to_log.current_state");
+		write_to_SD_card("global.data_from_navigation_to_log.theta_A");
+		write_to_SD_card("global.data_from_navigation_to_log.theta_B");
+		write_to_SD_card("global.data_from_navigation_to_log.theta_AB");
+		write_to_SD_card("global.data_from_navigation_to_log.theta_BA");
+		write_to_SD_card("global.data_from_navigation_to_log.x");
+		write_to_SD_card("global.data_from_navigation_to_log.collision_avoidance_active");
+		write_to_SD_card("global.data_from_navigation_to_log.collision_avoidance_did_evasion");
+		write_to_SD_card("\n");
 
 
 	
@@ -197,112 +141,60 @@ public:
 
 	void loop(void) {
 		// make a string for assembling the data to log:
-		dataString = "";
 		//Then make the string containing all the data
-		dataString += String(millis()); //timestamp in ms
-		dataString += ";";
-		dataString += String(global.GPS_module.latitude, 10);
-		dataString += ";";
-		dataString += String(global.GPS_module.longitude, 10);
-		dataString += ";";
-		dataString += String(global.gps_data.fix);
-		dataString += ";";
-		dataString += String(global.gps_data.gps_bearing);
-		dataString += ";";
-		dataString += String((global.gps_data.location.latitude) * 1000000); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
-		dataString += ";";
-		dataString += String((global.gps_data.location.longtitude) * 1000000);
-		dataString += ";";
-
-		write_to_SD_card();
-		dataString = "";
-
-		dataString += String(global.gps_data.location.speed);
-		dataString += ";";
-		dataString += String(global.bearing_container.compass_bearing);
-		dataString += ";";
-		dataString += String(global.bearing_container.pitch);
-		dataString += ";";
-		dataString += String(global.bearing_container.roll);
-		dataString += ";";
-		dataString += String(global.wind_bearing);
-		dataString += ";";
-		dataString += String(global.global_wind_bearing);
-		dataString += ";";
-		dataString += String(global.waypoints.actual_size);
-		dataString += ";";
-		dataString += String(digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN));
-		dataString += ";";
-		dataString += String(analogRead(BATTERY_CURRENT_READ_PIN));
-		dataString += ";";
-		dataString += String(analogRead(BATTERY_VOLTAGE_READ_PIN));
-		dataString += ";";
-
-		write_to_SD_card();
-		dataString = "";
-
-
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.global_Rudder_Desired_Angle);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.waypoints_count);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.desired_heading);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.distance_to_target);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.bearing_to_target);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind);
-
-		write_to_SD_card();
-		dataString = "";
-
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.current_state);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_A);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_B);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_AB);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.theta_BA);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.x);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.collision_avoidance_active);
-		dataString += ";";
-		dataString += String(global.data_from_navigation_to_log.collision_avoidance_did_evasion);
-		dataString += '\n';
-
-
-		write_to_SD_card();
-		dataString = "";
-
-
-
+		write_to_SD_card(String(millis())); //timestamp in ms
+		write_to_SD_card(String(global.GPS_module.latitude, 10));
+		write_to_SD_card(String(global.GPS_module.longitude, 10));
+		write_to_SD_card(String(global.gps_data.fix));
+		write_to_SD_card(String(global.gps_data.gps_bearing));
+		write_to_SD_card(String((global.gps_data.location.latitude) * 1000000)); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
+		write_to_SD_card(String((global.gps_data.location.longtitude) * 1000000));
+		write_to_SD_card(String(global.gps_data.location.speed));
+		write_to_SD_card(String(global.bearing_container.compass_bearing));
+		write_to_SD_card(String(global.bearing_container.pitch));
+		write_to_SD_card(String(global.bearing_container.roll));
+		write_to_SD_card(String(global.wind_bearing));
+		write_to_SD_card(String(global.global_wind_bearing));
+		write_to_SD_card(String(global.waypoints.actual_size));
+		write_to_SD_card(String(digitalRead(DO_WE_HAVE_CONTROLL_OF_SERVOS_PIN)));
+		write_to_SD_card(String(analogRead(BATTERY_CURRENT_READ_PIN)));
+		write_to_SD_card(String(analogRead(BATTERY_VOLTAGE_READ_PIN)));
+		write_to_SD_card(String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_real));
+		write_to_SD_card(String(global.data_from_navigation_to_log.Boat1_Data_X_T_b_imag));
+		write_to_SD_card(String(global.data_from_navigation_to_log.global_Rudder_Desired_Angle));
+		write_to_SD_card(String(global.data_from_navigation_to_log.waypoints_count));
+		write_to_SD_card(String(global.data_from_navigation_to_log.desired_heading));
+		write_to_SD_card(String(global.data_from_navigation_to_log.distance_to_target));
+		write_to_SD_card(String(global.data_from_navigation_to_log.bearing_to_target));
+		write_to_SD_card(String(global.data_from_navigation_to_log.bearing_to_target_relative_to_wind));
+		write_to_SD_card(String(global.data_from_navigation_to_log.current_state));
+		write_to_SD_card(String(global.data_from_navigation_to_log.theta_A));
+		write_to_SD_card(String(global.data_from_navigation_to_log.theta_B));
+		write_to_SD_card(String(global.data_from_navigation_to_log.theta_AB));
+		write_to_SD_card(String(global.data_from_navigation_to_log.theta_BA));
+		write_to_SD_card(String(global.data_from_navigation_to_log.x));
+		write_to_SD_card(String(global.data_from_navigation_to_log.collision_avoidance_active));
+		write_to_SD_card(String(global.data_from_navigation_to_log.collision_avoidance_did_evasion));
+		write_to_SD_card("\n");
 
 		// open the file. note that only one file can be open at a time,
 		// so you have to close this one before opening another.
 
 	}
 
-	void write_to_SD_card(void){
+	void write_to_SD_card(String Input){
+		Input = ";" + Input;
 		File dataFile = SD.open(filename, FILE_WRITE);
 
 		// if the file is available, write to it:
 		if (dataFile) {
-			dataFile.print(dataString);
+			dataFile.print(Input);
 			//dataFile.println(global.data_from_path_to_log);
 
 			dataFile.close();
 			// print to the SerialUSB port too:
 			if (global.debug_handler.data_logging_debug){
-				Serial.println(dataString);
+				Serial.print(Input);
 				//Serial.println(global.data_from_path_to_log);
 			}
 		}
