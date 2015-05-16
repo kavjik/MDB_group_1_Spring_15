@@ -2,6 +2,7 @@
 #define path_finding_h
 
 #include "guidance.h"
+#include "global.h"
 
 #define FRONT_SAIL_PIN 7
 #define rudder_servo_pin 8
@@ -10,7 +11,7 @@
 #define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
 #define PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME 100
 
-Navigation_guidance guidance_object;
+Navigation_guidance guidance_object; //cant be in global, because of circular references
 
 void path_finding(){
 	//this code is build like this, since the Navigation_guidance class is based on code from the previous group, which used a lot of global variables, i dont like global variables, so i have contained them in a class.
