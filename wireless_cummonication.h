@@ -4,10 +4,12 @@
 #include "XBee.h"
 #include "Location.h"
 
-#define COORDINATOR_ADDR	0x0013a200,0x40B5BBD0
+#define COORDINATOR_ADDR	0x0013a200,0x40B5BBD0		
 #define BOAT_1_ADDR			0x0013A200,0x40B5BBF0
 #define BOAT_2_ADDR			0x0013A200,0x40B5BBF5
 #define BOAT_3_ADDR			0x0013A200,0x40B48973
+#define BOAT_4_ADDR			0x0013A200,0x40BD3A3F
+
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	
 
 class wireless_communication_class
@@ -18,6 +20,10 @@ public:
 		Serial2.begin(9600);
 		xbee.setSerial(Serial2);
 		xbee.begin(Serial2);
+		//Startup delay to wait for XBee radio to initialize.
+		// you may need to increase this value if you are not getting a response
+		delay(2000);
+		get_ID();
 	}
 	enum XBEE_ID {
 		boat1,
@@ -41,34 +47,53 @@ public:
 		double longitude;
 		float  bearing;
 		float  speed;
+		uint8_t	waypoints_count;
 		uint8_t checksum;
 	}DATA_;
 
-	void send_info(double latitude, double longitude, float bearing, float speed){
-		outData.ID = boat1;											//*********** Set ID of sender ( coordinator = 4	boat1 = 0	boat2 = 1 ... )
+	void send_info(double latitude, double longitude, float bearing, float speed, int count){
+		//outData.ID = ID_;	
+		outData.ID = boat2;
 		outData.latitude = latitude;
 		outData.longitude = longitude;
 		outData.bearing = bearing;
 		outData.speed = speed;
+		outData.waypoints_count = global.waypoints.count();
 		outData.checksum = 0;
 
 		uint8_t pay_load[sizeof(outData)];
-
-
 		memcpy(pay_load, &outData, sizeof(DATA_));					//Convert DATA_ to uint8
 
-		for (int i = 0; i < 26; i++){ //Hard coded for now, could be changed to sizeof(DATA_)
-			outData.checksum += (uint8_t)(pay_load[i]);
+		for (int i = 0; i < 27; i++){ //Hard coded for now, could be changed to sizeof(DATA_)
+			outData.checksum += ~(uint8_t)(pay_load[i]);
+			
 		}
-		pay_load[26] = outData.checksum;
+		pay_load[27] = outData.checksum;
 
-		addr64 = XBeeAddress64(COORDINATOR_ADDR);			//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
+
+		addr64 = XBeeAddress64(BOAT_1_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
 		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 		xbee.send(zbTx);
 
-		//addr64 = XBeeAddress64(BOAT_1_ADDR);						//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
+
+		//addr64 = XBeeAddress64(BOAT_2_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
 		//zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 		//xbee.send(zbTx);
+
+
+		addr64 = XBeeAddress64(BOAT_3_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
+		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+		xbee.send(zbTx);
+
+		addr64 = XBeeAddress64(BOAT_4_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
+		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+		xbee.send(zbTx);
+
+
+		addr64 = XBeeAddress64(COORDINATOR_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
+		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+		xbee.send(zbTx);
+
 	}
 	void get_info(void){
 		xbee.readPacket();
@@ -78,18 +103,18 @@ public:
 				// got a zb rx packet
 				xbee.getResponse().getZBRxResponse(rx);// now fill our zb rx class
 			}
-			inData = {};//clear inData package
+			//inData = {};//clear inData package
 			memcpy(&inData, rx.getData(), sizeof(DATA_));				//Convert uint8 to DATA_
 
-
 			uint8_t check = 0;
-			uint8_t pay_load[sizeof(outData)];
-			memcpy(pay_load, &inData, sizeof(DATA_));
-			for (int i = 0; i < 26; i++){ //Hard coded for now, could be changed to sizeof(DATA_) -1
-				check += (uint8_t)(pay_load[i]);
-			}
-			if (check = inData.checksum) {
+			uint8_t pay_load2[sizeof(outData)];
+			memcpy(pay_load2, &inData, sizeof(DATA_));
 
+			for (int i = 0; i < 27; i++){ //Hard coded for now, could be changed to sizeof(DATA_) -1
+				check += ~(uint8_t)(pay_load2[i]);
+			}
+
+			if (check = pay_load2[27]) {
 
 				Location target;
 				switch (inData.command)
@@ -122,14 +147,28 @@ public:
 					Serial.println(inData.longitude, 7);
 					Serial.println(inData.bearing, 7);
 					Serial.println(inData.speed, 7);
+					Serial.println(inData.waypoints_count);
+					Serial.println(inData.checksum);
+					Serial.print('\r');
+					Serial.print('\n');
+
+				}
+
+			}
+			else {
+				if (global.debug_handler.wireless_communication_debug){
+					Serial.println("checksum error");
+					Serial.println(inData.ID);
+					Serial.println(inData.latitude, 7);
+					Serial.println(inData.longitude, 7);
+					Serial.println(inData.bearing, 7);
+					Serial.println(inData.speed, 7);
+					Serial.println(inData.waypoints_count);
+					Serial.println(inData.checksum);
 					Serial.print('\r');
 					Serial.print('\n');
 				}
 			}
-			else {
-				if (global.debug_handler.wireless_communication_debug) Serial.println("checksum error");
-			}
-
 		}
 		else if (global.debug_handler.wireless_communication_debug) Serial.println("didnt get anything");
 	}
@@ -137,7 +176,7 @@ public:
 		global.waypoints.enqueue(target);
 	}
 	void force_waypoint(Location target){
-		while (global.waypoints.actual_size > 0) {
+		while (global.waypoints.count() > 0) {
 			global.waypoints.dequeue();
 		}
 		global.waypoints.enqueue(target);
@@ -153,6 +192,7 @@ public:
 private:
 	DATA_ outData;
 	DATA_ inData;
+	XBEE_ID ID_;
 
 	XBee xbee = XBee();
 	uint8_t payload[80] = {};// = { 'h', 'e', 'y' };
@@ -172,54 +212,60 @@ private:
 	}
 
 	//Returns an ID of current xbee according to its Serial number
-	XBEE_ID get_ID(void){
+	void get_ID(void){
 		uint8_t slCmd[] = { 'S', 'L' };
 		AtCommandRequest atRequest = AtCommandRequest(slCmd);
 		AtCommandResponse atResponse = AtCommandResponse();
+		char SL_response[10];
+		char SL_boat1[] = "40b5bbf0";
+		char SL_boat2[] = "40b5bbf5";
+		char SL_boat3[] = "40b48973";
+		char SL_boat4[] = "40bd3a3f";
+		char SL_coordinator[] = "40b5bbd0";
 
-
-		// send the command
-		xbee.send(atRequest);
+		xbee.send(atRequest);// send the command
 
 		// wait up to 5 seconds for the status response
 		if (xbee.readPacket(5000)) {
 			// got a response!
-
-			// should be an AT command response
 			if (xbee.getResponse().getApiId() == AT_COMMAND_RESPONSE) {
 				xbee.getResponse().getAtCommandResponse(atResponse);
-
 				if (atResponse.isOk()) {
 					if (atResponse.getValueLength() > 0) {
-						Serial.print("Command value: ");
-
 						for (int i = 0; i < atResponse.getValueLength(); i++) {
-							Serial.print(atResponse.getValue()[i], HEX);
+							sprintf(&SL_response[i * 2], "%02x", atResponse.getValue()[i]);
 						}
-						Serial.println("");
+
+						if (strcmp(SL_response, SL_boat1) == 0){
+							ID_ = boat1;
+						}
+						else if (strcmp(SL_response, SL_boat2) == 0){
+							ID_ = boat2;
+							Serial.print(SL_response);
+							Serial.println("");
+						}
+						else if (strcmp(SL_response, SL_boat3) == 0){
+							ID_ = boat3;
+							Serial.print(SL_response);
+							Serial.println("");
+						}
+						else if (strcmp(SL_response, SL_boat4) == 0){
+							ID_ = boat4;
+						}
+						else if (strcmp(SL_response, SL_coordinator) == 0){
+							ID_ = coordinator;
+							Serial.print(SL_response);
+							Serial.println("");
+						}
+						else
+							Serial.println("not able to set correct ID check SL");
 					}
 				}
-				else {
-					Serial.print("Command return error code: ");
-					Serial.println(atResponse.getStatus(), HEX);
-				}
-			}
-			else {
-				Serial.print("Expected AT response but got ");
-				Serial.print(xbee.getResponse().getApiId(), HEX);
 			}
 		}
 		else {
-			// at command failed
-			if (xbee.getResponse().isError()) {
-				Serial.print("Error reading packet.  Error code: ");
-				Serial.println(xbee.getResponse().getErrorCode());
-			}
-			else {
-				Serial.print("No response from radio");
-			}
+			Serial.print("No response from radio");// at command failed
 		}
-
 	}
 };
 
@@ -230,9 +276,9 @@ void wireless_cummonication(){
 	wireless_communication_object.init();
 	while (1)
 	{
-		wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.location.speed);
-		//wireless_communication_object.send_info(33.3333333, -44.4444444, 55.55, 66.66);
-		delay(500);
+		//wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed, global.waypoints.count());
+		wireless_communication_object.send_info(22.3333333, -88.4444444, 33.55, 23.66, 3);
+		delay(1000);
 
 	}
 	yield();
