@@ -41,6 +41,7 @@ public:
 		double longitude;
 		float  bearing;
 		float  speed;
+		uint8_t checksum;
 	}DATA_;
 
 	void send_info(double latitude, double longitude, float bearing, float speed){
@@ -49,9 +50,17 @@ public:
 		outData.longitude = longitude;
 		outData.bearing = bearing;
 		outData.speed = speed;
+		outData.checksum = 0;
 
 		uint8_t pay_load[sizeof(outData)];
+
+
 		memcpy(pay_load, &outData, sizeof(DATA_));					//Convert DATA_ to uint8
+
+		for (int i = 0; i < 26; i++){ //Hard coded for now, could be changed to sizeof(DATA_)
+			outData.checksum += (uint8_t)(pay_load[i]);
+		}
+		pay_load[26] = outData.checksum;
 
 		addr64 = XBeeAddress64(COORDINATOR_ADDR);			//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
 		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
@@ -72,39 +81,53 @@ public:
 			inData = {};//clear inData package
 			memcpy(&inData, rx.getData(), sizeof(DATA_));				//Convert uint8 to DATA_
 
-			Location target;
-			switch (inData.command)
-			{
-			case update_other_boats_location_enum:
-				update_other_boats_location(inData);
-				break;
-			case add_waypoint_enum:
-				target.latitude = inData.latitude;
-				target.longtitude = inData.longitude;
-				add_waypoint(target);
-				break;
-			case force_waypoint_enum:
-				target.latitude = inData.latitude;
-				target.longtitude = inData.longitude;
-				force_waypoint(target);
-				break;
-			case turn_compass_calibration_on_enum:
-				turn_compass_calibration_on();
-				break;
-			case turn_compass_calibration_off_enum:
-				turn_compass_calibration_off();
-				break;
-			default:
-				break;
+
+			uint8_t check = 0;
+			uint8_t pay_load[sizeof(outData)];
+			memcpy(pay_load, &inData, sizeof(DATA_));
+			for (int i = 0; i < 26; i++){ //Hard coded for now, could be changed to sizeof(DATA_) -1
+				check += (uint8_t)(pay_load[i]);
 			}
-			if (global.debug_handler.wireless_communication_debug){
-				Serial.println(inData.ID);
-				Serial.println(inData.latitude, 7);
-				Serial.println(inData.longitude, 7);
-				Serial.println(inData.bearing, 7);
-				Serial.println(inData.speed, 7);
-				Serial.print('\r');
-				Serial.print('\n');
+			if (check = inData.checksum) {
+
+
+				Location target;
+				switch (inData.command)
+				{
+				case update_other_boats_location_enum:
+					update_other_boats_location(inData);
+					break;
+				case add_waypoint_enum:
+					target.latitude = inData.latitude;
+					target.longtitude = inData.longitude;
+					add_waypoint(target);
+					break;
+				case force_waypoint_enum:
+					target.latitude = inData.latitude;
+					target.longtitude = inData.longitude;
+					force_waypoint(target);
+					break;
+				case turn_compass_calibration_on_enum:
+					turn_compass_calibration_on();
+					break;
+				case turn_compass_calibration_off_enum:
+					turn_compass_calibration_off();
+					break;
+				default:
+					break;
+				}
+				if (global.debug_handler.wireless_communication_debug){
+					Serial.println(inData.ID);
+					Serial.println(inData.latitude, 7);
+					Serial.println(inData.longitude, 7);
+					Serial.println(inData.bearing, 7);
+					Serial.println(inData.speed, 7);
+					Serial.print('\r');
+					Serial.print('\n');
+				}
+			}
+			else {
+				if (global.debug_handler.wireless_communication_debug) Serial.println("checksum error");
 			}
 
 		}
