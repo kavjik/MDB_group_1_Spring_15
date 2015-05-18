@@ -12,7 +12,7 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
-#define THIS_BOAT boat3
+#define THIS_BOAT boat2
 
 class wireless_communication_class
 {
@@ -27,8 +27,8 @@ public:
 		//Startup delay to wait for XBee radio to initialize.
 		// you may need to increase this value if you are not getting a response
 		delay(5000);
-		//get_ID();
-		ID_ = THIS_BOAT;
+		get_ID();
+		//ID_ = THIS_BOAT;
 		ready = true;
 	}
 	enum XBEE_ID {
@@ -223,6 +223,7 @@ private:
 
 	//Returns an ID of current xbee according to its Serial number
 	void get_ID(void){
+		bool success = false;
 		uint8_t slCmd[] = { 'S', 'L' };
 		AtCommandRequest atRequest = AtCommandRequest(slCmd);
 		AtCommandResponse atResponse = AtCommandResponse();
@@ -248,24 +249,29 @@ private:
 
 						if (strcmp(SL_response, SL_boat1) == 0){
 							ID_ = boat1;
+							success = true;
 						}
 						else if (strcmp(SL_response, SL_boat2) == 0){
 							ID_ = boat2;
 							Serial.print(SL_response);
 							Serial.println("");
+							success = true;
 						}
 						else if (strcmp(SL_response, SL_boat3) == 0){
 							ID_ = boat3;
 							Serial.print(SL_response);
 							Serial.println("");
+							success = true;
 						}
 						else if (strcmp(SL_response, SL_boat4) == 0){
 							ID_ = boat4;
+							success = true;
 						}
 						else if (strcmp(SL_response, SL_coordinator) == 0){
 							ID_ = coordinator;
 							Serial.print(SL_response);
 							Serial.println("");
+							success = true;
 						}
 						else
 							Serial.println("not able to set correct ID check SL");
@@ -282,6 +288,9 @@ private:
 		}
 		else {
 			Serial.print("No response from radio");// at command failed
+		}
+		if (!success){
+			ID_ = THIS_BOAT;
 		}
 	}
 };
