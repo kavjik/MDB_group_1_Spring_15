@@ -302,6 +302,7 @@ void wireless_maintain_if_boat_is_valid_thread(void){
 			global.other_boats[i].is_valid_boat = false;
 		}
 	}
+	delay(500);
 }
 
 

@@ -102,10 +102,11 @@ public:
 		int minimum_distance_to_other_boat = COLLISION_AVOIDANCE_OUTER_LIMIT;
 		for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++)
 		{
-
-			if (global.gps_data.location.distance_to(global.other_boats[i]) < minimum_distance_to_other_boat) {
-				minimum_distance_to_other_boat = global.gps_data.location.distance_to(global.other_boats[i]);
-				do_avoidance = i;
+			if (global.other_boats[i].is_valid_boat){
+				if (global.gps_data.location.distance_to(global.other_boats[i]) < minimum_distance_to_other_boat) {
+					minimum_distance_to_other_boat = global.gps_data.location.distance_to(global.other_boats[i]);
+					do_avoidance = i;
+				}
 			}
 		}
 
