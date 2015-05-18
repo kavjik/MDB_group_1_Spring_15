@@ -10,6 +10,7 @@ public:
 	float speed;
 	bool is_valid_boat = false;
 	float bearing = 0; //optional bearing, used for tracking the other boats
+	long int timestamp;
 	float distance_to(Location target_location){
 		if (target_location.latitude == this->latitude && target_location.longtitude == this->longtitude) return(0);
 

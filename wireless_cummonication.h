@@ -10,7 +10,7 @@
 #define BOAT_3_ADDR			0x0013A200,0x40B48973
 #define BOAT_4_ADDR			0x0013A200,0x40BD3A3F
 
-#define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	
+#define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
 class wireless_communication_class
 {
@@ -52,8 +52,8 @@ public:
 	}DATA_;
 
 	void send_info(double latitude, double longitude, float bearing, float speed, int count){
-		//outData.ID = ID_;	
-		outData.ID = boat2;
+		outData.ID = ID_;
+		//outData.ID = boat2;
 		outData.latitude = latitude;
 		outData.longitude = longitude;
 		outData.bearing = bearing;
@@ -61,39 +61,39 @@ public:
 		outData.waypoints_count = global.waypoints.count();
 		outData.checksum = 0;
 
-		uint8_t pay_load[sizeof(outData)];
+		uint8_t pay_load[sizeof(DATA_)];
 		memcpy(pay_load, &outData, sizeof(DATA_));					//Convert DATA_ to uint8
 
-		for (int i = 0; i < 27; i++){ //Hard coded for now, could be changed to sizeof(DATA_)
+		for (int i = 0; i < sizeof(DATA_) - 1; i++){
 			outData.checksum += ~(uint8_t)(pay_load[i]);
-			
 		}
-		pay_load[27] = outData.checksum;
+		pay_load[sizeof(DATA_) - 1] = outData.checksum;
 
-
-		addr64 = XBeeAddress64(BOAT_1_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
-		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
-		xbee.send(zbTx);
-
-
-		//addr64 = XBeeAddress64(BOAT_2_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
-		//zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
-		//xbee.send(zbTx);
-
-
-		addr64 = XBeeAddress64(BOAT_3_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
-		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
-		xbee.send(zbTx);
-
-		addr64 = XBeeAddress64(BOAT_4_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
-		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
-		xbee.send(zbTx);
-
-
-		addr64 = XBeeAddress64(COORDINATOR_ADDR);					//*********** Set Address of receiver ( BOAT_1_ADDR	BOAT_2_ADDR	COORDINATOR_ADDR	...)
-		zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
-		xbee.send(zbTx);
-
+		if (ID_ != boat1){
+			//addr64 = XBeeAddress64(BOAT_1_ADDR);						//*********** Set Address of receiver
+			//zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+			//xbee.send(zbTx);
+		}
+		if (ID_ != boat2){
+			//addr64 = XBeeAddress64(BOAT_2_ADDR);					
+			//zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+			//xbee.send(zbTx);
+		}
+		if (ID_ != boat3){
+			addr64 = XBeeAddress64(BOAT_3_ADDR);
+			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+			xbee.send(zbTx);
+		}
+		if (ID_ != boat4){
+			//addr64 = XBeeAddress64(BOAT_4_ADDR);					
+			//zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+			//xbee.send(zbTx);
+		}
+		if (ID_ != coordinator){										//for testing purposes... coordinator(ground station) should not be sending anything
+			addr64 = XBeeAddress64(COORDINATOR_ADDR);
+			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
+			xbee.send(zbTx);
+		}
 	}
 	void get_info(void){
 		xbee.readPacket();
@@ -104,17 +104,17 @@ public:
 				xbee.getResponse().getZBRxResponse(rx);// now fill our zb rx class
 			}
 			//inData = {};//clear inData package
-			memcpy(&inData, rx.getData(), sizeof(DATA_));				//Convert uint8 to DATA_
-
 			uint8_t check = 0;
-			uint8_t pay_load2[sizeof(outData)];
-			memcpy(pay_load2, &inData, sizeof(DATA_));
+			uint8_t pay_load2[sizeof(DATA_)];
+			memcpy(pay_load2, rx.getData(), sizeof(DATA_));				//Convert uint8 to DATA_
 
-			for (int i = 0; i < 27; i++){ //Hard coded for now, could be changed to sizeof(DATA_) -1
+			memcpy(&inData, pay_load2, sizeof(DATA_));
+
+			for (int i = 0; i < sizeof(DATA_) - 1; i++){ //Hard coded for now, could be changed to sizeof(DATA_) -1
 				check += ~(uint8_t)(pay_load2[i]);
 			}
 
-			if (check = pay_load2[27]) {
+			if (check == pay_load2[sizeof(DATA_) - 1]) {
 
 				Location target;
 				switch (inData.command)
@@ -148,7 +148,8 @@ public:
 					Serial.println(inData.bearing, 7);
 					Serial.println(inData.speed, 7);
 					Serial.println(inData.waypoints_count);
-					Serial.println(inData.checksum);
+					Serial.println(check);
+					Serial.println(pay_load2[sizeof(DATA_) - 1]);
 					Serial.print('\r');
 					Serial.print('\n');
 
@@ -164,7 +165,8 @@ public:
 					Serial.println(inData.bearing, 7);
 					Serial.println(inData.speed, 7);
 					Serial.println(inData.waypoints_count);
-					Serial.println(inData.checksum);
+					Serial.println(check);
+					Serial.println(pay_load2[sizeof(DATA_) - 1]);
 					Serial.print('\r');
 					Serial.print('\n');
 				}
@@ -209,6 +211,7 @@ private:
 		global.other_boats[inData.ID].longtitude = inData.longitude;
 		global.other_boats[inData.ID].speed = inData.speed;
 		global.other_boats[inData.ID].is_valid_boat = true;
+		global.other_boats[inData.ID].timestamp = millis();
 	}
 
 	//Returns an ID of current xbee according to its Serial number
@@ -277,7 +280,7 @@ void wireless_cummonication(){
 	while (1)
 	{
 		//wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed, global.waypoints.count());
-		wireless_communication_object.send_info(22.3333333, -88.4444444, 33.55, 23.66, 3);
+		wireless_communication_object.send_info(22.3333333, -77.4444444, 33.55, 23.66, 3);
 		delay(1000);
 
 	}
@@ -291,6 +294,14 @@ void wireless_recieve_thread(){
 
 	}
 	yield();
+}
+#define WAIT_TIME_BEFORE_OTHER_BOAT_IS_INVALID 5000
+void wireless_maintain_if_boat_is_valid_thread(void){
+	for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++){
+		if (global.other_boats[i].timestamp < (millis() - WAIT_TIME_BEFORE_OTHER_BOAT_IS_INVALID)) {
+			global.other_boats[i].is_valid_boat = false;
+		}
+	}
 }
 
 

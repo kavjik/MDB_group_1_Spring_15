@@ -96,6 +96,7 @@ void setup() {
 		Scheduler.startLoop(path_finding);
 		Scheduler.startLoop(gps_tracking);
 		Scheduler.startLoop(computer_input_handler);
+		Scheduler.startLoop(wireless_maintain_if_boat_is_valid_thread);
 		//Scheduler.startLoop(benchmark_loop);
 	}
 
