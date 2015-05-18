@@ -15,15 +15,18 @@
 class wireless_communication_class
 {
 public:
+	bool ready = false;
 	wireless_communication_class(){}
 	void init(void){
+		ready = false;
 		Serial2.begin(9600);
 		xbee.setSerial(Serial2);
 		xbee.begin(Serial2);
 		//Startup delay to wait for XBee radio to initialize.
 		// you may need to increase this value if you are not getting a response
-		delay(2000);
+		delay(5000);
 		get_ID();
+		ready = true;
 	}
 	enum XBEE_ID {
 		boat1,
@@ -190,11 +193,11 @@ public:
 	void turn_compass_calibration_off(void){
 		global.toggle_compass_calibration = false;
 	}
-
+	XBEE_ID ID_;
 private:
 	DATA_ outData;
 	DATA_ inData;
-	XBEE_ID ID_;
+	
 
 	XBee xbee = XBee();
 	uint8_t payload[80] = {};// = { 'h', 'e', 'y' };
@@ -264,7 +267,14 @@ private:
 						else
 							Serial.println("not able to set correct ID check SL");
 					}
+					Serial.println(ID_);
 				}
+				else {
+					Serial.println("atResponse.isOk() fail");
+				}
+			}
+			else {
+				Serial.println("Get AP_ID incorrect");
 			}
 		}
 		else {
@@ -282,13 +292,17 @@ void wireless_cummonication(){
 	{
 		//wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed, global.waypoints.count());
 		wireless_communication_object.send_info(22.3333333, -77.4444444, 33.55, 23.66, 3);
-		delay(1000);
+		delay(350);
 
 	}
 	yield();
 }
 void wireless_recieve_thread(){
-	wireless_communication_object.init();
+	delay(500);
+	while (!wireless_communication_object.ready){
+		delay(100);
+	}
+	//wireless_communication_object.init();
 	while (1){
 		wireless_communication_object.get_info();
 		delay(100);
@@ -303,7 +317,8 @@ void wireless_maintain_if_boat_is_valid_thread(void){
 			global.other_boats[i].is_valid_boat = false;
 		}
 	}
-	delay(500);
+	delay(1000);
+	Serial.println(wireless_communication_object.ID_);
 }
 
 
