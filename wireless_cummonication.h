@@ -211,6 +211,7 @@ private:
 		global.other_boats[inData.ID].longtitude = inData.longitude;
 		global.other_boats[inData.ID].speed = inData.speed;
 		global.other_boats[inData.ID].is_valid_boat = true;
+		/*if (global.debug_handler.wireless_communication_debug)*/ Serial.println(millis() - global.other_boats[inData.ID].timestamp);
 		global.other_boats[inData.ID].timestamp = millis();
 	}
 
