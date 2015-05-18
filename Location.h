@@ -5,8 +5,8 @@ class Location { // a location consist of a longtitude and a lattitude, optional
 	//this class can also give the distance and bearing between two points.
 public:
 	Location() : latitude(65.55), longtitude(11.55), is_valid_boat(false) {} //filled with dummy data
-	float latitude = 0; //doubles to avoid any loss of precision
-	float longtitude = 0;
+	double latitude = 0; //doubles to avoid any loss of precision
+	double longtitude = 0;
 	float speed;
 	bool is_valid_boat = false;
 	float bearing = 0; //optional bearing, used for tracking the other boats

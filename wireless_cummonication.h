@@ -12,6 +12,8 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
+#define THIS_BOAT boat3
+
 class wireless_communication_class
 {
 public:
@@ -25,7 +27,8 @@ public:
 		//Startup delay to wait for XBee radio to initialize.
 		// you may need to increase this value if you are not getting a response
 		delay(5000);
-		get_ID();
+		//get_ID();
+		ID_ = THIS_BOAT;
 		ready = true;
 	}
 	enum XBEE_ID {
