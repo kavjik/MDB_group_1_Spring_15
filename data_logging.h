@@ -154,12 +154,8 @@ public:
 	} //initialize to dummy values, they are overwritten when real world data makes sense
 	File dataFile;
 	void loop(void) {
-		char in_function_filename[] = "simulate.csv";
-		for (int i = 0; i < 8; i++){
-			in_function_filename[i] = filename[i]; //very ugly work around
-		}
-		dataFile = SD.open(in_function_filename, FILE_WRITE);
-		if (dataFile) {
+
+
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
 			write_to_SD_card(String(millis())); //timestamp in ms
@@ -197,7 +193,25 @@ public:
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
 			write_to_SD_card("\n");
 
-			dataFile.close();
+			
+		
+
+
+	}
+
+	void write_to_SD_card(String Input){
+		char in_function_filename[] = "simulate.csv";
+		for (int i = 0; i < 8; i++){
+			in_function_filename[i] = filename[i]; //very ugly work around
+		}
+		dataFile = SD.open(in_function_filename, FILE_WRITE);
+		if (dataFile) {
+			Input = ";" + Input;
+
+			// if the file is available, write to it:
+
+			dataFile.print(Input);
+			//dataFile.println(global.data_from_path_to_log);
 		}
 		else {
 			if (global.debug_handler.data_logging_debug) {
@@ -205,16 +219,7 @@ public:
 				Serial.println(in_function_filename);
 			}
 		}
-
-	}
-
-	void write_to_SD_card(String Input){
-		Input = ";" + Input;
-
-		// if the file is available, write to it:
-		
-		dataFile.print(Input);
-		//dataFile.println(global.data_from_path_to_log);
+		dataFile.close();
 
 			
 		// print to the SerialUSB port too:
@@ -223,7 +228,7 @@ public:
 			//Serial.println(global.data_from_path_to_log);
 		}
 		
-		// if the file isn't open, pop up an error:
+		yield();
 		
 	}
 

@@ -12,7 +12,7 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
-#define THIS_BOAT boat2
+#define THIS_BOAT boat4
 
 class wireless_communication_class
 {
@@ -129,20 +129,25 @@ public:
 					update_other_boats_location(inData);
 					break;
 				case add_waypoint_enum:
+					Serial.println("got add waypoint command");
 					target.latitude = inData.latitude;
 					target.longtitude = inData.longitude;
 					add_waypoint(target);
+
 					break;
 				case force_waypoint_enum:
+					Serial.println("got force waypoint command");
 					target.latitude = inData.latitude;
 					target.longtitude = inData.longitude;
 					force_waypoint(target);
 					break;
 				case turn_compass_calibration_on_enum:
 					turn_compass_calibration_on();
+					Serial.println("remote turn calibration on");
 					break;
 				case turn_compass_calibration_off_enum:
 					turn_compass_calibration_off();
+					Serial.println("remote turn calibration off");
 					break;
 				default:
 					break;
@@ -180,8 +185,17 @@ public:
 		}
 		else if (global.debug_handler.wireless_communication_debug) Serial.println("didnt get anything");
 	}
+	Location last_waypoint;
 	void add_waypoint(Location target){
-		global.waypoints.enqueue(target);
+		if (last_waypoint.latitude == target.latitude && last_waypoint.longtitude == target.longtitude)
+		{
+			//here we do nothing
+		}
+		else {
+			global.waypoints.enqueue(target);
+			last_waypoint = target;
+			Serial.println("got waypoint");
+		}
 	}
 	void force_waypoint(Location target){
 		while (global.waypoints.count() > 0) {
@@ -217,7 +231,7 @@ private:
 		global.other_boats[inData.ID].longtitude = inData.longitude;
 		global.other_boats[inData.ID].speed = inData.speed;
 		global.other_boats[inData.ID].is_valid_boat = true;
-		/*if (global.debug_handler.wireless_communication_debug)*/ Serial.println(millis() - global.other_boats[inData.ID].timestamp);
+		if (global.debug_handler.wireless_communication_debug) Serial.println(millis() - global.other_boats[inData.ID].timestamp);
 		global.other_boats[inData.ID].timestamp = millis();
 	}
 

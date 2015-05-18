@@ -7,6 +7,11 @@ class Location_queue
 {
 public:
 	Location_queue(){ queue_start = 0; queue_end = 0; actual_size = 0; }
+	Location get_last_element(void){
+		int index = queue_end--;
+		if (queue_end < 0) queue_end = QUEUE_SIZE - 1;
+		return(elements[index]);
+	}
 	void enqueue(Location element)
 	{
 		elements[queue_end] = element;
