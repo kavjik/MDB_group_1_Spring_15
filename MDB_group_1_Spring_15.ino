@@ -1,6 +1,6 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE true
-#define SIMULATOR_MODE_MOVE_AUTOMATICALLY true //only means something if simulator mode is on
+#define SIMULATOR_MODE false
+#define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
 #include <Scheduler.h>

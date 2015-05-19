@@ -344,7 +344,7 @@ void wireless_maintain_if_boat_is_valid_thread(void){
 		}
 	}
 	delay(1000);
-	Serial.println(wireless_communication_object.ID_);
+	//Serial.println(wireless_communication_object.ID_);
 }
 
 

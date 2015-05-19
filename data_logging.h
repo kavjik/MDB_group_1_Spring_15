@@ -64,7 +64,7 @@ public:
 		//it takes the form "yy.mm.dd.hh.mm.ss"
 		//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
 		delay(50); //wait til everything is set up
-		while (!global.gps_data.fix && global.GPS_module.year == 80 && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
+		while (!global.gps_data.fix && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
 			if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
 			if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
 			delay(100); //wait till gps fix, that way we have the current time
@@ -97,12 +97,12 @@ public:
 		filename[10] = 's';
 		filename[11] = 'v';
 
-		char in_function_filename[] = "simulate.csv";
-		for (int i = 0; i < 8; i++){
-			in_function_filename[i] = filename[i]; //very ugly work around
-		}
-		dataFile = SD.open(in_function_filename, FILE_WRITE);
-		if (dataFile) {
+		//char in_function_filename[] = "simulate.csv";
+		//for (int i = 0; i < 8; i++){
+		//	in_function_filename[i] = filename[i]; //very ugly work around
+		//}
+		//dataFile = SD.open(in_function_filename, FILE_WRITE);
+		//if (dataFile) {
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
 			write_to_SD_card("millis())"); //timestamp in ms
@@ -139,7 +139,7 @@ public:
 			write_to_SD_card("guidance_object.collision_avoidance_active");
 			write_to_SD_card("guidance_object.collision_avoidance_did_evasion");
 			write_to_SD_card("\n");
-
+			/*
 			dataFile.close();
 		}
 		else {
@@ -148,14 +148,14 @@ public:
 				Serial.println(in_function_filename);
 			}
 		}
-
+		*/
 	
 	
 	} //initialize to dummy values, they are overwritten when real world data makes sense
 	File dataFile;
 	void loop(void) {
 
-
+		
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
 			write_to_SD_card(String(millis())); //timestamp in ms
@@ -200,33 +200,43 @@ public:
 	}
 
 	void write_to_SD_card(String Input){
-		char in_function_filename[] = "simulate.csv";
-		for (int i = 0; i < 8; i++){
-			in_function_filename[i] = filename[i]; //very ugly work around
-		}
-		dataFile = SD.open(in_function_filename, FILE_WRITE);
-		if (dataFile) {
-			Input = ";" + Input;
+		static int i = 0;
+		static String write_to_file = "";
+		write_to_file += Input;
+		write_to_file += ";";
 
-			// if the file is available, write to it:
-
-			dataFile.print(Input);
-			//dataFile.println(global.data_from_path_to_log);
-		}
-		else {
-			if (global.debug_handler.data_logging_debug) {
-				Serial.println("error opening datalog.txt");
-				Serial.println(in_function_filename);
+		if (i == 5){
+			char in_function_filename[] = "simulate.csv";
+			for (int i = 0; i < 8; i++){
+				in_function_filename[i] = filename[i]; //very ugly work around
 			}
-		}
-		dataFile.close();
+			dataFile = SD.open(in_function_filename, FILE_WRITE);
+			if (dataFile) {
 
-			
-		// print to the SerialUSB port too:
-		if (global.debug_handler.data_logging_debug){
-			Serial.print(Input);
-			//Serial.println(global.data_from_path_to_log);
+				// if the file is available, write to it:
+
+				dataFile.print(write_to_file);
+			}
+			else {
+				if (global.debug_handler.data_logging_debug) {
+					Serial.println("error opening datalog.txt");
+					Serial.println(in_function_filename);
+				}
+			}
+			dataFile.close();
+			//dataFile.println(global.data_from_path_to_log);
+
+
+
+			// print to the SerialUSB port too:
+			if (global.debug_handler.data_logging_debug){
+				Serial.print(write_to_file);
+				//Serial.println(global.data_from_path_to_log);
+			}
+			i = 0;
+			write_to_file = "";
 		}
+		i++;
 		
 		yield();
 		
@@ -245,7 +255,7 @@ void Data_logging() {
 	Sd_card_data_logging data_logger;
 	while (1) {
 		data_logger.loop();
-		delay(30);
+		yield();
 	}
 
 
