@@ -158,7 +158,7 @@ public:
 		
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
-			write_to_SD_card(String(millis())); //timestamp in ms
+		    write_to_SD_card(";"+ String(millis())); //timestamp in ms
 			write_to_SD_card(String(global.GPS_module.latitude, 10));
 			write_to_SD_card(String(global.GPS_module.longitude, 10));
 			write_to_SD_card(String(global.gps_data.fix));
