@@ -129,25 +129,25 @@ public:
 					update_other_boats_location(inData);
 					break;
 				case add_waypoint_enum:
-					Serial.println("got add waypoint command");
+					if (global.debug_handler.remote_commands_wireless_communication_debug) Serial.println("got add waypoint command");
 					target.latitude = inData.latitude;
 					target.longtitude = inData.longitude;
 					add_waypoint(target);
 
 					break;
 				case force_waypoint_enum:
-					Serial.println("got force waypoint command");
+					if (global.debug_handler.remote_commands_wireless_communication_debug) Serial.println("got force waypoint command");
 					target.latitude = inData.latitude;
 					target.longtitude = inData.longitude;
 					force_waypoint(target);
 					break;
 				case turn_compass_calibration_on_enum:
 					turn_compass_calibration_on();
-					Serial.println("remote turn calibration on");
+					if (global.debug_handler.remote_commands_wireless_communication_debug) Serial.println("remote turn calibration on");
 					break;
 				case turn_compass_calibration_off_enum:
 					turn_compass_calibration_off();
-					Serial.println("remote turn calibration off");
+					if (global.debug_handler.remote_commands_wireless_communication_debug) Serial.println("remote turn calibration off");
 					break;
 				default:
 					break;
@@ -194,7 +194,7 @@ public:
 		else {
 			global.waypoints.enqueue(target);
 			last_waypoint = target;
-			Serial.println("got waypoint");
+			if (global.debug_handler.remote_commands_wireless_communication_debug) Serial.println("got waypoint");
 		}
 	}
 	void force_waypoint(Location target){
