@@ -9,12 +9,18 @@
 // test comment
 
 //it would make more sense to have this as a functino that is called every time we have a new gps coordinate, but when i tried that, nothing worked, so i do it this way instead. 
+bool is_gps_module_longtitude_valid(void){ //this is a very ugly fix to a very ugly problem
+	if (global.GPS_module.longitude > 10.5) return false;
+	if (global.GPS_module.longitude < 9.1) return false;
+
+	static int counter = 0;
+
+}
 void gps_tracking() {
 
 	global.gps_data.fix = false; //set it false just to be sure, if had some problems with it being true when not meant to.
 	int fix_counter = 0;
-	double previous_longtitudes[5];
-	int counter = 0;
+
 
 	delay(1000); //get a chance for it to start
 
@@ -59,12 +65,6 @@ void gps_tracking() {
 	
 }
 
-bool is_gps_module_longtitude_valid(void){ //this is a very ugly fix to a very ugly problem
-	if (global.GPS_module.longitude > 10.5) return false;
-	if (global.GPS_module.longitude < 9.1) return false;
-	
-	static int counter = 0;
 
-}
 
 #endif
