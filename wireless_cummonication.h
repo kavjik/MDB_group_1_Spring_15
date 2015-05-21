@@ -99,6 +99,7 @@ public:
 			addr64 = XBeeAddress64(COORDINATOR_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
+			Serial.print(".");
 		}
 	}
 	void get_info(void){
@@ -305,6 +306,7 @@ private:
 		}
 		if (!success){
 			ID_ = THIS_BOAT;
+			Serial.print(ID_);
 		}
 	}
 };
@@ -316,8 +318,8 @@ void wireless_cummonication(){
 	wireless_communication_object.init();
 	while (1)
 	{
-		//wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.speed, global.waypoints.count());
-		wireless_communication_object.send_info(22.3333333, -77.4444444, 33.55, 23.66, 3);
+		wireless_communication_object.send_info(global.gps_data.location.latitude, global.gps_data.location.longtitude, global.bearing_container.compass_bearing, global.gps_data.location.speed, global.waypoints.count());
+		//wireless_communication_object.send_info(22.3333333, -77.4444444, 33.55, 23.66, 3);
 		delay(350);
 
 	}

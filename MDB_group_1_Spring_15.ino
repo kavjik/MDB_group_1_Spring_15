@@ -3,7 +3,7 @@
 #define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
-#include <Scheduler.h>
+#include "Scheduler.h"
 #include <SPI.h>
 #include <SD.h>
 #include <Wire.h>
@@ -33,7 +33,16 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-	
+	//setup a bit north of alsion
+	target.latitude = 54.91504444; //first point in water
+	target.longtitude = 9.77412500;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91525833; //south of the first point
+	target.longtitude = 9.77349167;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91504444; //back to the first point
+	target.longtitude = 9.77340278;
+	/*
 	target.latitude = 54.91382778; //first point in water
 	target.longtitude = 9.779919444;
 	global.waypoints.enqueue(target);
@@ -43,7 +52,7 @@ void setup() {
 	target.latitude = 54.91382778; //back to the first point
 	target.longtitude = 9.779919444;
 	 // setup to outside alsion
-	
+	*/
 	/*
 	target.latitude = 54.896841667; //¨setup at beach
 	target.longtitude = 9.799458333;
