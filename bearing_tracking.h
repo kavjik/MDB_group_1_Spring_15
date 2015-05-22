@@ -320,6 +320,7 @@ void Bearing_tracking() {
 
 	Bearing_thread_class bearing_thread_object;
 	int i = 0;
+	delay(200);
 	while (1) {
 		bearing_thread_object.update_data();
 		delay(35);

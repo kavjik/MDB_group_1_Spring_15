@@ -10,21 +10,28 @@
 
 
 bool is_gps_module_longtitude_valid(void){ //this is a very ugly fix to a very ugly problem
-	if (global.GPS_module.longitude < 1050) return false;
-	if (global.GPS_module.longitude > 910) return false;
-
-	static int counter = 0;
+	global.longtitude_fix_triggered = true;
+	if (global.GPS_module.longitude > 1050) return false;
+	if (global.GPS_module.longitude < 910) return false;
+	global.longtitude_fix_triggered = false;
+	return(true);
 
 }
 bool is_gps_module_latittude_valid(void){ //this is a very ugly fix to a very ugly problem
-	if (global.GPS_module.latitude < 5800) return false;
-	if (global.GPS_module.latitude > 5400) return false;
+	global.lattitude_fix_triggered = true;
+	if (global.GPS_module.latitude > 5800) return false;
+	if (global.GPS_module.latitude < 5400) return false;
+	global.lattitude_fix_triggered = false;
+	return(true);
 
-	static int counter = 0;
+	
 
 }
+
 //it would make more sense to have this as a functino that is called every time we have a new gps coordinate, but when i tried that, nothing worked, so i do it this way instead. 
 void gps_tracking() {
+	global.longtitude_fix_triggered = false;
+	global.lattitude_fix_triggered = false;
 
 	global.gps_data.fix = false; //set it false just to be sure, if had some problems with it being true when not meant to.
 	int fix_counter = 0;
@@ -53,6 +60,10 @@ void gps_tracking() {
 
 		if (is_gps_module_longtitude_valid()) global.gps_data.location.longtitude = floor(global.GPS_module.longitude / 100) + (global.GPS_module.longitude / 100 - floor(global.GPS_module.longitude / 100)) * 100 / 60;
 		//NO NO NO I DONT WANT TO DO THIS, but the data i get for the longtitude is often invallid, i feel i dont have a choice.
+
+		if (global.longtitude_fix_triggered) Serial.println("longtitude_fix_triggered");
+		if (global.lattitude_fix_triggered) Serial.println("lattitude_fix_triggered");
+
 		global.gps_data.location.bearing = global.GPS_module.angle;
 		global.gps_data.location.speed = global.GPS_module.speed * 0.51444; //constant to convert from knots to m/s
 

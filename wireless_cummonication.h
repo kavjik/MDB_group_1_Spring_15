@@ -12,7 +12,7 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
-#define THIS_BOAT boat4 //used if the get_ID fails
+#define THIS_BOAT boat2 //used if the get_ID fails
 
 class wireless_communication_class
 {
@@ -314,6 +314,7 @@ private:
 wireless_communication_class wireless_communication_object;
 
 void wireless_cummonication(){
+	delay(500);
 	wireless_communication_object.init();
 	while (1)
 	{

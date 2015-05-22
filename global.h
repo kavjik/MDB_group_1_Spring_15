@@ -46,6 +46,9 @@ public:
 	float global_wind_bearing;
 	float Rudder_Desired_Angle;
 	bool force_load_waypoint_in_guidance;
+
+	bool longtitude_fix_triggered = false;
+	bool lattitude_fix_triggered = false;
 	
 };
 

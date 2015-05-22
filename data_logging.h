@@ -105,7 +105,7 @@ public:
 		//if (dataFile) {
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
-			write_to_SD_card("millis())"); //timestamp in ms
+			write_to_SD_card(";millis())"); //timestamp in ms
 			write_to_SD_card("global.GPS_module.latitude, 10");
 			write_to_SD_card("global.GPS_module.longitude, 10");
 			write_to_SD_card("global.gps_data.fix");
@@ -138,6 +138,8 @@ public:
 			write_to_SD_card("guidance_object.x");
 			write_to_SD_card("guidance_object.collision_avoidance_active");
 			write_to_SD_card("guidance_object.collision_avoidance_did_evasion");
+			write_to_SD_card("longtitude_fix_triggered");
+			write_to_SD_card("lattitude_fix_triggered");
 			write_to_SD_card("\n");
 			/*
 			dataFile.close();
@@ -158,7 +160,7 @@ public:
 		
 			// make a string for assembling the data to log:
 			//Then make the string containing all the data
-		    write_to_SD_card(";"+ String(millis())); //timestamp in ms
+		    write_to_SD_card(String(millis())); //timestamp in ms
 			write_to_SD_card(String(global.GPS_module.latitude, 10));
 			write_to_SD_card(String(global.GPS_module.longitude, 10));
 			write_to_SD_card(String(global.gps_data.fix));
@@ -191,6 +193,8 @@ public:
 			write_to_SD_card(String(guidance_object.x));
 			write_to_SD_card(String(guidance_object.collision_avoidance_active));
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
+			write_to_SD_card(String(global.longtitude_fix_triggered));
+			write_to_SD_card(String(global.lattitude_fix_triggered));
 			write_to_SD_card("\n");
 
 			delay(50);
@@ -251,7 +255,9 @@ public:
 
 
 void Data_logging() {
-	
+
+
+	delay(2000); //wait till everything has been setup
 	Sd_card_data_logging data_logger;
 	while (1) {
 		data_logger.loop();
