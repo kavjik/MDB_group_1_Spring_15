@@ -10,15 +10,15 @@
 
 
 bool is_gps_module_longtitude_valid(void){ //this is a very ugly fix to a very ugly problem
-	if (global.GPS_module.longitude < 10.5) return false;
-	if (global.GPS_module.longitude > 9.1) return false;
+	if (global.GPS_module.longitude < 1050) return false;
+	if (global.GPS_module.longitude > 910) return false;
 
 	static int counter = 0;
 
 }
 bool is_gps_module_latittude_valid(void){ //this is a very ugly fix to a very ugly problem
-	if (global.GPS_module.latitude < 58) return false;
-	if (global.GPS_module.latitude > 54) return false;
+	if (global.GPS_module.latitude < 5800) return false;
+	if (global.GPS_module.latitude > 5400) return false;
 
 	static int counter = 0;
 
