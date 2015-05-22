@@ -322,7 +322,7 @@ void Bearing_tracking() {
 	int i = 0;
 	while (1) {
 		bearing_thread_object.update_data();
-		delay(25);
+		delay(35);
 		if (i == 15) {
 			bearing_thread_object.initial_pitch = global.bearing_container.pitch;
 			bearing_thread_object.initial_roll = global.bearing_container.roll;

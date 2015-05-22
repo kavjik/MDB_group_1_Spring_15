@@ -193,7 +193,7 @@ public:
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
 			write_to_SD_card("\n");
 
-			
+			delay(50);
 		
 
 
@@ -238,7 +238,7 @@ public:
 		}
 		i++;
 		
-		yield();
+		delay(5);
 		
 	}
 

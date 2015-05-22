@@ -34,7 +34,7 @@ public:
 			Location target;
 			target.latitude = -200;
 			target.longtitude = -200;
-			return target; //meant to be giberish
+			return target; //meant to be giberish, we dont want this to be a blocking call
 		}
 
 	}

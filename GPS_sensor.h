@@ -139,12 +139,12 @@ void useInterrupt(boolean); // Func prototype keeps Arduino 0023 happy
 					Serial.print("Satellites: "); Serial.println((int)global.GPS_module.satellites);
 				}
 			}
-			yield();
+			delay(5);
 		}
-		yield();
+		delay(5);
 	}
 
-	yield();
+	delay(5);
 }
 
 

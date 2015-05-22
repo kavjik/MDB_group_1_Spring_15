@@ -8,8 +8,8 @@
 #define rudder_servo_pin 8
 #define sail_servo_pin 9
 #define PATH_FINDING_SIMULATOR_MODE_WAIT_TIME 750
-#define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 50
-#define PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME 100
+#define PATH_FINDING_DEFAULT_MODE_WAIT_TIME 100
+#define PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME 500
 
 Navigation_guidance guidance_object; //cant be in global, because of circular references
 
