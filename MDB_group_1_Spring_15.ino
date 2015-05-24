@@ -34,6 +34,7 @@ void setup() {
 
 	Location target;
 	//setup a bit north of alsion
+	/*
 	target.latitude = 54.91504444; //first point in water
 	target.longtitude = 9.77412500;
 	global.waypoints.enqueue(target);
@@ -42,6 +43,7 @@ void setup() {
 	global.waypoints.enqueue(target);
 	target.latitude = 54.91504444; //back to the first point
 	target.longtitude = 9.77340278;
+	*/
 	/*
 	target.latitude = 54.91382778; //first point in water
 	target.longtitude = 9.779919444;
@@ -53,7 +55,7 @@ void setup() {
 	target.longtitude = 9.779919444;
 	 // setup to outside alsion
 	*/
-	/*
+	
 	target.latitude = 54.896841667; //¨setup at beach
 	target.longtitude = 9.799458333;
 	global.waypoints.enqueue(target); //first target 
@@ -69,7 +71,7 @@ void setup() {
 	target.latitude = 54.896841667; 
 	target.longtitude = 9.799458333;
 	global.waypoints.enqueue(target); //first target 
-	*/
+	
 
 	if (SIMULATOR_MODE) {
 		Scheduler.startLoop(Data_logging);
