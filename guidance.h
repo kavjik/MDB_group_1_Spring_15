@@ -68,6 +68,7 @@ public:
 #define COLLISION_AVOIDANCE_INNER_LIMIT 10
 #define COLLISION_AVOIDANCE_OUTER_LIMIT 15
 #define MAX_ALLOWED_ROLL_BEFORE_CORRECTION 30
+#define JIBING_TURNING_VALUE 40
 
 
 	
@@ -85,11 +86,12 @@ public:
 		sail_control();
 		
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
-			global.global_wind_bearing = 0;
+			global.global_wind_bearing = 300;
 
 			global.bearing_container.compass_bearing = global.desired_heading; //turn to the way we want to go
 			global.wind_bearing = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;
 			if (global.wind_bearing > 180) global.wind_bearing -= 360;
+			if (global.wind_bearing < -180) global.wind_bearing += 360;
 			simulator_mode_move_forward(); //move forward
 			//Serial.println(global.wind_bearing);
 		}
@@ -433,6 +435,9 @@ public:
 			Serial.print("imaginary_part_of_complex_from_old_code: ");
 			Serial.print(imaginary_part_of_complex_from_old_code);
 			Serial.println("");
+			Serial.print("global.waypoints.count: ");
+			Serial.print(global.waypoints.count());
+			Serial.println("");
 		}
 
 	}
@@ -512,14 +517,14 @@ public:
 			}
 			break;
 		case jibe_going_from_wind_from_left_to_right:
-			global.desired_heading = int(global.bearing_container.compass_bearing - TACKING_TURNING_VALUE) % 360;
+			global.desired_heading = int(global.bearing_container.compass_bearing - JIBING_TURNING_VALUE) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("jibe_going_from_wind_from_left_to_right");
 			}
 			break;
 		case jibe_going_from_wind_from_right_to_left:
-			global.desired_heading = int(global.bearing_container.compass_bearing + TACKING_TURNING_VALUE) % 360;
+			global.desired_heading = int(global.bearing_container.compass_bearing + JIBING_TURNING_VALUE) % 360;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
 				Serial.println("jibe_going_from_wind_from_right_to_left");

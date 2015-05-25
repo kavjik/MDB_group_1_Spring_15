@@ -70,6 +70,7 @@ public:
 			delay(100); //wait till gps fix, that way we have the current time
 
 		}
+		delay(1000);
 		if (global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
 		
 		if (SIMULATOR_MODE){
@@ -257,7 +258,7 @@ public:
 void Data_logging() {
 
 
-	delay(2000); //wait till everything has been setup
+	delay(1500); //wait till everything has been setup
 	Sd_card_data_logging data_logger;
 	while (1) {
 		data_logger.loop();

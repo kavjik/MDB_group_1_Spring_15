@@ -75,7 +75,7 @@ public:
 		}
 		pay_load[sizeof(DATA_) - 1] = outData.checksum;
 		delay(10);
-		
+		/*
 		if (ID_ != boat1){
 			addr64 = XBeeAddress64(BOAT_1_ADDR);						//*********** Set Address of receiver
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
@@ -95,14 +95,14 @@ public:
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
-		*/
+		
 		delay(10);
 		if (ID_ != boat4){
 			addr64 = XBeeAddress64(BOAT_4_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
-		
+		*/
 		delay(10);
 		if (ID_ != coordinator){										//for testing purposes... coordinator(ground station) should not be sending anything
 			addr64 = XBeeAddress64(COORDINATOR_ADDR);
