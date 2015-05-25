@@ -3,6 +3,15 @@
 #define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
+
+//below are defines that change between boats
+#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT 0
+#define COMPASS_X_MIN -17
+#define COMPASS_X_MAX 175
+#define COMPASS_Y_MIN -46
+#define COMPASS_Y_MAX 129
+#define THIS_BOAT boat4 //used if the get_ID fails
+
 #include "Scheduler.h"
 #include <SPI.h>
 #include <SD.h>

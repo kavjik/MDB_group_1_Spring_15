@@ -12,7 +12,7 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
-#define THIS_BOAT boat4 //used if the get_ID fails
+
 
 class wireless_communication_class
 {
@@ -74,36 +74,47 @@ public:
 			outData.checksum += ~(uint8_t)(pay_load[i]);
 		}
 		pay_load[sizeof(DATA_) - 1] = outData.checksum;
-
+		delay(10);
+		
 		if (ID_ != boat1){
 			addr64 = XBeeAddress64(BOAT_1_ADDR);						//*********** Set Address of receiver
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		delay(10);
+		/*
 		if (ID_ != boat2){
 			addr64 = XBeeAddress64(BOAT_2_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		/*
+		delay(10);
 		if (ID_ != boat3){
 			addr64 = XBeeAddress64(BOAT_3_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		*/
+		delay(10);
 		if (ID_ != boat4){
 			addr64 = XBeeAddress64(BOAT_4_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		
+		delay(10);
 		if (ID_ != coordinator){										//for testing purposes... coordinator(ground station) should not be sending anything
 			addr64 = XBeeAddress64(COORDINATOR_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		delay(10);
 	}
 	void get_info(void){
 		xbee.readPacket();
 		if (xbee.getResponse().isAvailable()) {
+
 			// got something
 			if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
 				// got a zb rx packet
