@@ -24,7 +24,7 @@ void simulator_mode_move_forward(void) {
 	a1 = global.gps_data.location.latitude * PI / 180.0;
 	b1 = global.gps_data.location.longtitude * PI / 180.0;
 	R = 6378.137;
-	d = 2 / 1000.0;
+	d = 0.5 / 1000.0;
 	cb = global.bearing_container.compass_bearing * PI / 180.0;
 
 	a2 = asin(sin(a1)*cos(d / R) + cos(a1)*sin(d / R)*cos(cb));
@@ -192,7 +192,7 @@ void computer_input_handler()
 				break;
 			}
 		}
-		delay(50);
+		delay(100);
 	}
 }
 

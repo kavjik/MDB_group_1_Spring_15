@@ -1,13 +1,9 @@
 #ifndef bearing_h
 #define bearing_h
-#define SAMPLE_SIZE 5
+#define SAMPLE_SIZE 7
 #define NINE_DOF_SENSOR_POWER_PIN 26
-#define WIND_DIRECTION_SAMPLE_SIZE 5
-#define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 20
-#define COMPASS_X_MAX 25
-#define COMPASS_X_MIN -203
-#define COMPASS_Y_MAX 17
-#define COMPASS_Y_MIN -185
+#define WIND_DIRECTION_SAMPLE_SIZE 7
+#define STEPS_BETWEEN_WIND_DIRECTION_SAMPLES 30
 #define DEBUG_LED 31
 
 
@@ -69,15 +65,17 @@ public:
 	}
 
 	void update_data(void){
-		this->update_wind_direction_sensor(); //gives wind direction and global wind direction //TODO change those names
-		this->maintain_tracking_counter();    // for calculating the avarage compass bearing and pitch we have a tracking counter, this always point in the oldest element in the array we use to take an avarage over a range of values
+		
 		this->read_9DOF_sensor();			  //reads the durect data from the 9DOF sensor, this does no calculations on its own
 		this->update_pitch_and_roll();		  //based on the above data, this calculates the pitch and roll of the boat
 		this->update_compass_data();		  //calculates the compass bearing of the boat
+		this->update_wind_direction_sensor(); //gives wind direction and global wind direction //TODO change those names
 		if (global.debug_handler.bearing_tracking_debug && bearing_tracking_counter == 0){ //we only print debug messages if the setting for doing so is on, and we have the extra precausing that we do it corrosponding to the avarage time we sample samples, since otherwise the console would be absolutely spammed with messages. 
 			this->print_debug();
 		}
 		if (global.toggle_compass_calibration) this->do_compass_calibration();
+		this->maintain_tracking_counter();    // for calculating the avarage compass bearing and pitch we have a tracking counter, this always point in the oldest element in the array we use to take an avarage over a range of values
+
 	}
 
 	void read_9DOF_sensor(void){
@@ -88,7 +86,7 @@ public:
 		Bearing_hardware_object.readCompass(COMPASSADDR, &Bearing_hardware_object.compass);
 		Bearing_hardware_object.readGyro(GYROADDR, &Bearing_hardware_object.gyro);
 
-		if ((millis() - timestamp) > 1500) //something went terribly wrong, the sensor is properly disconnected or had some sort of error, lets fix that.
+		if ((millis() - timestamp) > 200) //something went terribly wrong, the sensor is properly disconnected or had some sort of error, lets fix that.
 		{
 			Bearing_hardware_object.return_on_sensor_contact();
 			return; //there is no data, exit the function, we will try again shortly
@@ -119,7 +117,7 @@ public:
 	}
 
 	void update_compass_data(void){
-		compass_x_array[bearing_tracking_counter] = (Bearing_hardware_object.compass.value.x - ((xMin + xMax) / 2.0f)) / ((xMax - xMin) / 200.0f);
+		compass_x_array[bearing_tracking_counter] = (Bearing_hardware_object.compass.value.x - ((xMin + xMax) / 2.0f)) / ((xMax - xMin) / 200.0f); //this calculation normalizes the results so they are on a circle.
 		compass_y_array[bearing_tracking_counter] = (Bearing_hardware_object.compass.value.z - ((yMin + yMax) / 2.0f)) / ((yMax - yMin) / 200.0f); //changed to z temporarely, becuase it actually works, which y dosnt.
 		compass_y_sum = 0;
 		compass_x_sum = 0;
@@ -134,7 +132,7 @@ public:
 		//angle between the measure compass x and y, and the vector (0,100)
 		// see http://www.vitutor.com/geometry/vec/angle_vectors.html
 
-		global.bearing_container.compass_bearing = (180 + ((atan2(compass_y_sum / SAMPLE_SIZE, compass_x_sum / SAMPLE_SIZE)*57.29577f))); //this is based on the vector (x,z) and then converted from radians to degrees. 
+		global.bearing_container.compass_bearing = (180 + ((atan2(compass_y_sum, compass_x_sum)*57.29577f))); //this is based on the vector (x,z) and then converted from radians to degrees. 
 
 
 	}
@@ -153,8 +151,8 @@ public:
 		//first we read the wind sensor:
 		//the full range of it is 2.5V, so we multiply with 360/2.5f TODO improve algorithm.
 		//the below is the instantanious wind direction relative to the boat, the value we actually broadcast to everyone else, is based on an average based on the wind direction relative to the compass
-		wind_direction_relative_to_boat = ((int((((analogRead(A4)-46)/840.0)*360.0)+210))%360)-180; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
-
+		wind_direction_relative_to_boat = ((int((((analogRead(A4)-46)/840.0)*360.0)-WIND_SENSOR_OFFSET_BOAT_DEPENDANT))%360)-180; //numbers here are based on a quick reading of the sensor, and asumes its totally linear in that range, i know its not, but its close
+		//the 210 is a constant for each boat
 		global_wind_bearing = global.bearing_container.compass_bearing + wind_direction_relative_to_boat; //global wind bearing denotes the compass bearing of the wind. might be usefull at some point in time..
 
 		if (wind_direction_bearing_tracking_counter % STEPS_BETWEEN_WIND_DIRECTION_SAMPLES == 0){
@@ -320,10 +318,11 @@ void Bearing_tracking() {
 
 	Bearing_thread_class bearing_thread_object;
 	int i = 0;
+	delay(200);
 	while (1) {
 		bearing_thread_object.update_data();
-		delay(25);
-		if (i == 15) {
+		delay(10);
+		if (i == 15) { //after we are sure we can trust the pitch and roll measurements, we asume that the boat starts in a level position, and go from there
 			bearing_thread_object.initial_pitch = global.bearing_container.pitch;
 			bearing_thread_object.initial_roll = global.bearing_container.roll;
 		}

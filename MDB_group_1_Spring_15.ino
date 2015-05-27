@@ -3,6 +3,15 @@
 #define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
+
+//below are defines that change between boats
+#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (141+114-360)
+#define COMPASS_X_MIN -104
+#define COMPASS_X_MAX 143
+#define COMPASS_Y_MIN -231
+#define COMPASS_Y_MAX -47
+#define THIS_BOAT boat1 //used if the get_ID fails
+
 #include "Scheduler.h"
 #include <SPI.h>
 #include <SD.h>
@@ -34,6 +43,7 @@ void setup() {
 
 	Location target;
 	//setup a bit north of alsion
+	/*
 	target.latitude = 54.91504444; //first point in water
 	target.longtitude = 9.77412500;
 	global.waypoints.enqueue(target);
@@ -42,17 +52,22 @@ void setup() {
 	global.waypoints.enqueue(target);
 	target.latitude = 54.91504444; //back to the first point
 	target.longtitude = 9.77340278;
-	/*
-	target.latitude = 54.91382778; //first point in water
-	target.longtitude = 9.779919444;
-	global.waypoints.enqueue(target);
-	target.latitude = 54.91358889; //south of the first point
-	target.longtitude = 9.780316667;
-	global.waypoints.enqueue(target);
-	target.latitude = 54.91382778; //back to the first point
-	target.longtitude = 9.779919444;
-	 // setup to outside alsion
 	*/
+	
+	target.latitude = 54.91368056; //first point in water
+	target.longtitude = 9.77971667;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91359722; //south of the first point
+	target.longtitude = 9.77990000;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91368056; //back to the first point
+	target.longtitude = 9.77971667;
+	global.waypoints.enqueue(target);
+	target.latitude = 54.91360833; //home
+	target.longtitude = 9.77959722;
+	global.waypoints.enqueue(target);
+	 // setup to outside alsion
+	
 	/*
 	target.latitude = 54.896841667; //¨setup at beach
 	target.longtitude = 9.799458333;
@@ -82,8 +97,8 @@ void setup() {
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		global.gps_data.location.latitude = 54.910513888889; 
-		global.gps_data.location.longtitude = 9.781272222222;// ALSION
+		global.gps_data.location.latitude = 54.91360833;
+		global.gps_data.location.longtitude = 9.77944167;// ALSION
 		//global.gps_data.location.latitude = 54.896811111;
 		//global.gps_data.location.longtitude = 9.799813889;
 

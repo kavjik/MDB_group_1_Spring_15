@@ -12,7 +12,7 @@
 
 #define BROADCAST_ADDR		0x0,ZB_BROADCAST_ADDRESS//defined in Xbee.h	(not used because of lower performance)
 
-#define THIS_BOAT boat4
+
 
 class wireless_communication_class
 {
@@ -26,7 +26,7 @@ public:
 		xbee.begin(Serial2);
 		//Startup delay to wait for XBee radio to initialize.
 		// you may need to increase this value if you are not getting a response
-		delay(5000);
+		delay(2000);
 		get_ID();
 		//ID_ = THIS_BOAT;
 		ready = true;
@@ -74,37 +74,47 @@ public:
 			outData.checksum += ~(uint8_t)(pay_load[i]);
 		}
 		pay_load[sizeof(DATA_) - 1] = outData.checksum;
-
+		delay(10);
+		/*
 		if (ID_ != boat1){
 			addr64 = XBeeAddress64(BOAT_1_ADDR);						//*********** Set Address of receiver
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		delay(10);
+		/*
 		if (ID_ != boat2){
 			addr64 = XBeeAddress64(BOAT_2_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		/*
+		delay(10);
 		if (ID_ != boat3){
 			addr64 = XBeeAddress64(BOAT_3_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		
+		delay(10);
 		if (ID_ != boat4){
 			addr64 = XBeeAddress64(BOAT_4_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
+		*/
+		delay(10);
 		if (ID_ != coordinator){										//for testing purposes... coordinator(ground station) should not be sending anything
 			addr64 = XBeeAddress64(COORDINATOR_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
-			Serial.print(".");
 		}
+		delay(10);
 	}
 	void get_info(void){
 		xbee.readPacket();
 		if (xbee.getResponse().isAvailable()) {
+
 			// got something
 			if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
 				// got a zb rx packet
@@ -315,6 +325,7 @@ private:
 wireless_communication_class wireless_communication_object;
 
 void wireless_cummonication(){
+	delay(500);
 	wireless_communication_object.init();
 	while (1)
 	{
@@ -340,12 +351,16 @@ void wireless_recieve_thread(){
 }
 #define WAIT_TIME_BEFORE_OTHER_BOAT_IS_INVALID 5000
 void wireless_maintain_if_boat_is_valid_thread(void){
-	for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++){
-		if (global.other_boats[i].timestamp < (millis() - WAIT_TIME_BEFORE_OTHER_BOAT_IS_INVALID)) {
-			global.other_boats[i].is_valid_boat = false;
+	while (1){
+		if (!SIMULATOR_MODE){
+			for (int i = 0; i < NUMBER_OF_OTHER_BOATS_IN_BOAT_ARRAY; i++){
+				if (global.other_boats[i].timestamp < (millis() - WAIT_TIME_BEFORE_OTHER_BOAT_IS_INVALID)) {
+					global.other_boats[i].is_valid_boat = false;
+				}
+			}
 		}
+		delay(1000);
 	}
-	delay(1000);
 	//Serial.println(wireless_communication_object.ID_);
 }
 
