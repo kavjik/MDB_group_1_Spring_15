@@ -139,6 +139,7 @@ public:
 			write_to_SD_card("guidance_object.x");
 			write_to_SD_card("guidance_object.collision_avoidance_active");
 			write_to_SD_card("guidance_object.collision_avoidance_did_evasion");
+			write_to_SD_card("guidance_object.a");
 			write_to_SD_card("longtitude_fix_triggered");
 			write_to_SD_card("lattitude_fix_triggered");
 			write_to_SD_card("\n");
@@ -194,6 +195,7 @@ public:
 			write_to_SD_card(String(guidance_object.x));
 			write_to_SD_card(String(guidance_object.collision_avoidance_active));
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
+			write_to_SD_card(String(guidance_object.a));
 			write_to_SD_card(String(global.longtitude_fix_triggered));
 			write_to_SD_card(String(global.lattitude_fix_triggered));
 			write_to_SD_card("\n");

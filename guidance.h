@@ -22,6 +22,7 @@ enum boat_states
 
 class Navigation_guidance{ //this class contains all the previous groups work on navigating the boat, with mayor changes to suit the way i have made the program.
 public:
+	bool a = 0;
 	boat_states state = close_hauled_wind_from_left;
 	boat_states next_state;
 	float bearing_to_target; //compass bearing to target
@@ -66,7 +67,7 @@ public:
 #define TIMEOUT_FOR_COMPLETED_TACKING 8000
 #define RUDDER_LIMIT 45 
 #define COLLISION_AVOIDANCE_INNER_LIMIT 10
-#define COLLISION_AVOIDANCE_OUTER_LIMIT 15
+#define COLLISION_AVOIDANCE_OUTER_LIMIT 20
 #define MAX_ALLOWED_ROLL_BEFORE_CORRECTION 30
 #define JIBING_TURNING_VALUE 40
 
@@ -98,6 +99,7 @@ public:
 	}
 
 	void do_colission_avoidance(void){ //TODO add debug messages to this
+		
 		//first determine if we should do collision avoidance
 		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
 		bool forced = false; //this determine wheter we avoid no mater what, this is the case if we are very close to the other boat.
@@ -139,22 +141,29 @@ public:
 			float theta_rdb = int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360;
 			float theta_ldb = int(global.global_wind_bearing - DOWN_WIND_ZONE) % 360;
 
+			/*if (x>20)   /////can you put this in the guidance so I can use a value directly in the avoidance guidance
+				
+			{
+				a = 0;
+			} //this has been replaced with an else in the buttom of this, since we only enter the collision avoidance code if a boat is closer than COLLISION_AVOIDANCE_OUTER_LIMIT
 
-			if (x < 10)
+			else */if (x < 10)
 			{// meters
 				if (theta_AB >= 0)
 				{
 					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
+					a = 1;
 				}
 				else
 				{
 					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
+					a = 1;
 				}
 			}
 
 			// SOFT COLLISION AVOIDANCE
 
-			else if (10 <= x && x < 20)
+			else if (10 <= x && x < 20 && a == 0)
 			{
 				if (theta_A*theta_B < 0)// meeting/cross-path
 				{
@@ -168,7 +177,7 @@ public:
 							}
 							else
 							{
-								global.desired_heading = (int)(theta_AB - 30)%360;
+								global.desired_heading = (int)(theta_AB - 30) % 360;
 							}
 						}
 						else if (theta_BA < theta_B && theta_B < 180)
@@ -179,7 +188,7 @@ public:
 							}
 							else
 							{
-								global.desired_heading = (int)(theta_AB + 30)%360;
+								global.desired_heading = (int)(theta_AB + 30) % 360;
 							}
 						}
 						else
@@ -226,7 +235,7 @@ public:
 									}
 									else
 									{
-										global.desired_heading = (int)(theta_B - 30)%360;
+										global.desired_heading = (int)(theta_B - 30) % 360;
 									}
 								}
 							}
@@ -245,7 +254,7 @@ public:
 									}
 									else
 									{
-										global.desired_heading = (int)(theta_B + 30)%360;
+										global.desired_heading = (int)(theta_B + 30) % 360;
 									}
 								}
 							}
@@ -286,7 +295,7 @@ public:
 									}
 									else
 									{
-										global.desired_heading = (int)(theta_B + 30)%360;
+										global.desired_heading = (int)(theta_B + 30) % 360;
 									}
 								}
 							}
@@ -294,6 +303,24 @@ public:
 					}
 				}
 			}
+			else if (10 <= x && x< 20 && a = 1)
+			{
+				if (theta_AB >= 0)
+				{
+					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
+					a = 1;
+				}
+				else
+				{
+					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
+					a = 1;
+				}
+			}
+
+			
+		}
+		else {
+			a = 0;
 		}
 	}
 	void do_tack_for_collision_avoidance(void){
