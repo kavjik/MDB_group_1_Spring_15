@@ -303,17 +303,15 @@ public:
 					}
 				}
 			}
-			else if (10 <= x && x< 20 && a = 1)
+			else if (10 <= x && x< 20 && a == 1)
 			{
 				if (theta_AB >= 0)
 				{
 					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
-					a = 1;
 				}
 				else
 				{
 					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
-					a = 1;
 				}
 			}
 
