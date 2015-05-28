@@ -35,7 +35,9 @@ public:
 	
 	float real_part_of_complex_from_old_code = 0;
 	float imaginary_part_of_complex_from_old_code = 0;
-
+	float theta_LOS;
+	float Theta_LOS_relative_to_wind;
+	float bearing_to_target_relative_to_LOS;
 
 	Servo Rudder_Servo;
 	Servo sail_servo;
@@ -415,6 +417,7 @@ public:
 				next_state = state;
 			}
 		}
+		theta_LOS = global.gps_data.location.bearing_to(target_location);
 	}
 
 	void handle_target(void){
@@ -427,6 +430,7 @@ public:
 				//TODO print message here
 			}
 		}
+		theta_LOS = global.gps_data.location.bearing_to(target_location);
 	}
 
 	void get_target_info(void){
@@ -435,13 +439,22 @@ public:
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
-	
-		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
-		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
+		Theta_LOS_relative_to_wind = theta_LOS - global.global_wind_bearing;
+		if (Theta_LOS_relative_to_wind > 180) Theta_LOS_relative_to_wind -= 360;
+		if (Theta_LOS_relative_to_wind < -180) Theta_LOS_relative_to_wind += 360;
+		bearing_to_target_relative_to_LOS = theta_LOS - bearing_to_target; //if positive, we are left of the original trajectory
+		if (bearing_to_target_relative_to_LOS > 180) bearing_to_target_relative_to_LOS -= 360;
+		if (bearing_to_target_relative_to_LOS < -180) bearing_to_target_relative_to_LOS += 360;
 		
-		real_part_of_complex_from_old_code = sin(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
-		imaginary_part_of_complex_from_old_code = cos(bearing_to_target_relative_to_wind*PI / 180)*distance_to_target;
+	
+		
+		real_part_of_complex_from_old_code = sin(bearing_to_target_relative_to_LOS*PI / 180)*distance_to_target;
+		imaginary_part_of_complex_from_old_code = cos(bearing_to_target_relative_to_LOS*PI / 180)*distance_to_target;
 
+		//now in order to make the boat stay within the boundaries, we simply modify the bearing to target according to how far away from the original path we are, though to a maximum of 60
+		
+
+		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
 		
 		if (global.debug_handler.path_finding_debug) {
 			Serial.println("");
@@ -464,6 +477,7 @@ public:
 			Serial.print(global.waypoints.count());
 			Serial.println("");
 		}
+
 
 	}
 
