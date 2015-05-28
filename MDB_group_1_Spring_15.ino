@@ -1,16 +1,18 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE false
-#define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
+#define SIMULATOR_MODE true	
+#define SIMULATOR_MODE_MOVE_AUTOMATICALLY true //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
 
 //below are defines that change between boats
-#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (141+114-360)
+#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (0)
 #define COMPASS_X_MIN -104
 #define COMPASS_X_MAX 143
 #define COMPASS_Y_MIN -231
 #define COMPASS_Y_MAX -47
 #define THIS_BOAT boat1 //used if the get_ID fails
+//above are defines that change between boats
+
 
 #include "Scheduler.h"
 #include <SPI.h>
@@ -42,6 +44,27 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
+
+	target.latitude = 54.9135694444; //first point in water
+	target.longtitude = 9.7813250000;
+	global.waypoints.enqueue(target);
+
+	target.latitude = 54.9127638889; //first point in water
+	target.longtitude = 9.7815861111;
+	global.waypoints.enqueue(target);
+
+	target.latitude = 54.9122361111; //first point in water
+	target.longtitude = 9.7826222222;
+	global.waypoints.enqueue(target);
+
+	target.latitude = 54.9131361111; //first point in water
+	target.longtitude = 9.7825666667;
+	global.waypoints.enqueue(target);
+
+	target.latitude = 54.9124500000; //first point in water
+	target.longtitude = 9.7840055556;
+	global.waypoints.enqueue(target);
+
 	//setup a bit north of alsion
 	/*
 	target.latitude = 54.91504444; //first point in water
@@ -53,7 +76,7 @@ void setup() {
 	target.latitude = 54.91504444; //back to the first point
 	target.longtitude = 9.77340278;
 	*/
-	
+	/*
 	target.latitude = 54.91368056; //first point in water
 	target.longtitude = 9.77971667;
 	global.waypoints.enqueue(target);
@@ -67,7 +90,7 @@ void setup() {
 	target.longtitude = 9.77959722;
 	global.waypoints.enqueue(target);
 	 // setup to outside alsion
-	
+	*/
 	/*
 	target.latitude = 54.896841667; //¨setup at beach
 	target.longtitude = 9.799458333;
@@ -97,16 +120,34 @@ void setup() {
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		global.gps_data.location.latitude = 54.91360833;
-		global.gps_data.location.longtitude = 9.77944167;// ALSION
+		global.gps_data.location.latitude = 54.9135138889;
+		global.gps_data.location.longtitude = 9.7804888889;// ALSION
 		//global.gps_data.location.latitude = 54.896811111;
 		//global.gps_data.location.longtitude = 9.799813889;
 
-		global.other_boats[0].bearing = 180;
+		global.other_boats[0].bearing = 270;
 		global.other_boats[0].is_valid_boat = true;
-		global.other_boats[0].latitude = 54.9129768;
-		global.other_boats[0].longtitude = 9.7798641;
+		global.other_boats[0].latitude = 54.91353414;
+		global.other_boats[0].longtitude = 9.78077585;
 		global.other_boats[0].speed = 2;
+
+		global.other_boats[1].bearing = 200;
+		global.other_boats[1].is_valid_boat = true;
+		global.other_boats[1].latitude = 54,91237681;
+		global.other_boats[1].longtitude = 9.78281277;
+		global.other_boats[1].speed = 1;
+
+		global.other_boats[2].bearing = 90;
+		global.other_boats[2].is_valid_boat = true;
+		global.other_boats[2].latitude = 54.91290731;
+		global.other_boats[2].longtitude = 9.78294998;
+		global.other_boats[2].speed = 3;
+
+		global.other_boats[3].bearing = 40;
+		global.other_boats[3].is_valid_boat = true;
+		global.other_boats[3].latitude = 54.91244928;
+		global.other_boats[3].longtitude = 9.78400978;
+		global.other_boats[3].speed = 4;
 
 
 	}
