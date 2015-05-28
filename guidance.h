@@ -123,23 +123,23 @@ public:
 			theta_A = global.bearing_container.compass_bearing - global.global_wind_bearing;//Boat A heading direction refers to winding direction
 			if (theta_A > 180) theta_A -= 360;
 			if (theta_A < -180) theta_A += 360;
-			theta_B = global.other_boats[do_avoidance].bearing - global.global_wind_bearing;//Boat B heading direction refers to winding direction //TODO change to boat b
+			theta_B = global.other_boats[do_avoidance].bearing - global.global_wind_bearing;//Boat B heading direction refers to winding direction 
 			if (theta_B > 180) theta_B -= 360;
 			if (theta_B < -180) theta_B += 360;
 			theta_AB = global.gps_data.location.bearing_to(global.other_boats[do_avoidance]) - global.global_wind_bearing;//theta_AB is the angle between wind direction and line A-B(draw straight line from boat A to boat B )
 			if (theta_AB > 180) theta_AB -= 360;
 			if (theta_AB < -180) theta_AB += 360;
 			theta_BA = theta_AB - 180;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
-			if (theta_BA < -180) theta_BA += 360; //dont know why i need to flip the sign here, but according to datalog i do.
+			if (theta_BA < -180) theta_BA += 360; 
 			if (theta_BA > 180) theta_BA -= 360;
 			
 			float v_A = global.gps_data.location.speed;//the velocity of Boat A
 			float v_B = global.other_boats[do_avoidance].speed;//the velocity of Boat B
 			x = global.gps_data.location.distance_to(global.other_boats[do_avoidance]);//is the distance between boat A and boat B
-			float theta_rub = int(global.global_wind_bearing + TACKING_ZONE) % 360;
-			float theta_lub = int(global.global_wind_bearing - TACKING_ZONE) % 360;
-			float theta_rdb = int(global.global_wind_bearing + DOWN_WIND_ZONE) % 360;
-			float theta_ldb = int(global.global_wind_bearing - DOWN_WIND_ZONE) % 360;
+			float theta_rub = TACKING_ZONE;
+			float theta_lub = -TACKING_ZONE;
+			float theta_rdb = DOWN_WIND_ZONE;
+			float theta_ldb = -DOWN_WIND_ZONE;
 
 			/*if (x>20)   /////can you put this in the guidance so I can use a value directly in the avoidance guidance
 				

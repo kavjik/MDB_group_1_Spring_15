@@ -125,15 +125,18 @@ void setup() {
 		//global.gps_data.location.latitude = 54.896811111;
 		//global.gps_data.location.longtitude = 9.799813889;
 
+
+		
+
 		global.other_boats[0].bearing = 270;
 		global.other_boats[0].is_valid_boat = true;
-		global.other_boats[0].latitude = 54.91353414;
-		global.other_boats[0].longtitude = 9.78077585;
+		global.other_boats[0].latitude = 54.91353907;
+		global.other_boats[0].longtitude = 9.78084565;
 		global.other_boats[0].speed = 2;
 
 		global.other_boats[1].bearing = 200;
 		global.other_boats[1].is_valid_boat = true;
-		global.other_boats[1].latitude = 54,91237681;
+		global.other_boats[1].latitude = 54.91237681;
 		global.other_boats[1].longtitude = 9.78281277;
 		global.other_boats[1].speed = 1;
 
