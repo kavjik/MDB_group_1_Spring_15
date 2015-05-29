@@ -137,6 +137,11 @@ public:
 			write_to_SD_card("guidance_object.theta_AB");
 			write_to_SD_card("guidance_object.theta_BA");
 			write_to_SD_card("guidance_object.x");
+			write_to_SD_card("guidance_object.alpha");
+			write_to_SD_card("guidance_object.beta");
+			write_to_SD_card("guidance_object.theta_A_AB");
+			write_to_SD_card("guidance_object.theta_B_BA");
+			write_to_SD_card("guidance_object.theta_B_AB");
 			write_to_SD_card("guidance_object.collision_avoidance_active");
 			write_to_SD_card("guidance_object.collision_avoidance_did_evasion");
 			write_to_SD_card("guidance_object.a");
@@ -193,6 +198,11 @@ public:
 			write_to_SD_card(String(guidance_object.theta_AB));
 			write_to_SD_card(String(guidance_object.theta_BA));
 			write_to_SD_card(String(guidance_object.x));
+			write_to_SD_card(String(guidance_object.alpha));
+			write_to_SD_card(String(guidance_object.beta));
+			write_to_SD_card(String(guidance_object.theta_A_AB));
+			write_to_SD_card(String(guidance_object.theta_B_BA));
+			write_to_SD_card(String(guidance_object.theta_B_AB));
 			write_to_SD_card(String(guidance_object.collision_avoidance_active));
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
 			write_to_SD_card(String(guidance_object.a));
