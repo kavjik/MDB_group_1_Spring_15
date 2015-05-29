@@ -132,6 +132,9 @@ public:
 			write_to_SD_card("guidance_object.bearing_to_target");
 			write_to_SD_card("guidance_object.bearing_to_target_relative_to_wind");
 			write_to_SD_card("guidance_object.state");
+			write_to_SD_card("guidance_object.theta_LOS");
+			write_to_SD_card("guidance_object.Theta_LOS_relative_to_wind");
+			write_to_SD_card("guidance_object.bearing_to_target_relative_to_LOS");
 			write_to_SD_card("guidance_object.theta_A");
 			write_to_SD_card("guidance_object.theta_B");
 			write_to_SD_card("guidance_object.theta_AB");
@@ -188,6 +191,9 @@ public:
 			write_to_SD_card(String(guidance_object.bearing_to_target));
 			write_to_SD_card(String(guidance_object.bearing_to_target_relative_to_wind));
 			write_to_SD_card(String(guidance_object.state));
+			write_to_SD_card(String(guidance_object.theta_LOS));
+			write_to_SD_card(String(guidance_object.Theta_LOS_relative_to_wind));
+			write_to_SD_card(String(guidance_object.bearing_to_target_relative_to_LOS));
 			write_to_SD_card(String(guidance_object.theta_A));
 			write_to_SD_card(String(guidance_object.theta_B));
 			write_to_SD_card(String(guidance_object.theta_AB));
@@ -196,6 +202,11 @@ public:
 			write_to_SD_card(String(guidance_object.collision_avoidance_active));
 			write_to_SD_card(String(guidance_object.collision_avoidance_did_evasion));
 			write_to_SD_card(String(guidance_object.a));
+			/*
+				float theta_LOS;
+	float Theta_LOS_relative_to_wind;
+	float bearing_to_target_relative_to_LOS;
+	*/
 			write_to_SD_card(String(global.longtitude_fix_triggered));
 			write_to_SD_card(String(global.lattitude_fix_triggered));
 			write_to_SD_card("\n");

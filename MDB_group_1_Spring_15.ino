@@ -44,7 +44,7 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-
+	
 	target.latitude = 54.9135694444; //first point in water
 	target.longtitude = 9.7813250000;
 	global.waypoints.enqueue(target);
@@ -126,7 +126,7 @@ void setup() {
 		//global.gps_data.location.longtitude = 9.799813889;
 
 
-		
+	/*	
 
 		global.other_boats[0].bearing = 270;
 		global.other_boats[0].is_valid_boat = true;
@@ -151,7 +151,7 @@ void setup() {
 		global.other_boats[3].latitude = 54.91244928;
 		global.other_boats[3].longtitude = 9.78400978;
 		global.other_boats[3].speed = 4;
-
+*/
 
 	}
 	else

@@ -62,7 +62,7 @@ public:
 #define IN_RANGE_DISTANCE 6
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
-#define TACKING_ZONE_DISTANCE 20
+#define TACKING_ZONE_DISTANCE 10
 #define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
@@ -440,6 +440,7 @@ public:
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
+		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
 		Theta_LOS_relative_to_wind = theta_LOS - global.global_wind_bearing;
 		if (Theta_LOS_relative_to_wind > 180) Theta_LOS_relative_to_wind -= 360;
 		if (Theta_LOS_relative_to_wind < -180) Theta_LOS_relative_to_wind += 360;
@@ -455,7 +456,7 @@ public:
 		//now in order to make the boat stay within the boundaries, we simply modify the bearing to target according to how far away from the original path we are, though to a maximum of 60
 		
 
-		//bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
+		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
 		
 		if (global.debug_handler.path_finding_debug) {
 			Serial.println("");
@@ -596,19 +597,39 @@ public:
 		switch (state)
 		{
 		case close_hauled_wind_from_left:
-			if (bearing_to_target_relative_to_wind > TACKING_ZONE) {
+			if (bearing_to_target_relative_to_wind > TACKING_ZONE+5) {
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE)){
+			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE-5)){
 				next_state = generel_direction_wind_from_right;
 			}
+			/*
+			else if (real_part_of_complex_from_old_code > 20){
+				next_state = tacking_going_from_wind_from_left_to_right;
+				has_boat_been_at_tacking_target = false;
+				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
+				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
+			}
+			else if (real_part_of_complex_from_old_code < -20){
+				next_state = generel_direction_wind_from_left;
+			}*/
+			/*
 			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_wind < -TACKING_ZONE_NARROW_ANGLE && real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
 				next_state = tacking_going_from_wind_from_left_to_right;
 				has_boat_been_at_tacking_target = false;
 				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
-				if (global.global_wind_bearing < 0) global.global_wind_bearing += 360;
+				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
 			}
-
+			*/
+			else if (/*bearing_to_target_relative_to_LOS < (-TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_LOS < -TACKING_ZONE_NARROW_ANGLE && */real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
+				next_state = tacking_going_from_wind_from_left_to_right;
+				has_boat_been_at_tacking_target = false;
+				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
+				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
+			}
+			else if (real_part_of_complex_from_old_code < -20){
+				next_state = generel_direction_wind_from_left;
+			}
 			break;
 
 		case close_hauled_wind_from_right:
@@ -623,13 +644,23 @@ public:
 #define TACKING_ZONE_WIDE_ANGLE TACKING_ZONE / 2
 #define TACKING_ZONE_NARROW_ANGLE 5
 			*/
+			else if (/*bearing_to_target_relative_to_LOS > (TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_LOS > TACKING_ZONE_NARROW_ANGLE &&*/ real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
+				next_state = tacking_going_from_wind_from_right_to_left;
+				has_boat_been_at_tacking_target = false;
+				frozen_tacking_direction = global.global_wind_bearing + TACKING_ZONE;
+				if (frozen_tacking_direction > 360) frozen_tacking_direction -= 360;
+			}
+			else if (real_part_of_complex_from_old_code > 20){
+				next_state = generel_direction_wind_from_right;
+			}
+			/*
 			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_wind > TACKING_ZONE_NARROW_ANGLE && real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
 				next_state = tacking_going_from_wind_from_right_to_left;
 				frozen_tacking_direction = global.global_wind_bearing + TACKING_ZONE;
 				has_boat_been_at_tacking_target = false;
 				if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
 			}
-
+			*/
 			break;
 
 
@@ -694,10 +725,10 @@ public:
 				//we are there
 				next_state = down_wind_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
+			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
+			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
 			break;
@@ -707,10 +738,10 @@ public:
 				//we are there
 				next_state = down_wind_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
+			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
+			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
 			break;
@@ -719,24 +750,20 @@ public:
 			if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind < 155 && bearing_to_target_relative_to_wind > DOWN_WIND_ZONE){
+			else if (real_part_of_complex_from_old_code > 15 || (bearing_to_target_relative_to_wind < 155 && bearing_to_target_relative_to_wind > 0)){
 				next_state = jibe_going_from_wind_from_right_to_left;
 			}
-			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
-				next_state = generel_direction_wind_from_left;
-			}
+
 			break;
 
 		case	down_wind_wind_from_left:
 			if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > -155 && bearing_to_target_relative_to_wind < -DOWN_WIND_ZONE){
+			else if (real_part_of_complex_from_old_code < -15 || (bearing_to_target_relative_to_wind > -155 && bearing_to_target_relative_to_wind < 0)){
 				next_state = jibe_going_from_wind_from_left_to_right;
 			}
-			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
-				next_state = generel_direction_wind_from_right;
-			}
+
 
 			break;
 
