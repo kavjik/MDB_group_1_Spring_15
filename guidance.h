@@ -425,12 +425,13 @@ public:
 			if (global.waypoints.actual_size> 0){ //there are still waypoints to take
 				target_location = global.waypoints.dequeue();
 				global.force_load_waypoint_in_guidance = false;
+				theta_LOS = global.gps_data.location.bearing_to(target_location);
 			}
 			else{
 				//TODO print message here
 			}
 		}
-		theta_LOS = global.gps_data.location.bearing_to(target_location);
+		
 	}
 
 	void get_target_info(void){
@@ -454,7 +455,7 @@ public:
 		//now in order to make the boat stay within the boundaries, we simply modify the bearing to target according to how far away from the original path we are, though to a maximum of 60
 		
 
-		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
+		//bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
 		
 		if (global.debug_handler.path_finding_debug) {
 			Serial.println("");
