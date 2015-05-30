@@ -130,8 +130,8 @@ void setup() {
 
 		global.other_boats[0].bearing = 270;
 		global.other_boats[0].is_valid_boat = true;
-		global.other_boats[0].latitude = 54.91353907;
-		global.other_boats[0].longtitude = 9.78084565;
+		global.other_boats[0].latitude = 0;// 54.91353907;
+		global.other_boats[0].longtitude = 0;//9.78084565;
 		global.other_boats[0].speed = 2;
 
 		global.other_boats[1].bearing = 200;

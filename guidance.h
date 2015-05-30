@@ -450,6 +450,7 @@ public:
 		distance_to_target = global.gps_data.location.distance_to(target_location);
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing)))%360;
+		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
 
 		if (bearing_to_target_relative_to_wind > 0){ //target is right of wind
 			if (bearing_to_target_relative_to_wind > TACKING_ZONE) {
@@ -494,6 +495,7 @@ public:
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
+		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
 		Theta_LOS_relative_to_wind = theta_LOS - global.global_wind_bearing;
 		if (Theta_LOS_relative_to_wind > 180) Theta_LOS_relative_to_wind -= 360;
 		if (Theta_LOS_relative_to_wind < -180) Theta_LOS_relative_to_wind += 360;
