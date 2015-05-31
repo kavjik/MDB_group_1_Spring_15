@@ -185,44 +185,49 @@ public:
 				}
 				
 			}
-			
+
 			if (do_avoidance){
 				//now we know we should avoid, but if we are already sailing away, there is no need to activly do anything, so lets check that.
-				if (angle_between_two_angles(global.desired_heading, theta_BA) < 70){
-					//well, we do nothing, since we dont need to.
+				float angle_to_other_boat = angle_between_two_angles(bearing_to_target_relative_to_wind, theta_BA);
+				if (angle_to_other_boat < 70) //todo make this depend on simulator mode
+				{
+					avoidance_angle = 100 - angle_to_other_boat;
+
 				}
 				else {
-					collision_avoidance_did_evasion = true;
-					if (bearing_to_target_relative_to_wind > 0){ //wind from left
-						if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind - 180){ //the other boat is to the left of us, turn right 
-							global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
-						}
-						else {//the other boat is to the right of us, turn left 
-							global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
-						}
-					}
-					else { //wind from right
-						if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind + 180){ //the other boat is to the left of us, turn right 
-							global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
-						}
-						else {//the other boat is to the right of us, turn left 
-							global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
-						}
-					}
-					//now we have determined the new path, we should check if that makes us go into dead zone, if it does, change the state 
-					float desired_heading_relative_to_wind = ((int)((global.desired_heading - global.global_wind_bearing))) % 360;
-					if (desired_heading_relative_to_wind > 180) desired_heading_relative_to_wind -= 360;
-					if (desired_heading_relative_to_wind < -180) desired_heading_relative_to_wind += 360;
-					if (desired_heading_relative_to_wind < TACKING_ZONE && desired_heading_relative_to_wind > -TACKING_ZONE){
-						//we should tack
-						do_tack_for_collision_avoidance();
-					}
-					else if (desired_heading_relative_to_wind > DOWN_WIND_ZONE && desired_heading_relative_to_wind < -DOWN_WIND_ZONE){
-						//we should jibe
-						do_jibe_for_collision_avoidance();
-					}
+					avoidance_angle = (110 - (angle_to_other_boat - 70))*0.25; //TODO make this depend on simulator mode and defines
 				}
 				
+				if (bearing_to_target_relative_to_wind > 0){ //wind from left
+					if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind - 180){ //the other boat is to the left of us, turn right 
+						global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
+					}
+					else {//the other boat is to the right of us, turn left 
+						global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
+					}
+				}
+				else { //wind from right
+					if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind + 180){ //the other boat is to the left of us, turn right 
+						global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
+					}
+					else {//the other boat is to the right of us, turn left 
+						global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
+					}
+				}
+				//now we have determined the new path, we should check if that makes us go into dead zone, if it does, change the state 
+				float desired_heading_relative_to_wind = ((int)((global.desired_heading - global.global_wind_bearing))) % 360;
+				if (desired_heading_relative_to_wind > 180) desired_heading_relative_to_wind -= 360;
+				if (desired_heading_relative_to_wind < -180) desired_heading_relative_to_wind += 360;
+				if (desired_heading_relative_to_wind < TACKING_ZONE && desired_heading_relative_to_wind > -TACKING_ZONE){
+					//we should tack
+					do_tack_for_collision_avoidance();
+				}
+				else if (desired_heading_relative_to_wind > DOWN_WIND_ZONE && desired_heading_relative_to_wind < -DOWN_WIND_ZONE){
+					//we should jibe
+					do_jibe_for_collision_avoidance();
+				}
+				
+			
 			}
 		}
 	}
