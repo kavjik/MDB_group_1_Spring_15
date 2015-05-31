@@ -189,13 +189,13 @@ public:
 			if (do_avoidance){
 				//now we know we should avoid, but if we are already sailing away, there is no need to activly do anything, so lets check that.
 				float angle_to_other_boat = angle_between_two_angles(bearing_to_target_relative_to_wind, theta_BA);
-				if (angle_to_other_boat < 70) //todo make this depend on simulator mode
+				if (angle_to_other_boat < 50) //todo make this depend on simulator mode
 				{
-					avoidance_angle = 100 - angle_to_other_boat;
+					avoidance_angle = 70 - angle_to_other_boat; //should depend on simulator mode
 
 				}
 				else {
-					avoidance_angle = (110 - (angle_to_other_boat - 70))*0.25; //TODO make this depend on simulator mode and defines
+					avoidance_angle = 40+(130 - (angle_to_other_boat - 50))*0.25; //TODO make this depend on simulator mode and defines
 				}
 				
 				if (bearing_to_target_relative_to_wind > 0){ //wind from left
