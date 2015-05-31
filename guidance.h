@@ -108,7 +108,7 @@ public:
 			//Serial.println(global.wind_bearing);
 		}
 	}
-	void do_colission_avoidance(void){ 
+	void do_colission_avoidance(void){
 		// HARD COLLISION AVOIDANCE 
 
 
@@ -178,37 +178,37 @@ public:
 
 
 
-			theta_A_AB = theta_A - theta_AB;
+			//theta_A_AB = theta_A - theta_AB;
 
 			//theta_B_BA = theta_B - theta_BA;
 			//theta_B_AB = theta_B - theta_AB;
 
-			if (theta_A_AB > 180)
-			{
-				theta_A_AB = (theta_A_AB)-360;
-			}
-			else if (theta_A_AB < -180)
-			{
-				theta_A_AB = theta_A_AB + 360;
-			}
+			//if (theta_A_AB > 180)
+			//{
+			//	theta_A_AB = (theta_A_AB)-360;
+			//}
+			//else if (theta_A_AB < -180)
+			//{
+			//	theta_A_AB = theta_A_AB + 360;
+			//}
 
-			if (theta_B_BA>180)
-			{
-				theta_B_BA = (theta_B_BA)-360;
-			}
-			else if (theta_B_BA < -180)
-			{
-				theta_B_BA = theta_B_BA + 360;
-			}
+			//if (theta_B_BA>180)
+			//{
+			//	theta_B_BA = (theta_B_BA)-360;
+			//}
+			//else if (theta_B_BA < -180)
+			//{
+			//	theta_B_BA = theta_B_BA + 360;
+			//}
 
-			if (theta_B_AB>180)
-			{
-				theta_B_AB = (theta_B_AB)-360;
-			}
-			else if (theta_B_AB < -180)
-			{
-				theta_B_AB = theta_B_AB + 360;
-			}
+			//if (theta_B_AB>180)
+			//{
+			//	theta_B_AB = (theta_B_AB)-360;
+			//}
+			//else if (theta_B_AB < -180)
+			//{
+			//	theta_B_AB = theta_B_AB + 360;
+			//}
 
 
 			previous = now;
@@ -266,7 +266,7 @@ public:
 				{
 					if (theta_Acon > 0 && alpha > 0)//A wind coming from left and A is behind
 					{
-						if (theta_B_BA < 0)//B heading direction is below B->A
+						if (theta_B_BAcon < 0)//B heading direction is below B->A
 						{
 							if (alpha - avoidangle < theta_rub)//the right up barrier to determine if there is need to tack
 							{
@@ -307,84 +307,84 @@ public:
 					}
 					else
 					{
-						if (theta_A_ABcon *theta_B_ABcon < 0 && abs(theta_Bcon - theta_Acon) < avoidangle)//
-					{
+						if (theta_A_ABcon *theta_B_ABcon < 0)//&& abs(theta_Bcon - theta_Acon) < avoidangle)//
+						{
 							if (theta_lub < (theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) && theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle < theta_rub)
-						{
-							do_tack_for_collision_avoidance();
-						}
+							{
+								do_tack_for_collision_avoidance();
+							}
 							else if ((theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) < theta_ldb || (theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) > theta_rdb)
-						{
-							do_jibe_for_collision_avoidance();
-						}
-						else
-						{
-								global.desired_heading = (int)(theta_B - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) % 360;
+							{
+								do_jibe_for_collision_avoidance();
+							}
+							else
+							{
+								global.desired_heading = (int)(alpha - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) % 360;
 							}
 						}
 
 
 						else//
-					{
-						if (alpha > 0)
 						{
+							if (alpha > 0)
+							{
 								if (theta_Acon > 0)
-							{
-								if (theta_B - avoidangle > theta_rub)
 								{
-									do_tack_for_collision_avoidance();
+									if (theta_B - avoidangle > theta_rub)
+									{
+										do_tack_for_collision_avoidance();
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B - avoidangle) % 360;
+									}
 								}
-								else
-								{
-									global.desired_heading = (int)(theta_B - avoidangle) % 360;
-								}
-							}
 								else//theta_Acon<0
-							{
+								{
 									if (theta_B + avoidangle > theta_lub)//the left up barrier to determine if there is need to tack
-								{
-									do_tack_for_collision_avoidance();
-								}
-								else
-								{
-									global.desired_heading = (int)(theta_B + avoidangle) % 360;
+									{
+										do_tack_for_collision_avoidance();
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B + avoidangle) % 360;
+									}
 								}
 							}
-						}
-						else // alpha < 0
-						{
+							else // alpha < 0
+							{
 								if (theta_Acon < 0)
-							{
-								
-								if (theta_B + avoidangle > theta_lub)//the left up barrier to determine if there is need to tack
 								{
-									do_tack_for_collision_avoidance();
+
+									if (theta_B + avoidangle > theta_lub)//the left up barrier to determine if there is need to tack
+									{
+										do_tack_for_collision_avoidance();
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B + avoidangle) % 360;
+									}
+
 								}
-								else
-								{
-									global.desired_heading = (int)(theta_B + avoidangle) % 360;
-								}
-								
-							}
 								else//theta_Acon>0
-							{
-									if (theta_B - avoidangle < theta_rub)//the right up barrier to determine if there is need to tack
 								{
-									//theta_A = tack(right to left);
+									if (theta_B - avoidangle < theta_rub)//the right up barrier to determine if there is need to tack
+									{
+										//theta_A = tack(right to left);
 										do_tack_for_collision_avoidance();
 										//state = tacking_going_from_wind_from_right_to_left;
 										//determine_path_bearing();
-									
-								}
-								else
-								{
-									global.desired_heading = (int)(theta_B - avoidangle) % 360;
+
+									}
+									else
+									{
+										global.desired_heading = (int)(theta_B - avoidangle) % 360;
+									}
 								}
 							}
 						}
 					}
 				}
-			}
 			}
 			else if (10 <= x && x < 20 && a == 1)
 			{
@@ -397,16 +397,9 @@ public:
 					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
 				}
 			}
-
-
-			else
-			{
-			a = 0;
-			b = 1;
 		}
-	}
 		else {
-			a = 1;
+			a = 0;
 			b = 1;
 		}
 	}
