@@ -136,19 +136,19 @@ void setup() {
 
 		global.other_boats[1].bearing = 200;
 		global.other_boats[1].is_valid_boat = true;
-		global.other_boats[1].latitude = 54.91237681;
-		global.other_boats[1].longtitude = 9.78281277;
+		global.other_boats[1].latitude = 54.91237781;
+		global.other_boats[1].longtitude = 9.78281377;
 		global.other_boats[1].speed = 1;
 
 		global.other_boats[2].bearing = 90;
 		global.other_boats[2].is_valid_boat = true;
-		global.other_boats[2].latitude = 54.91290731;
+		global.other_boats[2].latitude = 54.91290631;
 		global.other_boats[2].longtitude = 9.78294998;
 		global.other_boats[2].speed = 3;
 
 		global.other_boats[3].bearing = 40;
 		global.other_boats[3].is_valid_boat = true;
-		global.other_boats[3].latitude = 54.91244928;
+		global.other_boats[3].latitude = 54.91244828;
 		global.other_boats[3].longtitude = 9.78400978;
 		global.other_boats[3].speed = 4;
 
