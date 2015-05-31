@@ -121,7 +121,7 @@ public:
 		collision_avoidance_did_evasion = false;
 		if (do_avoidance != -1) {
 			collision_avoidance_active = true;
-			collision_avoidance_did_evasion = true;
+			bool do_avoidance = false;
 			theta_A = global.bearing_container.compass_bearing - global.global_wind_bearing;//Boat A heading direction refers to winding direction
 			if (theta_A > 180) theta_A -= 360;
 			if (theta_A < -180) theta_A += 360;
@@ -142,185 +142,87 @@ public:
 			float theta_lub = -TACKING_ZONE;
 			float theta_rdb = DOWN_WIND_ZONE;
 			float theta_ldb = -DOWN_WIND_ZONE;
+			float avoidance_angle = 55;
 
-			/*if (x>20)   /////can you put this in the guidance so I can use a value directly in the avoidance guidance
+			if (x < 10)
+			{
+				do_avoidance = true;
+			}
+			else
+			{
+				if (theta_A > 0 && theta_B > 0){
+					if (theta_AB > theta_A){
+						//the other boat is to the right, we should move
+						do_avoidance = true;
+					}
+					else { //its to the left of us, we should move
+						do_avoidance = false;
+					}
+				}
+				else if(theta_A > 0 && theta_B < 0){
+					do_avoidance = true;
+				}
+				else if(theta_A < 0 && theta_B > 0){
+					do_avoidance = false;
+				}
+				else if(theta_A < 0 && theta_B < 0){ //the check raelly dosnt have to be there, but its just for checking
+					if (theta_AB > theta_A){
+						//same as aboive, but inversed, since wind is coming from the right now
+						do_avoidance = false;
+					}
+					else { 
+						do_avoidance = false;
+					}
+				}
+				 //special overtaking check, only applies if we 
+				if (angle_between_two_angles(theta_A, theta_AB) < 20 && angle_between_two_angles(theta_B, theta_A) < 20){ //its straight ahead, and pointing the same way as us, we should move
+					do_avoidance = true;
+				}
+				else if (angle_between_two_angles(theta_A, theta_AB) > (180 - 20) && angle_between_two_angles(theta_B, theta_A) < 20)//its right behind us and pointing the same way as us, they are overtaking and should move.
+				{
+					do_avoidance = false;
+				}
 				
-			{
-				a = 0;
-			} //this has been replaced with an else in the buttom of this, since we only enter the collision avoidance code if a boat is closer than COLLISION_AVOIDANCE_OUTER_LIMIT
-
-			else */if (x < 10)
-			{// meters
-				if (theta_AB >= 0)
-				{
-					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
-					a = 1;
-				}
-				else
-				{
-					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
-					a = 1;
-				}
 			}
-
-			// SOFT COLLISION AVOIDANCE
-
-			else if (10 <= x && x < 20 && a == 0)
-			{
-				if (theta_A*theta_B < 0)// meeting/cross-path
-				{
-					if (theta_A > 0)
-					{
-						if (-180 < theta_B && theta_B < theta_BA)
-						{
-							if (theta_AB - 30 < theta_rub)//the right up barrier to determine if there is need to tack
-							{
-								do_tack_for_collision_avoidance();
-							}
-							else
-							{
-								global.desired_heading = (int)(theta_AB - 30) % 360;
-							}
-						}
-						else if (theta_BA < theta_B && theta_B < 180)
-						{
-							if (theta_AB + 30 > theta_rdb)//the right down barrier to determine if there is need to jibe
-							{
-								do_jibe_for_collision_avoidance();
-							}
-							else
-							{
-								global.desired_heading = (int)(theta_AB + 30) % 360;
-							}
-						}
-						else
-						{
-							//Do nothing theta_A = theta_A;
-							collision_avoidance_did_evasion = false;
-						}
-
-					}
-					else // theta_A < 0
-					{
-						// do nothing theta_A = theta_A;
-						collision_avoidance_did_evasion = false;
-					}
-				}
-				else if (-90 < theta_AB && theta_AB < 90) // theta_A*theta_B > 0
-				{
-					// do nothing theta_A = theta_A;
-					collision_avoidance_did_evasion = false;
-				}
-				else
-				{
-					if ((theta_A - theta_AB)*(theta_B - theta_AB) < 0)
-					{
-						// do nothing theta_A = theta_A;
-						collision_avoidance_did_evasion = false;
-					}
-					else
-					{
-						if (theta_AB > 0)
-						{
-							if (theta_A > 0)
-							{
-								if (v_A < v_B)// speeds of the boats
-								{
-									// do nothing theta_A = theta_A;
-									collision_avoidance_did_evasion = false;
-								}
-								else
-								{
-									if (theta_B - 30 < theta_rub)
-									{
-										do_tack_for_collision_avoidance();
-									}
-									else
-									{
-										global.desired_heading = (int)(theta_B - 30) % 360;
-									}
-								}
-							}
-							else//theta_A<0
-							{
-								if (v_A > v_B)
-								{
-									// do nothing theta_A = theta_A;
-									collision_avoidance_did_evasion = false;
-								}
-								else
-								{
-									if (theta_B + 30 > theta_lub)//the left up barrier to determine if there is need to tack
-									{
-										do_tack_for_collision_avoidance();
-									}
-									else
-									{
-										global.desired_heading = (int)(theta_B + 30) % 360;
-									}
-								}
-							}
-						}
-						else // theta_AB < 0
-						{
-							if (theta_A < 0)
-							{
-								if (v_A < v_B)
-								{
-									// do nothing theta_A = theta_A;
-									collision_avoidance_did_evasion = false;
-								}
-								else
-								{
-									if (theta_B + 30 > theta_lub)//the left up barrier to determine if there is need to tack
-									{
-										do_tack_for_collision_avoidance();
-									}
-									else
-									{
-										global.desired_heading = (int)(theta_B + 30) % 360;
-									}
-								}
-							}
-							else//theta_A>0
-							{
-								if (v_A > v_B)
-								{
-									// do nothing theta_A = theta_A;
-									collision_avoidance_did_evasion = false;
-								}
-								else
-								{
-									if (theta_B + 30 < theta_rub)//the right up barrier to determine if there is need to tack
-									{
-										do_tack_for_collision_avoidance();
-									}
-									else
-									{
-										global.desired_heading = (int)(theta_B + 30) % 360;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			else if (10 <= x && x< 20 && a == 1)
-			{
-				if (theta_AB >= 0)
-				{
-					global.desired_heading = (int)(global.global_wind_bearing - 90) % 360;  // degrees 
-				}
-				else
-				{
-					global.desired_heading = (int)(global.global_wind_bearing + 90) % 360;
-				}
-			}
-
 			
-		}
-		else {
-			a = 0;
+			if (do_avoidance){
+				//now we know we should avoid, but if we are already sailing away, there is no need to activly do anything, so lets check that.
+				if (angle_between_two_angles(theta_A, theta_BA) < 70){
+					//well, we do nothing, since we dont need to.
+				}
+				else {
+					collision_avoidance_did_evasion = true;
+					if (theta_A > 0){ //wind from left
+						if (theta_B < theta_A && theta_B > theta_A - 180){ //the other boat is to the left of us, turn right 
+							global.desired_heading = (int)(global.desired_heading + avoidance_angle) % 360;
+						}
+						else {//the other boat is to the right of us, turn left 
+							global.desired_heading = (int)(global.desired_heading - avoidance_angle) % 360;
+						}
+					}
+					else { //wind from right
+						if (theta_B < theta_A && theta_B > theta_A + 180){ //the other boat is to the left of us, turn right 
+							global.desired_heading = (int)(global.desired_heading + avoidance_angle) % 360;
+						}
+						else {//the other boat is to the right of us, turn left 
+							global.desired_heading = (int)(global.desired_heading - avoidance_angle) % 360;
+						}
+					}
+					//now we have determined the new path, we should check if that makes us go into dead zone, if it does, change the state 
+					float desired_heading_relative_to_wind = ((int)((global.desired_heading - global.global_wind_bearing))) % 360;
+					if (desired_heading_relative_to_wind > 180) desired_heading_relative_to_wind -= 360;
+					if (desired_heading_relative_to_wind < -180) desired_heading_relative_to_wind += 360;
+					if (desired_heading_relative_to_wind < TACKING_ZONE && desired_heading_relative_to_wind > -TACKING_ZONE){
+						//we should tack
+						do_tack_for_collision_avoidance();
+					}
+					else if (desired_heading_relative_to_wind > DOWN_WIND_ZONE && desired_heading_relative_to_wind < -DOWN_WIND_ZONE){
+						//we should jibe
+						do_jibe_for_collision_avoidance();
+					}
+				}
+				
+			}
 		}
 	}
 	void do_tack_for_collision_avoidance(void){
