@@ -177,18 +177,7 @@ public:
 			if (theta_B_AB > 180) theta_B_AB -= 360;
 
 
-			if (b == 1){//if b is 1
 
-				alpha = theta_AB;
-				beta = theta_BA;
-				theta_Acon = theta_A;
-				theta_Bcon = theta_B;
-				theta_A_ABcon = theta_A_AB;//
-				theta_B_BAcon = theta_B_BA;//
-				theta_B_ABcon = theta_B_AB;
-				b = 0;
-
-			}
 			theta_A_AB = theta_A - theta_AB;
 
 			theta_B_BA = theta_B - theta_BA;
@@ -228,6 +217,18 @@ public:
 			if (previous*now < 0)
 			{
 				b = 1;
+			}
+			if (b == 1){//if b is 1
+
+				alpha = theta_AB;
+				beta = theta_BA;
+				theta_Acon = theta_A;
+				theta_Bcon = theta_B;
+				theta_A_ABcon = theta_A_AB;//
+				theta_B_BAcon = theta_B_BA;//
+				theta_B_ABcon = theta_B_AB;
+				b = 0;
+
 			}
 			//previous2=now2;
 			//now2=abs(theta_AB)-90;
@@ -404,6 +405,10 @@ public:
 
 
 
+		}
+		else {
+			a = 1;
+			b = 1;
 		}
 	}
 	void do_tack_for_collision_avoidance(void){
