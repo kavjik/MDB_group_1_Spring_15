@@ -161,9 +161,20 @@ public:
 			static float theta_Bcon;
 			static float theta_A_ABcon;
 			static float theta_B_BAcon;
+			static float theta_B_ABcon;
 
 
+			theta_A_AB = theta_A - theta_AB;
+			if (theta_A_AB < -180) theta_A_AB += 360;
+			if (theta_A_AB > 180) theta_A_AB -= 360;
 
+			theta_B_BA = theta_B - theta_BA;
+			if (theta_B_BA < -180) theta_B_BA += 360;
+			if (theta_B_BA > 180) theta_B_BA -= 360;
+
+			theta_B_AB = theta_B - theta_AB;
+			if (theta_B_AB < -180) theta_B_AB += 360;
+			if (theta_B_AB > 180) theta_B_AB -= 360;
 
 
 			if (b == 1){//if b is 1
@@ -174,6 +185,7 @@ public:
 				theta_Bcon = theta_B;
 				theta_A_ABcon = theta_A_AB;//
 				theta_B_BAcon = theta_B_BA;//
+				theta_B_ABcon = theta_B_AB;
 				b = 0;
 
 			}
