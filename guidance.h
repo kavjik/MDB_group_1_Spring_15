@@ -98,6 +98,7 @@ public:
 			simulator_mode_move_forward(); //move forward
 			//Serial.println(global.wind_bearing);
 		}
+		rudder_pid_controller();
 	}
 
 	void do_colission_avoidance(void){ //TODO add debug messages to this
@@ -187,25 +188,25 @@ public:
 			
 			if (do_avoidance){
 				//now we know we should avoid, but if we are already sailing away, there is no need to activly do anything, so lets check that.
-				if (angle_between_two_angles(theta_A, theta_BA) < 70){
+				if (angle_between_two_angles(global.desired_heading, theta_BA) < 70){
 					//well, we do nothing, since we dont need to.
 				}
 				else {
 					collision_avoidance_did_evasion = true;
-					if (theta_A > 0){ //wind from left
-						if (theta_B < theta_A && theta_B > theta_A - 180){ //the other boat is to the left of us, turn right 
-							global.desired_heading = (int)(global.desired_heading + avoidance_angle) % 360;
+					if (bearing_to_target_relative_to_wind > 0){ //wind from left
+						if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind - 180){ //the other boat is to the left of us, turn right 
+							global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
 						}
 						else {//the other boat is to the right of us, turn left 
-							global.desired_heading = (int)(global.desired_heading - avoidance_angle) % 360;
+							global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
 						}
 					}
 					else { //wind from right
-						if (theta_B < theta_A && theta_B > theta_A + 180){ //the other boat is to the left of us, turn right 
-							global.desired_heading = (int)(global.desired_heading + avoidance_angle) % 360;
+						if (theta_B < bearing_to_target_relative_to_wind && theta_B > bearing_to_target_relative_to_wind + 180){ //the other boat is to the left of us, turn right 
+							global.desired_heading = (int)(bearing_to_target_relative_to_wind + avoidance_angle) % 360;
 						}
 						else {//the other boat is to the right of us, turn left 
-							global.desired_heading = (int)(global.desired_heading - avoidance_angle) % 360;
+							global.desired_heading = (int)(bearing_to_target_relative_to_wind - avoidance_angle) % 360;
 						}
 					}
 					//now we have determined the new path, we should check if that makes us go into dead zone, if it does, change the state 
@@ -360,7 +361,7 @@ public:
 		//now in order to make the boat stay within the boundaries, we simply modify the bearing to target according to how far away from the original path we are, though to a maximum of 60
 		
 
-		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
+		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 80 ? 40 : real_part_of_complex_from_old_code/2);
 		
 		if (global.debug_handler.path_finding_debug) {
 			Serial.println("");
@@ -381,6 +382,9 @@ public:
 			Serial.println("");
 			Serial.print("global.waypoints.count: ");
 			Serial.print(global.waypoints.count());
+			Serial.println("");
+			Serial.print("x: ");
+			Serial.print(x);
 			Serial.println("");
 		}
 

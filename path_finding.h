@@ -28,7 +28,7 @@ void path_finding(){
 	while (1){
 	
 		guidance_object.guidance();
-		guidance_object.rudder_pid_controller();
+
 		if (SIMULATOR_MODE) {
 			if (SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
 				delay(PATH_FINDING_AUTOMATIC_MODE_DELAY_TIME);
