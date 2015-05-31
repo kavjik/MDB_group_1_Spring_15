@@ -89,7 +89,7 @@ public:
 		sail_control();
 		
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
-			global.global_wind_bearing = 0;
+			global.global_wind_bearing = 330;
 
 			global.bearing_container.compass_bearing = global.desired_heading; //turn to the way we want to go
 			global.wind_bearing = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;
@@ -396,7 +396,8 @@ public:
 		distance_to_target = global.gps_data.location.distance_to(target_location);
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing)))%360;
-
+		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
+		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
 		if (bearing_to_target_relative_to_wind > 0){ //target is right of wind
 			if (bearing_to_target_relative_to_wind > TACKING_ZONE) {
 				state = generel_direction_wind_from_left;
@@ -441,6 +442,7 @@ public:
 		//bearing_to_target_relative_to_wind = fmod(bearing_to_target - global.global_wind_bearing, 360) - 180; //ensure the range is from -180  to +180
 		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
 		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
+		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
 		Theta_LOS_relative_to_wind = theta_LOS - global.global_wind_bearing;
 		if (Theta_LOS_relative_to_wind > 180) Theta_LOS_relative_to_wind -= 360;
 		if (Theta_LOS_relative_to_wind < -180) Theta_LOS_relative_to_wind += 360;
@@ -760,7 +762,7 @@ public:
 			if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (real_part_of_complex_from_old_code < -15 || (bearing_to_target_relative_to_wind > -155 && bearing_to_target_relative_to_wind < 0)){
+			else if (real_part_of_complex_from_old_code < -15 || (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0)){
 				next_state = jibe_going_from_wind_from_left_to_right;
 			}
 
