@@ -33,7 +33,7 @@ public:
 	bool has_boat_been_at_tacking_target;
 	long int time_stamp_for_tacking;
 	Location target_location;
-	
+
 	float real_part_of_complex_from_old_code = 0;
 	float imaginary_part_of_complex_from_old_code = 0;
 	float theta_LOS;
@@ -71,7 +71,7 @@ public:
 #define IN_RANGE_DISTANCE 6
 #define DOWN_WIND_ZONE 135
 #define TACKING_TURNING_VALUE 20
-#define TACKING_ZONE_DISTANCE 10
+#define TACKING_ZONE_DISTANCE 20
 #define TACKING_ZONE_WIDE_ANGLE (TACKING_ZONE / 2)
 #define TACKING_ZONE_NARROW_ANGLE 5
 #define TOLERANCE_FOR_COMPLETED_TACKING 15
@@ -83,7 +83,7 @@ public:
 #define JIBING_TURNING_VALUE 40
 
 
-	
+
 
 
 	void guidance()
@@ -94,9 +94,9 @@ public:
 		state = next_state; //this is here to ensure that collision avoidance can "avoid" this thing. 
 		determine_path_bearing(); //determines which way to go, dependent on which state we are in.
 		do_colission_avoidance(); //may overwrite the next state logic
-		
+
 		sail_control();
-		
+
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
 			global.global_wind_bearing = 0;
 
@@ -111,8 +111,13 @@ public:
 	void do_colission_avoidance(void){
 		// HARD COLLISION AVOIDANCE 
 
-		
 
+		static bool b = 0;
+		static float alpha = 0;
+		static float beta = 0;
+		float theta_A_AB;
+		float theta_B_AB;
+		float theta_B_BA;
 
 		//first determine if we should do collision avoidance
 		int do_avoidance = -1; //this marks which boat we avoid, its implemented as only 1 boat for now.
@@ -144,9 +149,9 @@ public:
 			if (theta_AB > 180) theta_AB -= 360;
 			if (theta_AB < -180) theta_AB += 360;
 			theta_BA = theta_AB - 180;//theta _BA is the angle between wind direction and Line B-A(draw straight line from boat B to boat A )
-			if (theta_BA < -180) theta_BA += 360; 
+			if (theta_BA < -180) theta_BA += 360;
 			if (theta_BA > 180) theta_BA -= 360;
-			
+
 			float v_A = global.gps_data.location.speed;//the velocity of Boat A
 			float v_B = global.other_boats[do_avoidance].speed;//the velocity of Boat B
 			x = global.gps_data.location.distance_to(global.other_boats[do_avoidance]);//is the distance between boat A and boat B
@@ -176,41 +181,6 @@ public:
 			if (theta_B_AB < -180) theta_B_AB += 360;
 			if (theta_B_AB > 180) theta_B_AB -= 360;
 
-
-
-			//theta_A_AB = theta_A - theta_AB;
-
-			//theta_B_BA = theta_B - theta_BA;
-			//theta_B_AB = theta_B - theta_AB;
-
-			//if (theta_A_AB > 180)
-			//{
-			//	theta_A_AB = (theta_A_AB)-360;
-			//}
-			//else if (theta_A_AB < -180)
-			//{
-			//	theta_A_AB = theta_A_AB + 360;
-			//}
-
-			//if (theta_B_BA>180)
-			//{
-			//	theta_B_BA = (theta_B_BA)-360;
-			//}
-			//else if (theta_B_BA < -180)
-			//{
-			//	theta_B_BA = theta_B_BA + 360;
-			//}
-				
-			//if (theta_B_AB>180)
-			//{
-			//	theta_B_AB = (theta_B_AB)-360;
-			//}
-			//else if (theta_B_AB < -180)
-			//{
-			//	theta_B_AB = theta_B_AB + 360;
-			//}
-
-
 			previous = now;
 			now = theta_B_BA;
 
@@ -230,12 +200,6 @@ public:
 				b = 0;
 
 			}
-			//previous2=now2;
-			//now2=abs(theta_AB)-90;
-			//if(previous2*now2<0)
-			//{
-			//   b = 1;
-			// }
 
 
 			if (x < 10)
@@ -292,33 +256,33 @@ public:
 					}
 
 
-						else
-						{
-							//Do nothing theta_A = theta_A;
-							collision_avoidance_did_evasion = false;
-						}
-					}
-				else // theta_A*theta_B > 0   overtaking
+					else
 					{
-					if (-90 < alpha && alpha < 90)//boat B is on the above
-				{
 						//Do nothing theta_A = theta_A;
-					collision_avoidance_did_evasion = false;
+						collision_avoidance_did_evasion = false;
+					}
 				}
-				else
+				else // theta_A*theta_B > 0   overtaking
 				{
-						if (theta_A_ABcon *theta_B_ABcon < 0)//&& abs(theta_Bcon - theta_Acon) < avoidangle)//
+					if (-90 < alpha && alpha < 90)//boat B is on the above
 					{
+						//Do nothing theta_A = theta_A;
+						collision_avoidance_did_evasion = false;
+					}
+					else
+					{
+						if (theta_A_ABcon *theta_B_ABcon < 0)//&& abs(theta_Bcon - theta_Acon) < avoidangle)//
+						{
 							if (theta_lub < (theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) && theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle < theta_rub)
 							{
 								do_tack_for_collision_avoidance();
-					}
+							}
 							else if ((theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) < theta_ldb || (theta_Bcon - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) > theta_rdb)
 							{
 								do_jibe_for_collision_avoidance();
 							}
-					else
-					{
+							else
+							{
 								global.desired_heading = (int)(alpha - theta_B_ABcon / abs(theta_B_ABcon)*avoidangle) % 360;
 							}
 						}
@@ -331,7 +295,7 @@ public:
 								if (theta_Acon > 0)
 								{
 									if (theta_B - avoidangle > theta_rub)
-								{
+									{
 										do_tack_for_collision_avoidance();
 									}
 									else
@@ -348,11 +312,11 @@ public:
 									else
 									{
 										global.desired_heading = (int)(theta_B + avoidangle) % 360;
+									}
 								}
 							}
-						}
 							else // alpha < 0
-								{
+							{
 								if (theta_Acon < 0)
 								{
 
@@ -363,7 +327,7 @@ public:
 									else
 									{
 										global.desired_heading = (int)(theta_B + avoidangle) % 360;
-							}
+									}
 
 								}
 								else//theta_Acon>0
@@ -403,6 +367,7 @@ public:
 			b = 1;
 		}
 	}
+
 	void do_tack_for_collision_avoidance(void){
 		if (theta_AB > 0) { //the other boat is to the right of the wind
 			next_state = tacking_going_from_wind_from_left_to_right;
@@ -411,7 +376,7 @@ public:
 			next_state = tacking_going_from_wind_from_right_to_left;
 		}
 		determine_path_bearing();//TODO determine wheter this is a good idea
-	
+
 	}
 	void do_jibe_for_collision_avoidance(void){
 		if (theta_AB > 0) { //the other boat is to the right of the wind
@@ -430,9 +395,9 @@ public:
 			sail_control_value *= -1;
 			sail_control_value += 360;
 		}
-		
+
 		if (sail_control_value < 55) sail_control_value = 0;
-		else sail_control_value -= 55; 
+		else sail_control_value -= 55;
 
 		sail_control_value *= 2.25;
 		sail_control_value *= -1; //inverting
@@ -451,20 +416,20 @@ public:
 		}
 		if (global.wind_bearing > 0){
 			front_sail_servo.write(180);
-			if(global.debug_handler.path_finding_debug) Serial.println("wind from right");
+			if (global.debug_handler.path_finding_debug) Serial.println("wind from right");
 		}
 		else {
 			front_sail_servo.write(0);
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from left");
 		}
-		
+
 	}
-	 public:
+public:
 	void guidance_start()
 	{
-		
+
 		//test comment
-		if (global.waypoints.actual_size== 0) { //there is no targets
+		if (global.waypoints.actual_size == 0) { //there is no targets
 			target_location.latitude = 55;
 			target_location.longtitude = 9; //we default to somewhere
 			Serial.println("no waypoints avaliable, defaulted to build in guidance target");
@@ -476,7 +441,7 @@ public:
 
 		distance_to_target = global.gps_data.location.distance_to(target_location);
 		bearing_to_target = global.gps_data.location.bearing_to(target_location);
-		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing)))%360;
+		bearing_to_target_relative_to_wind = ((int)((bearing_to_target - global.global_wind_bearing))) % 360;
 		if (bearing_to_target_relative_to_wind > 180) bearing_to_target_relative_to_wind -= 360;
 		if (bearing_to_target_relative_to_wind < -180) bearing_to_target_relative_to_wind += 360;
 		if (bearing_to_target_relative_to_wind > 0){ //target is right of wind
@@ -503,7 +468,7 @@ public:
 	}
 
 	void handle_target(void){
-		if (global.gps_data.location.distance_to(target_location) < IN_RANGE_DISTANCE || global.force_load_waypoint_in_guidance){ 
+		if (global.gps_data.location.distance_to(target_location) < IN_RANGE_DISTANCE || global.force_load_waypoint_in_guidance){
 			if (global.waypoints.actual_size> 0){ //there are still waypoints to take
 				target_location = global.waypoints.dequeue();
 				global.force_load_waypoint_in_guidance = false;
@@ -513,7 +478,7 @@ public:
 				//TODO print message here
 			}
 		}
-		
+
 	}
 
 	void get_target_info(void){
@@ -530,17 +495,17 @@ public:
 		bearing_to_target_relative_to_LOS = theta_LOS - bearing_to_target; //if positive, we are left of the original trajectory
 		if (bearing_to_target_relative_to_LOS > 180) bearing_to_target_relative_to_LOS -= 360;
 		if (bearing_to_target_relative_to_LOS < -180) bearing_to_target_relative_to_LOS += 360;
-		
-	
-		
+
+
+
 		real_part_of_complex_from_old_code = sin(bearing_to_target_relative_to_LOS*PI / 180)*distance_to_target;
 		imaginary_part_of_complex_from_old_code = cos(bearing_to_target_relative_to_LOS*PI / 180)*distance_to_target;
 
 		//now in order to make the boat stay within the boundaries, we simply modify the bearing to target according to how far away from the original path we are, though to a maximum of 60
-		
 
-		bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
-		
+
+		//bearing_to_target_relative_to_wind -= (real_part_of_complex_from_old_code > 60 ? 60 : real_part_of_complex_from_old_code);
+
 		if (global.debug_handler.path_finding_debug) {
 			Serial.println("");
 			Serial.print("distance_to_target: ");
@@ -572,7 +537,7 @@ public:
 		switch (state)
 		{
 		case close_hauled_wind_from_left:
-			global.desired_heading = int(global.global_wind_bearing + TACKING_ZONE)% 360;
+			global.desired_heading = int(global.global_wind_bearing + TACKING_ZONE) % 360;
 
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
@@ -589,10 +554,10 @@ public:
 			break;
 
 			/*	tacking_going_from_wind_from_left_to_right,
-	tacking_going_from_wind_from_right_to_left,
-	*/
-		case tacking_going_from_wind_from_left_to_right: 
-			//høns
+			tacking_going_from_wind_from_right_to_left,
+			*/
+		case tacking_going_from_wind_from_left_to_right:
+			
 			global.desired_heading = frozen_tacking_direction;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
@@ -601,7 +566,7 @@ public:
 			//do stuff
 			break;
 		case tacking_going_from_wind_from_right_to_left:
-			//høns
+			
 			global.desired_heading = frozen_tacking_direction;
 			if (global.debug_handler.path_finding_debug){
 				Serial.print("state is:");
@@ -666,7 +631,7 @@ public:
 
 	void next_state_logic(void){
 		/*
-		close_hauled_wind_from_left, 
+		close_hauled_wind_from_left,
 		close_hauled_wind_from_right,
 		generel_direction_wind_from_right,
 		generel_direction_wind_from_left,
@@ -680,77 +645,47 @@ public:
 		switch (state)
 		{
 		case close_hauled_wind_from_left:
-			if (bearing_to_target_relative_to_wind > TACKING_ZONE+5) {
+			if (bearing_to_target_relative_to_wind > TACKING_ZONE) {
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE-5)){
+			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE)){
 				next_state = generel_direction_wind_from_right;
 			}
-			/*
-			else if (real_part_of_complex_from_old_code > 20){
-				next_state = tacking_going_from_wind_from_left_to_right;
-				has_boat_been_at_tacking_target = false;
-				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
-				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
-			}
-			else if (real_part_of_complex_from_old_code < -20){
-				next_state = generel_direction_wind_from_left;
-			}*/
-			/*
 			else if (bearing_to_target_relative_to_wind < (-TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_wind < -TACKING_ZONE_NARROW_ANGLE && real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
 				next_state = tacking_going_from_wind_from_left_to_right;
 				has_boat_been_at_tacking_target = false;
 				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
-				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
+				if (global.global_wind_bearing < 0) global.global_wind_bearing += 360;
 			}
-			*/
-			else if (/*bearing_to_target_relative_to_LOS < (-TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_LOS < -TACKING_ZONE_NARROW_ANGLE && */real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
-				next_state = tacking_going_from_wind_from_left_to_right;
-				has_boat_been_at_tacking_target = false;
-				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
-				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
-			}
-			else if (real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
-				next_state = generel_direction_wind_from_left;
-			}
+
 			break;
 
 		case close_hauled_wind_from_right:
-			if (bearing_to_target_relative_to_wind < -TACKING_ZONE-5) {
+			if (bearing_to_target_relative_to_wind < -TACKING_ZONE) {
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind > TACKING_ZONE+5){
+			else if (bearing_to_target_relative_to_wind > TACKING_ZONE){
 				next_state = generel_direction_wind_from_left;
 			}
 			/*
 			#define TACKING_ZONE_DISTANCE 20
-#define TACKING_ZONE_WIDE_ANGLE TACKING_ZONE / 2
-#define TACKING_ZONE_NARROW_ANGLE 5
+			#define TACKING_ZONE_WIDE_ANGLE TACKING_ZONE / 2
+			#define TACKING_ZONE_NARROW_ANGLE 5
 			*/
-			else if (/*bearing_to_target_relative_to_LOS > (TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_LOS > TACKING_ZONE_NARROW_ANGLE &&*/ real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
-				next_state = tacking_going_from_wind_from_right_to_left;
-				has_boat_been_at_tacking_target = false;
-				frozen_tacking_direction = global.global_wind_bearing + TACKING_ZONE;
-				if (frozen_tacking_direction > 360) frozen_tacking_direction -= 360;
-			}
-			else if (real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
-				next_state = generel_direction_wind_from_right;
-			}
-			/*
 			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE_WIDE_ANGLE) || bearing_to_target_relative_to_wind > TACKING_ZONE_NARROW_ANGLE && real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
 				next_state = tacking_going_from_wind_from_right_to_left;
 				frozen_tacking_direction = global.global_wind_bearing + TACKING_ZONE;
 				has_boat_been_at_tacking_target = false;
 				if (global.global_wind_bearing > 360) global.global_wind_bearing -= 360;
 			}
-			*/
+
 			break;
 
 
 			/*	tacking_going_from_wind_from_left_to_right,
 			tacking_going_from_wind_from_right_to_left,
 			*/
-		case tacking_going_from_wind_from_left_to_right :
+		case tacking_going_from_wind_from_left_to_right:
 			if (angle_between_two_angles(global.bearing_container.compass_bearing, frozen_tacking_direction) < TOLERANCE_FOR_COMPLETED_TACKING && has_boat_been_at_tacking_target == false) {
 				has_boat_been_at_tacking_target = true;
 				time_stamp_for_tacking = millis();
@@ -758,17 +693,17 @@ public:
 			if ((millis() - time_stamp_for_tacking) > TIMEOUT_FOR_COMPLETED_TACKING && has_boat_been_at_tacking_target == true) {
 				next_state = close_hauled_wind_from_right;
 			}
-			if (bearing_to_target_relative_to_wind < (-TACKING_ZONE-5)) {
+			if (bearing_to_target_relative_to_wind < (-TACKING_ZONE - 5)) {
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind > (TACKING_ZONE+5)){
+			else if (bearing_to_target_relative_to_wind >(TACKING_ZONE + 5)){
 				next_state = generel_direction_wind_from_left;
 			}
 
 			break;
 			/*#define TOLERANCE_FOR_COMPLETED_TACKING 15
-#define TIMEOUT_FOR_COMPLETED_TACKING 5000*/
-		case tacking_going_from_wind_from_right_to_left :
+			#define TIMEOUT_FOR_COMPLETED_TACKING 5000*/
+		case tacking_going_from_wind_from_right_to_left:
 			if (angle_between_two_angles(global.bearing_container.compass_bearing, frozen_tacking_direction) < TOLERANCE_FOR_COMPLETED_TACKING && has_boat_been_at_tacking_target == false) {
 				has_boat_been_at_tacking_target = true;
 				time_stamp_for_tacking = millis();
@@ -808,10 +743,10 @@ public:
 				//we are there
 				next_state = down_wind_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind > 0){
+			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind < 0){
+			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
 			break;
@@ -821,10 +756,10 @@ public:
 				//we are there
 				next_state = down_wind_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind > 0){
+			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind < 0){
+			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
 			break;
@@ -833,20 +768,24 @@ public:
 			if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE || (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind > 0)){
+			else if (bearing_to_target_relative_to_wind < 155 && bearing_to_target_relative_to_wind > DOWN_WIND_ZONE){
 				next_state = jibe_going_from_wind_from_right_to_left;
 			}
-
+			else if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
+				next_state = generel_direction_wind_from_left;
+			}
 			break;
 
 		case	down_wind_wind_from_left:
 			if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE || (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind < 0)){
+			else if (bearing_to_target_relative_to_wind > -155 && bearing_to_target_relative_to_wind < -DOWN_WIND_ZONE){
 				next_state = jibe_going_from_wind_from_left_to_right;
 			}
-
+			else if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
+				next_state = generel_direction_wind_from_right;
+			}
 
 			break;
 
@@ -855,7 +794,7 @@ public:
 			break;
 		}
 		//if we want to do special things when changing state, it can be done here.
-		
+
 
 	}
 
@@ -881,7 +820,7 @@ public:
 			dHeading += 360;
 		}
 		// Singularity translation
-	
+
 
 		// Limit control statement
 		//{
@@ -892,20 +831,20 @@ public:
 		// The following checks, will keep integratorSum within -0.2 and 0.2
 		/*
 		if (integratorSum < -INTEGRATOR_MAX && dHeading > 0) {
-			integratorSum = dHeading + integratorSum;
+		integratorSum = dHeading + integratorSum;
 		}
 		else if (integratorSum > INTEGRATOR_MAX && dHeading < 0) {
-			integratorSum = dHeading + integratorSum;
+		integratorSum = dHeading + integratorSum;
 		}
 		else {
-			integratorSum = integratorSum;
+		integratorSum = integratorSum;
 		}
 		integralValue = GAIN_I * integratorSum;
 		// result
 		*/
 		temp_ang = pValue;// +integralValue; // Angle in radians
 
-	
+
 		global.Rudder_Desired_Angle = round(temp_ang);
 
 		if (global.Rudder_Desired_Angle > RUDDER_LIMIT) global.Rudder_Desired_Angle = RUDDER_LIMIT;

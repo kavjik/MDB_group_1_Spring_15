@@ -126,32 +126,32 @@ void setup() {
 		//global.gps_data.location.longtitude = 9.799813889;
 
 
-	/*	
+	
 
-		global.other_boats[0].bearing = 270;
+		global.other_boats[0].bearing = 40;
 		global.other_boats[0].is_valid_boat = true;
-		global.other_boats[0].latitude = 0;// 54.91353907;
-		global.other_boats[0].longtitude = 0;//9.78084565;
+		global.other_boats[0].latitude = 54.91326366;
+		global.other_boats[0].longtitude = 9.78124791;
 		global.other_boats[0].speed = 2;
 
-		global.other_boats[1].bearing = 200;
+		global.other_boats[1].bearing = 100;
 		global.other_boats[1].is_valid_boat = true;
-		global.other_boats[1].latitude = 54.91237781;
-		global.other_boats[1].longtitude = 9.78281377;
+		global.other_boats[1].latitude = 54.91264944;
+		global.other_boats[1].longtitude = 9.78197736;
 		global.other_boats[1].speed = 1;
 
-		global.other_boats[2].bearing = 90;
+		global.other_boats[2].bearing = 200;
 		global.other_boats[2].is_valid_boat = true;
-		global.other_boats[2].latitude = 54.91290631;
-		global.other_boats[2].longtitude = 9.78294998;
+		global.other_boats[2].latitude = 54.91259097;
+		global.other_boats[2].longtitude = 9.7825118;
 		global.other_boats[2].speed = 3;
 
-		global.other_boats[3].bearing = 40;
+		global.other_boats[3].bearing = 270;
 		global.other_boats[3].is_valid_boat = true;
-		global.other_boats[3].latitude = 54.91244828;
-		global.other_boats[3].longtitude = 9.78400978;
+		global.other_boats[3].latitude = 54.91281952;
+		global.other_boats[3].longtitude = 9.78327043;
 		global.other_boats[3].speed = 4;
-*/
+
 
 	}
 	else
