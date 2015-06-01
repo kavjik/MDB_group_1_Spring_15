@@ -629,16 +629,16 @@ public:
 				frozen_tacking_direction = global.global_wind_bearing - TACKING_ZONE;
 				if (frozen_tacking_direction < 0) frozen_tacking_direction += 360;
 			}
-			else if (real_part_of_complex_from_old_code < -20){
+			else if (real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE){
 				next_state = generel_direction_wind_from_left;
 			}
 			break;
 
 		case close_hauled_wind_from_right:
-			if (bearing_to_target_relative_to_wind < -TACKING_ZONE) {
+			if (bearing_to_target_relative_to_wind < -TACKING_ZONE-5) {
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (bearing_to_target_relative_to_wind > TACKING_ZONE){
+			else if (bearing_to_target_relative_to_wind > TACKING_ZONE+5){
 				next_state = generel_direction_wind_from_left;
 			}
 			/*
@@ -652,7 +652,7 @@ public:
 				frozen_tacking_direction = global.global_wind_bearing + TACKING_ZONE;
 				if (frozen_tacking_direction > 360) frozen_tacking_direction -= 360;
 			}
-			else if (real_part_of_complex_from_old_code > 20){
+			else if (real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE){
 				next_state = generel_direction_wind_from_right;
 			}
 			/*
@@ -752,7 +752,7 @@ public:
 			if (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0){
 				next_state = generel_direction_wind_from_right;
 			}
-			else if (real_part_of_complex_from_old_code > 15 || (bearing_to_target_relative_to_wind < 155 && bearing_to_target_relative_to_wind > 0)){
+			else if (real_part_of_complex_from_old_code > TACKING_ZONE_DISTANCE || (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE-5 && bearing_to_target_relative_to_wind > 0)){
 				next_state = jibe_going_from_wind_from_right_to_left;
 			}
 
@@ -762,7 +762,7 @@ public:
 			if (bearing_to_target_relative_to_wind < DOWN_WIND_ZONE && bearing_to_target_relative_to_wind > 0){
 				next_state = generel_direction_wind_from_left;
 			}
-			else if (real_part_of_complex_from_old_code < -15 || (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE && bearing_to_target_relative_to_wind < 0)){
+			else if (real_part_of_complex_from_old_code < -TACKING_ZONE_DISTANCE || (bearing_to_target_relative_to_wind > -DOWN_WIND_ZONE+5 && bearing_to_target_relative_to_wind < 0)){
 				next_state = jibe_going_from_wind_from_left_to_right;
 			}
 
