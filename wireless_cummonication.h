@@ -82,20 +82,20 @@ public:
 			xbee.send(zbTx);
 		}
 		delay(10);
-		/*
+		*/
 		if (ID_ != boat2){
 			addr64 = XBeeAddress64(BOAT_2_ADDR);					
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
-		/*
+		
 		delay(10);
 		if (ID_ != boat3){
 			addr64 = XBeeAddress64(BOAT_3_ADDR);
 			zbTx = ZBTxRequest(addr64, pay_load, sizeof(DATA_));
 			xbee.send(zbTx);
 		}
-		
+		/*
 		delay(10);
 		if (ID_ != boat4){
 			addr64 = XBeeAddress64(BOAT_4_ADDR);					

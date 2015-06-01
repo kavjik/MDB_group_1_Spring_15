@@ -19,8 +19,8 @@ bool is_gps_module_longtitude_valid(void){ //this is a very ugly fix to a very u
 }
 bool is_gps_module_latittude_valid(void){ //this is a very ugly fix to a very ugly problem
 	global.lattitude_fix_triggered = true;
-	if (global.GPS_module.latitude > 5800) return false;
-	if (global.GPS_module.latitude < 5400) return false;
+	if (global.GPS_module.latitude > 5750) return false;
+	if (global.GPS_module.latitude < 5450) return false;
 	global.lattitude_fix_triggered = false;
 	return(true);
 

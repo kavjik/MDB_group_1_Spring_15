@@ -419,7 +419,13 @@ public:
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from right");
 		}
 		else {
-			front_sail_servo.write(0);
+			if (BIG_SWING_ON_FRONT_SAIL){
+				front_sail_servo.write(0);
+			}
+			else {
+				front_sail_servo.write(0);
+			}
+			
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from left");
 		}
 
