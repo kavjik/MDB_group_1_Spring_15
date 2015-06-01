@@ -2,7 +2,7 @@
 #define queue_h
 
 #include "Location.h"
-#define QUEUE_SIZE 8
+#define QUEUE_SIZE 12
 class Location_queue
 {
 public:
