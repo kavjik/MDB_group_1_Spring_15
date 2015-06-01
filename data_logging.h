@@ -64,13 +64,12 @@ public:
 		//it takes the form "yy.mm.dd.hh.mm.ss"
 		//i also wait for the gps to have a fix, since i get the timestamp used in the filename from the gps
 		delay(50); //wait til everything is set up
-		while (!global.gps_data.fix && SIMULATOR_MODE == false){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
+		while (!global.gps_data.fix && SIMULATOR_MODE == false && (global.GPS_module.year != 15 || global.GPS_module.year != 16)){ //when the module is booted up from fresh, it thinks we are in the year 2080, as soon as it know we are not, then it knows when we are.
 			if (global.debug_handler.data_logging_debug)  Serial.println("datalogger waiting for fix");
 			if (global.debug_handler.data_logging_debug) Serial.println(global.GPS_module.year); //temp TODO remove
 			delay(100); //wait till gps fix, that way we have the current time
 
 		}
-		delay(1000);
 		if (global.debug_handler.data_logging_debug)	Serial.println("datalogger got current UTC time");
 		
 		if (SIMULATOR_MODE){
@@ -111,8 +110,8 @@ public:
 			write_to_SD_card("global.GPS_module.longitude, 10");
 			write_to_SD_card("global.gps_data.fix");
 			write_to_SD_card("global.gps_data.gps_bearing");
-			write_to_SD_card("(global.gps_data.location.latitude) * 1000000"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 			write_to_SD_card("(global.gps_data.location.longtitude) * 1000000)");
+			write_to_SD_card("(global.gps_data.location.latitude) * 1000000"); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 			write_to_SD_card("global.gps_data.location.speed");
 			write_to_SD_card("global.bearing_container.compass_bearing");
 			write_to_SD_card("global.bearing_container.pitch");
@@ -175,8 +174,8 @@ public:
 			write_to_SD_card(String(global.GPS_module.longitude, 10));
 			write_to_SD_card(String(global.gps_data.fix));
 			write_to_SD_card(String(global.gps_data.gps_bearing));
-			write_to_SD_card(String((global.gps_data.location.latitude) * 1000000)); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 			write_to_SD_card(String((global.gps_data.location.longtitude) * 1000000));
+			write_to_SD_card(String((global.gps_data.location.latitude) * 1000000)); //to get the number of digits i want, i multiply with 1.000.000, it needs to be divided by 1.000.000 in the other end
 			write_to_SD_card(String(global.gps_data.location.speed));
 			write_to_SD_card(String(global.bearing_container.compass_bearing));
 			write_to_SD_card(String(global.bearing_container.pitch));
@@ -242,7 +241,11 @@ public:
 			if (dataFile) {
 
 				// if the file is available, write to it:
-
+				for (int i = 0; i < write_to_file.length(); i++){
+					if (write_to_file[i] == '.'){
+						write_to_file[i] = ',';
+					}
+				}
 				dataFile.print(write_to_file);
 			}
 			else {

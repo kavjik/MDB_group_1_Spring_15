@@ -33,7 +33,7 @@
 #define BIG_SWING_ON_FRONT_SAIL false
 #define THIS_BOAT boat3 //used if the get_ID fails
 //above are defines that change between x
-boats
+
 
 #include "Scheduler.h"
 #include <SPI.h>
