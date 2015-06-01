@@ -89,7 +89,7 @@ public:
 		sail_control();
 		
 		if (SIMULATOR_MODE && SIMULATOR_MODE_MOVE_AUTOMATICALLY) {
-			global.global_wind_bearing = 330;
+			global.global_wind_bearing = 0;
 
 			global.bearing_container.compass_bearing = global.desired_heading; //turn to the way we want to go
 			global.wind_bearing = (int)(global.bearing_container.compass_bearing - global.global_wind_bearing) % 360;
