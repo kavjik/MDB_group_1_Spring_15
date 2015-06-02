@@ -4,15 +4,15 @@
 #define HEART_BEAT_LED 30
 
 
-////below are defines that change between boats //red boat
-//#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (126)
-//#define COMPASS_X_MIN -104
-//#define COMPASS_X_MAX 143
-//#define COMPASS_Y_MIN -231
-//#define COMPASS_Y_MAX -47
-//#define BIG_SWING_ON_FRONT_SAIL true
-//#define THIS_BOAT boat1 //used if the get_ID fails
-////above are defines that change between boats
+//below are defines that change between boats //red boat
+#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (126)
+#define COMPASS_X_MIN -104
+#define COMPASS_X_MAX 143
+#define COMPASS_Y_MIN -231
+#define COMPASS_Y_MAX -47
+#define BIG_SWING_ON_FRONT_SAIL true
+#define THIS_BOAT boat1 //used if the get_ID fails
+//above are defines that change between boats
 
 ////below are defines that change between boats //blue boat
 //#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-107)
@@ -24,15 +24,15 @@
 //#define THIS_BOAT boat2 //used if the get_ID fails
 ////above are defines that change between boats
 
-//below are defines that change between boats //yelow boat
-#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-114)
-#define COMPASS_X_MIN -84
-#define COMPASS_X_MAX 61
-#define COMPASS_Y_MIN -18
-#define COMPASS_Y_MAX 87
-#define BIG_SWING_ON_FRONT_SAIL false
-#define THIS_BOAT boat3 //used if the get_ID fails
-//above are defines that change between x
+////below are defines that change between boats //yelow boat
+//#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-114)
+//#define COMPASS_X_MIN -84
+//#define COMPASS_X_MAX 61
+//#define COMPASS_Y_MIN -18
+//#define COMPASS_Y_MAX 87
+//#define BIG_SWING_ON_FRONT_SAIL false
+//#define THIS_BOAT boat3 //used if the get_ID fails
+////above are defines that change between x
 
 
 #include "Scheduler.h"
@@ -65,53 +65,52 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
-	//blue
-	target.latitude = 54.913941667;
-	target.longtitude = 9.779511111;
-	global.waypoints.enqueue(target); //A
-	target.latitude = 54.913694444;
-	target.longtitude = 9.780158333;
-	global.waypoints.enqueue(target); //B
-	target.latitude = 54.913613889;
-	target.longtitude = 9.779650000;
-	global.waypoints.enqueue(target); //C
-	target.latitude = 54.913941667;
-	target.longtitude = 9.779511111;
-	global.waypoints.enqueue(target); //A
-	target.latitude = 54.913694444;
-	target.longtitude = 9.780158333;
-	global.waypoints.enqueue(target); //B
-	target.latitude = 54.913613889;
-	target.longtitude = 9.779650000;
-	global.waypoints.enqueue(target); //C
-	target.latitude = 54.913941667;
-	target.longtitude = 9.779511111;
-	global.waypoints.enqueue(target); //A
-	target.latitude = 54.913694444;
-	target.longtitude = 9.780158333;
-	global.waypoints.enqueue(target); //B
-	target.latitude = 54.913613889;
-	target.longtitude = 9.779650000;
-	global.waypoints.enqueue(target); //C
+	//red
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target); 
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+	target.latitude = 55.359088889;
+	target.longtitude = 9.211044444;
+	global.waypoints.enqueue(target);
+
 	if (SIMULATOR_MODE) {
 		Scheduler.startLoop(Data_logging);
 		//Scheduler.startLoop(Bearing_tracking);
 		//Scheduler.startLoop(Location_tracking);
 		Scheduler.startLoop(wireless_cummonication);
 		Scheduler.startLoop(wireless_recieve_thread);
+		Scheduler.startLoop(wireless_maintain_if_boat_is_valid_thread);
 		Scheduler.startLoop(path_finding);
 		//Scheduler.startLoop(gps_tracking); 
 		Scheduler.startLoop(computer_input_handler);
 		Scheduler.startLoop(control_simulator);
 		global.gps_data.fix = true;
-		global.gps_data.location.latitude = 54.9135138889;
-		global.gps_data.location.longtitude = 9.7804888889;// ALSION
+		global.gps_data.location.latitude = 55.359144444;
+		global.gps_data.location.longtitude = 9.210477778;// Jels
 		//global.gps_data.location.latitude = 54.896811111;
 		//global.gps_data.location.longtitude = 9.799813889;
 
 
 	
-
+		/*
 		global.other_boats[0].bearing = 40;
 		global.other_boats[0].is_valid_boat = true;
 		global.other_boats[0].latitude = 54.91326366;
@@ -135,6 +134,7 @@ void setup() {
 		global.other_boats[3].latitude = 54.91281952;
 		global.other_boats[3].longtitude = 9.78327043;
 		global.other_boats[3].speed = 4;
+		*/
 
 
 	}
