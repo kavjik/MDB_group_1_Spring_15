@@ -1,18 +1,18 @@
 #define mySerial Serial1
-#define SIMULATOR_MODE true	
-#define SIMULATOR_MODE_MOVE_AUTOMATICALLY true //only means something if simulator mode is on
+#define SIMULATOR_MODE false	
+#define SIMULATOR_MODE_MOVE_AUTOMATICALLY false //only means something if simulator mode is on
 #define HEART_BEAT_LED 30
 
 
-//below are defines that change between boats //red boat
-#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (126)
-#define COMPASS_X_MIN -104
-#define COMPASS_X_MAX 143
-#define COMPASS_Y_MIN -231
-#define COMPASS_Y_MAX -47
-#define BIG_SWING_ON_FRONT_SAIL true
-#define THIS_BOAT boat1 //used if the get_ID fails
-//above are defines that change between boats
+////below are defines that change between boats //red boat
+//#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (126)
+//#define COMPASS_X_MIN -104
+//#define COMPASS_X_MAX 143
+//#define COMPASS_Y_MIN -231
+//#define COMPASS_Y_MAX -47
+//#define BIG_SWING_ON_FRONT_SAIL true
+//#define THIS_BOAT boat1 //used if the get_ID fails
+////above are defines that change between boats
 
 ////below are defines that change between boats //blue boat
 //#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-107)
@@ -24,15 +24,15 @@
 //#define THIS_BOAT boat2 //used if the get_ID fails
 ////above are defines that change between boats
 
-////below are defines that change between boats //yellow boat
-//#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-114)
-//#define COMPASS_X_MIN -84
-//#define COMPASS_X_MAX 61
-//#define COMPASS_Y_MIN -18
-//#define COMPASS_Y_MAX 87
-//#define BIG_SWING_ON_FRONT_SAIL false
-//#define THIS_BOAT boat3 //used if the get_ID fails
-////above are defines that change between x
+//below are defines that change between boats //yellow boat
+#define WIND_SENSOR_OFFSET_BOAT_DEPENDANT (-114)
+#define COMPASS_X_MIN -84
+#define COMPASS_X_MAX 61
+#define COMPASS_Y_MIN -18
+#define COMPASS_Y_MAX 87
+#define BIG_SWING_ON_FRONT_SAIL false
+#define THIS_BOAT boat3 //used if the get_ID fails
+//above are defines that change between x
 
 
 #include "Scheduler.h"
@@ -65,6 +65,72 @@ void setup() {
 	pinMode(51, INPUT_PULLUP);
 
 	Location target;
+	//Yellow Moelledam (Counter Clockwise)
+	target.latitude = 54.915508333;
+	target.longtitude = 9.794372222;
+	global.waypoints.enqueue(target); //A
+	target.latitude = 54.915297222;
+	target.longtitude = 9.794747222;
+	global.waypoints.enqueue(target); //B
+	target.latitude = 54.915644444;
+	target.longtitude = 9.795294444;
+	global.waypoints.enqueue(target); //C
+	target.latitude = 54.915875000;
+	target.longtitude = 9.794877778;
+	global.waypoints.enqueue(target); //D
+	target.latitude = 54.915508333;
+	target.longtitude = 9.794372222;
+	global.waypoints.enqueue(target); //A
+	target.latitude = 54.915297222;
+	target.longtitude = 9.794747222;
+	global.waypoints.enqueue(target); //B
+	target.latitude = 54.915644444;
+	target.longtitude = 9.795294444;
+	global.waypoints.enqueue(target); //C
+	target.latitude = 54.915875000;
+	target.longtitude = 9.794877778;
+	global.waypoints.enqueue(target); //D
+	target.latitude = 54.915508333;
+	target.longtitude = 9.794372222;
+	global.waypoints.enqueue(target); //A
+	target.latitude = 54.915297222;
+	target.longtitude = 9.794747222;
+	global.waypoints.enqueue(target); //Home
+
+
+	////Blue Moelledam (Clockwise)
+	//target.latitude = 54.915644444;
+	//target.longtitude = 9.795294444;
+	//global.waypoints.enqueue(target); //C
+	//target.latitude = 54.915297222;
+	//target.longtitude = 9.794747222;
+	//global.waypoints.enqueue(target); //B
+	//target.latitude = 54.915508333;
+	//target.longtitude = 9.794372222;
+	//global.waypoints.enqueue(target); //A
+	//target.latitude = 54.915875000;
+	//target.longtitude = 9.794877778;
+	//global.waypoints.enqueue(target); //D
+	//target.latitude = 54.915644444;
+	//target.longtitude = 9.795294444;
+	//global.waypoints.enqueue(target); //C
+	//target.latitude = 54.915297222;
+	//target.longtitude = 9.794747222;
+	//global.waypoints.enqueue(target); //B
+	//target.latitude = 54.915508333;
+	//target.longtitude = 9.794372222;
+	//global.waypoints.enqueue(target); //A
+	//target.latitude = 54.915875000;
+	//target.longtitude = 9.794877778;
+	//global.waypoints.enqueue(target); //D
+	//target.latitude = 54.915644444;
+	//target.longtitude = 9.795294444;
+	//global.waypoints.enqueue(target); //C
+	//target.latitude = 54.915297222;
+	//target.longtitude = 9.794747222;
+	//global.waypoints.enqueue(target); //Home
+
+
 	////blue
 	//target.latitude = 55.359088889;
 	//target.longtitude = 9.211044444;
@@ -121,30 +187,30 @@ void setup() {
 	//global.waypoints.enqueue(target);
 
 	//red
-	target.latitude = 55.359511111;
-	target.longtitude = 9.210461111;
-	global.waypoints.enqueue(target); 
-	target.latitude = 55.359088889;
-	target.longtitude = 9.211044444;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359511111;
-	target.longtitude = 9.210461111;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359088889;
-	target.longtitude = 9.211044444;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359511111;
-	target.longtitude = 9.210461111;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359088889;
-	target.longtitude = 9.211044444;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359511111;
-	target.longtitude = 9.210461111;
-	global.waypoints.enqueue(target);
-	target.latitude = 55.359088889;
-	target.longtitude = 9.211044444;
-	global.waypoints.enqueue(target);
+	//target.latitude = 55.359511111;
+	//target.longtitude = 9.210461111;
+	//global.waypoints.enqueue(target); 
+	//target.latitude = 55.359088889;
+	//target.longtitude = 9.211044444;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359511111;
+	//target.longtitude = 9.210461111;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359088889;
+	//target.longtitude = 9.211044444;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359511111;
+	//target.longtitude = 9.210461111;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359088889;
+	//target.longtitude = 9.211044444;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359511111;
+	//target.longtitude = 9.210461111;
+	//global.waypoints.enqueue(target);
+	//target.latitude = 55.359088889;
+	//target.longtitude = 9.211044444;
+	//global.waypoints.enqueue(target);
 
 
 	if (SIMULATOR_MODE) {

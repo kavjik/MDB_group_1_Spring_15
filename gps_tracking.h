@@ -122,6 +122,7 @@ void gps_tracking() {
 			}
 			if (fail_count > 50){
 				return_on_sensible_gps_location();
+				fail_count = 0;
 			}
 		}
 
