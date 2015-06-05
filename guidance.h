@@ -416,15 +416,15 @@ public:
 
 		}
 		if (global.wind_bearing > 0){
-			front_sail_servo.write(180);
+			front_sail_servo.write(130);
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from right");
 		}
 		else {
 			if (BIG_SWING_ON_FRONT_SAIL){
-				front_sail_servo.write(0);
+				front_sail_servo.write(50);
 			}
 			else {
-				front_sail_servo.write(0);
+				front_sail_servo.write(50);
 			}
 			
 			if (global.debug_handler.path_finding_debug) Serial.println("wind from left");
